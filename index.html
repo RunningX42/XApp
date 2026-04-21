@@ -9,1642 +9,980 @@
 <meta name="theme-color" content="#0d0d0d">
 <title>RunningX</title>
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0d0d0d;
-  --surface: #181818;
-  --surface2: #222222;
-  --border: #2e2e2e;
-  --accent: #d4f542;
-  --accent2: #ff6b35;
-  --accent3: #42d4f5;
-  --text: #ededed;
-  --muted: #999;
-  --faint: #555;
-  --run-bg: rgba(212,245,66,0.13);
-  --run-text: #d4f542;
-  --strength-bg: rgba(255,107,53,0.13);
-  --strength-text: #ff8c5e;
-  --mob-bg: rgba(66,212,245,0.13);
-  --mob-text: #42d4f5;
-  --rest-bg: rgba(255,255,255,0.05);
-  --rest-text: #666;
-  --race-bg: rgba(255,51,102,0.15);
-  --race-text: #ff3366;
-  --work-bg: rgba(255,180,0,0.12);
-  --work-text: #ffb400;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:        #0d0d0d;
+  --surface:   #181818;
+  --border:    #2e2e2e;
+  --accent:    #d4f542;
+  --accent2:   #ff6b35;
+  --accent3:   #42d4f5;
+  --text:      #ededed;
+  --muted:     #999;
+  --faint:     #555;
+  --run-bg:    rgba(212,245,66,0.13);  --run-text:  #d4f542;
+  --str-bg:    rgba(255,107,53,0.13);  --str-text:  #ff8c5e;
+  --mob-bg:    rgba(66,212,245,0.13);  --mob-text:  #42d4f5;
+  --rest-bg:   rgba(255,255,255,0.05); --rest-text: #666;
+  --race-bg:   rgba(255,51,102,0.15);  --race-text: #ff3366;
+  --work-bg:   rgba(255,180,0,0.12);   --work-text: #ffb400;
+  --st: env(safe-area-inset-top, 0px);
+  --sb: env(safe-area-inset-bottom, 0px);
 }
-
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.5; height: 100%; overscroll-behavior: none; }
 
-html, body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 14px;
-  line-height: 1.5;
-  height: 100%;
-  overscroll-behavior: none;
-}
+/* SHELL */
+.app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
 
-/* ── APP SHELL ── */
-.app {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  max-width: 480px;
-  margin: 0 auto;
-  position: relative;
-}
-
-/* ── TOP BAR ── */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: calc(var(--safe-top) + 14px) 18px 14px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 10;
-}
-.topbar-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 22px;
-  letter-spacing: 1.5px;
-  color: var(--text);
-  line-height: 1;
-}
+/* TOPBAR */
+.topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(var(--st) + 14px) 18px 14px; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 10; }
+.topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; line-height: 1; }
 .topbar-logo span { color: var(--accent); }
-.topbar-pr {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 0.5px;
-  text-align: right;
-  line-height: 1.4;
-}
-.topbar-pr strong { color: var(--accent); }
+.topbar-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); letter-spacing: 1px; margin-top: 1px; }
+.topbar-right { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.5; flex: 1; margin: 0 10px; }
+.topbar-right strong { color: var(--accent); }
 
-/* ── COUNTDOWN STRIP ── */
-.countdown-strip {
-  display: flex;
-  background: linear-gradient(90deg, rgba(212,245,66,0.06) 0%, transparent 60%);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 18px;
-  gap: 16px;
-  flex-shrink: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
+/* COUNTDOWN */
+.countdown-strip { display: flex; background: linear-gradient(90deg,rgba(212,245,66,0.06) 0%,transparent 60%); border-bottom: 1px solid var(--border); padding: 10px 18px; gap: 16px; flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
 .countdown-strip::-webkit-scrollbar { display: none; }
-.cd-item {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.cd-race { font-size: 11px; font-weight: 600; color: var(--text); }
-.cd-race.target { color: var(--accent); }
-.cd-days {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 24px;
-  line-height: 1;
-  color: var(--muted);
-}
-.cd-item.target .cd-days { color: var(--accent); }
+.cd-item { flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; }
+.cd-race { font-size: 11px; font-weight: 600; }
+.cd-race.hi, .cd-item.hi .cd-days { color: var(--accent); }
+.cd-days { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; color: var(--muted); }
 .cd-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; }
 .cd-sep { width: 1px; background: var(--border); flex-shrink: 0; margin: 2px 0; }
 
-/* ── NAV TABS ── */
-.tabs {
-  display: flex;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
+/* TABS */
+.tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
-.tab {
-  flex-shrink: 0;
-  padding: 12px 16px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.15s;
-  white-space: nowrap;
-  background: none;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-}
+.tab { flex-shrink: 0; padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; white-space: nowrap; transition: color 0.15s, border-color 0.15s; }
 .tab:hover { color: var(--text); }
 .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
 
-/* ── SCROLL AREA ── */
-.scroll-area {
-  flex: 1;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  padding-bottom: calc(var(--safe-bottom) + 80px);
-  -webkit-overflow-scrolling: touch;
-}
-
-/* ── VIEWS ── */
+/* SCROLL */
+.scroll-area { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-bottom: calc(var(--sb) + 80px); -webkit-overflow-scrolling: touch; }
 .view { display: none; padding: 16px; }
 .view.active { display: block; }
 
-/* ── TODAY CARD ── */
-.today-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 12px;
-}
-.today-date {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--faint);
-  letter-spacing: 1px;
-  text-transform: uppercase;
-}
-.today-phase {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  color: var(--accent);
-  letter-spacing: 0.5px;
-}
+/* SHARED CARD */
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 10px; }
+.card.faded { opacity: 0.7; }
+.card.work-border { border-color: rgba(255,180,0,0.3); }
+.card.race-border { border-color: rgba(255,51,102,0.4); }
+.card.accent-border { border-color: rgba(212,245,66,0.3); }
+.card-pad { padding: 14px 16px; }
 
-.today-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 12px;
-}
-.today-card.work-card { border-color: rgba(255,180,0,0.3); }
-.today-card.race-card { border-color: rgba(255,51,102,0.4); }
-.today-card.rest-card { opacity: 0.7; }
+/* BADGE */
+.badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; display: inline-block; }
 
-.tc-top {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px 10px;
-}
+/* TODAY */
+.today-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
+.today-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); letter-spacing: 1px; text-transform: uppercase; }
+.today-phase { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--accent); }
+.tc-top { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; }
 .tc-emoji { font-size: 28px; flex-shrink: 0; }
 .tc-main { flex: 1; min-width: 0; }
-.tc-type {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 3px;
-}
-.tc-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 28px;
-  line-height: 1;
-  letter-spacing: 0.5px;
-}
-.tc-metric {
-  font-family: 'DM Mono', monospace;
-  font-size: 13px;
-  color: var(--accent);
-  margin-top: 4px;
-  font-weight: 500;
-}
-.tc-detail {
-  padding: 0 16px 14px;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.55;
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  margin-top: 4px;
-}
+.tc-type { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+.tc-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; letter-spacing: 0.5px; }
+.tc-metric { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent); margin-top: 4px; }
+.tc-detail { padding: 10px 16px 14px; font-size: 12px; color: var(--muted); line-height: 1.55; border-top: 1px solid var(--border); }
+.mob-reminder { background: rgba(66,212,245,0.05); border: 1px solid rgba(66,212,245,0.15); border-radius: 4px; padding: 12px 14px; margin-top: 4px; }
+.mob-title { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--accent3); text-transform: uppercase; margin-bottom: 4px; }
+.mob-text { font-size: 12px; color: var(--muted); }
+.tmr-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--faint); margin-bottom: 8px; }
+.tmr-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
+.tmr-metric { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); }
 
-/* FEEDBACK SECTION */
-.feedback-section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-}
-.feedback-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 12px;
-}
-.feedback-stars {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.star-btn {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  border-radius: 4px;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.12s;
-}
-.star-btn.selected { background: rgba(212,245,66,0.15); border-color: var(--accent); transform: scale(1.08); }
+/* FEEDBACK */
+.feedback-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; margin-bottom: 10px; }
+.feedback-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+.feedback-stars { display: flex; gap: 8px; margin-bottom: 12px; }
+.star-btn { width: 40px; height: 40px; border: 1px solid var(--border); background: var(--bg); border-radius: 4px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.12s, background 0.12s, border-color 0.12s; }
+.star-btn.active { background: rgba(212,245,66,0.15); border-color: var(--accent); transform: scale(1.08); }
 .star-btn:active { transform: scale(0.95); }
-
-.feedback-textarea {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 13px;
-  padding: 10px 12px;
-  resize: none;
-  height: 72px;
-  margin-bottom: 10px;
-  outline: none;
-  transition: border-color 0.15s;
-}
+.feedback-textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 12px; resize: none; height: 72px; margin-bottom: 10px; outline: none; transition: border-color 0.15s; }
 .feedback-textarea:focus { border-color: var(--accent); }
 .feedback-textarea::placeholder { color: var(--faint); }
+.prev-feedback { background: rgba(212,245,66,0.04); border: 1px solid rgba(212,245,66,0.15); border-radius: 4px; padding: 10px 14px; margin-bottom: 10px; }
+.prev-feedback-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.prev-feedback-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); opacity: 0.7; }
+.prev-feedback-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.edit-link { background: none; border: none; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
+.btn-primary { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 4px; padding: 12px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; cursor: pointer; transition: background 0.12s, transform 0.12s; }
+.btn-primary:hover { background: #c8ec30; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-secondary { width: 100%; margin-top: 8px; background: none; border: 1px solid var(--border); border-radius: 4px; padding: 10px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; cursor: pointer; }
 
-.submit-btn {
-  width: 100%;
-  background: var(--accent);
-  color: #000;
-  border: none;
-  border-radius: 4px;
-  padding: 12px;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.12s;
-}
-.submit-btn:hover { background: #c8ec30; }
-.submit-btn:active { transform: scale(0.98); }
-.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+/* WEEK */
+.week-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.week-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 12px 10px; text-align: center; }
+.week-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; }
+.week-stat-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; margin-top: 2px; }
+.progress-bar-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
+.progress-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.progress-bar-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; text-transform: uppercase; }
+.progress-bar-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); }
+.progress-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s ease; }
+.progress-bar-footer { display: flex; justify-content: space-between; margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); }
+.day-tiles { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 10px; }
+.day-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 8px 4px; text-align: center; }
+.day-tile.is-today { border-color: rgba(212,245,66,0.5); background: rgba(212,245,66,0.05); }
+.day-tile.is-past { opacity: 0.45; }
+.day-tile-day { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--faint); letter-spacing: 0.5px; }
+.day-tile.is-today .day-tile-day { color: var(--accent); }
+.day-tile-num { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text); line-height: 1.1; }
+.day-tile.is-today .day-tile-num { color: var(--accent); }
+.day-tile-dot { width: 6px; height: 6px; border-radius: 50%; background: transparent; margin: 4px auto 0; }
+.day-tile-check { font-size: 8px; color: var(--accent); margin-top: 2px; height: 12px; }
+.day-tile-km { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--muted); margin-top: 1px; }
+.section-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.upcoming-row { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 11px 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
+.upcoming-row.is-today { border-color: rgba(212,245,66,0.3); background: rgba(212,245,66,0.03); }
+.upcoming-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); flex-shrink: 0; text-align: center; width: 28px; }
+.upcoming-date.is-today { color: var(--accent); }
+.upcoming-date-day { font-size: 8px; text-transform: uppercase; }
+.upcoming-date-num { font-size: 16px; font-weight: 500; line-height: 1.1; }
+.upcoming-body { flex: 1; min-width: 0; }
+.upcoming-title { font-size: 13px; font-weight: 600; }
+.upcoming-metric { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 2px; }
+.upcoming-emoji { font-size: 20px; flex-shrink: 0; }
 
-.feedback-saved {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  color: var(--accent);
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  padding: 10px 0 4px;
-}
-.feedback-saved.show { display: flex; }
-
-/* PREVIOUS FEEDBACK */
-.prev-feedback {
-  background: rgba(212,245,66,0.04);
-  border: 1px solid rgba(212,245,66,0.15);
-  border-radius: 4px;
-  padding: 10px 14px;
-  margin-bottom: 12px;
-}
-.prev-feedback-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--accent);
-  opacity: 0.7;
-  margin-bottom: 4px;
-}
-.prev-feedback-text {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.5;
-}
-
-/* TOMORROW CARD */
-.tomorrow-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
-  opacity: 0.75;
-}
-.tmr-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-bottom: 8px;
-}
-.tmr-title {
-  font-size: 15px;
-  font-weight: 600;
-  margin-bottom: 3px;
-}
-.tmr-detail {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--accent);
-}
-
-/* ── WEEK VIEW ── */
-.week-section {
-  margin-bottom: 8px;
-}
-.week-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 1.5px;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-bottom: 8px;
-  padding: 0 2px;
-}
-.week-day-row {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 12px 14px;
-  margin-bottom: 6px;
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  position: relative;
-  transition: opacity 0.15s;
-}
-.week-day-row.is-past { opacity: 0.45; }
-.week-day-row.is-today { border-color: rgba(212,245,66,0.4); background: rgba(212,245,66,0.03); }
-.week-day-row.is-work { border-color: rgba(255,180,0,0.2); }
-.wdr-date {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--faint);
-  flex-shrink: 0;
-  width: 28px;
-  text-align: center;
-  margin-top: 1px;
-}
-.wdr-date-day { font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
-.wdr-date-num { font-size: 16px; font-weight: 500; line-height: 1.1; }
-.week-day-row.is-today .wdr-date { color: var(--accent); }
-.wdr-body { flex: 1; min-width: 0; }
-.wdr-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 2px 6px;
-  border-radius: 2px;
-  display: inline-block;
-  margin-bottom: 4px;
-}
-.wdr-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
-.wdr-metric { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 2px; }
-.wdr-emoji { font-size: 20px; flex-shrink: 0; }
-.wdr-feedback-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  flex-shrink: 0;
-  margin-top: 6px;
-}
-
-/* ── PLAN VIEW (phases) ── */
-.phase-tabs {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  margin-bottom: 14px;
-}
-.phase-tab {
-  padding: 6px 12px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--muted);
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-radius: 2px;
-  transition: all 0.12s;
-}
+/* PLAN */
+.phase-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+.phase-tab { padding: 6px 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: color 0.12s, border-color 0.12s, background 0.12s; }
 .phase-tab:hover { color: var(--accent); border-color: var(--accent); }
 .phase-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
-
-.plan-loading {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--muted);
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 1px;
-}
-.plan-loading::after {
-  content: '';
-  display: block;
-  width: 24px;
-  height: 24px;
-  border: 2px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  margin: 16px auto 0;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* Plan table */
-.plan-table {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.plan-row {
-  display: grid;
-  grid-template-columns: 80px 1fr auto;
-  gap: 10px;
-  padding: 11px 14px;
-  border-bottom: 1px solid rgba(255,255,255,0.04);
-  align-items: start;
-}
+.phase-banner { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 4px; padding: 12px 14px; margin-bottom: 12px; display: flex; gap: 10px; align-items: center; }
+.phase-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--accent); opacity: 0.2; }
+.phase-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.5px; }
+.phase-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.plan-table { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+.plan-row { display: grid; grid-template-columns: 76px 1fr auto; gap: 10px; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: start; }
 .plan-row:last-child { border-bottom: none; }
 .plan-row.is-today { background: rgba(212,245,66,0.04); }
 .plan-row.is-past { opacity: 0.4; }
 .plan-row.is-work { background: rgba(255,180,0,0.03); }
-.pr-date-col {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--faint);
-  line-height: 1.5;
-}
-.pr-date-col strong { color: var(--muted); display: block; }
-.plan-row.is-today .pr-date-col strong { color: var(--accent); }
-.pr-body-col {}
-.pr-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-.pr-detail { font-size: 11px; color: var(--muted); line-height: 1.4; }
-.pr-km {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--accent);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-.pr-feedback-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  background: rgba(212,245,66,0.1);
-  color: var(--accent);
-  padding: 2px 6px;
-  border-radius: 2px;
-  margin-top: 4px;
-  display: inline-block;
-}
+.plan-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); line-height: 1.5; }
+.plan-date strong { color: var(--muted); display: block; }
+.plan-row.is-today .plan-date strong { color: var(--accent); }
+.plan-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.plan-detail { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.plan-feedback { font-family: 'DM Mono', monospace; font-size: 9px; background: rgba(212,245,66,0.1); color: var(--accent); padding: 2px 6px; border-radius: 2px; margin-top: 4px; display: inline-block; }
+.plan-km { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); white-space: nowrap; }
+.plan-loading { text-align: center; padding: 40px 20px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; }
+.plan-loading::after { content: ''; display: block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; margin: 16px auto 0; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* ── STATS VIEW ── */
-.stats-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-.stat-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 14px;
-}
-.stat-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-bottom: 6px;
-}
-.stat-val {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 36px;
-  line-height: 1;
-  color: var(--accent);
-}
-.stat-sub {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 2px;
-}
-.stat-card.wide {
-  grid-column: 1 / -1;
-}
-
-/* Feedback history */
+/* STATS */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px; }
+.stat-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
+.stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1; color: var(--accent); }
+.stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
 .feedback-history { display: flex; flex-direction: column; gap: 6px; }
-.fh-row {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 11px 14px;
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-}
-.fh-date {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--faint);
-  flex-shrink: 0;
-  width: 36px;
-}
+.fh-row { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 11px 14px; display: flex; gap: 12px; align-items: flex-start; }
+.fh-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); flex-shrink: 0; width: 36px; }
 .fh-body { flex: 1; }
 .fh-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
 .fh-text { font-size: 11px; color: var(--muted); line-height: 1.45; }
-.fh-score {
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  color: var(--accent);
-  flex-shrink: 0;
-}
+.fh-km { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); flex-shrink: 0; }
 
-/* ── SETTINGS VIEW ── */
-.settings-section {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 16px;
-  margin-bottom: 10px;
-}
-.settings-title {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 12px;
-}
+/* SETTINGS */
+.settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 10px; }
+.settings-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
 .settings-field { margin-bottom: 12px; }
-.settings-label {
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 5px;
-  display: block;
-}
-.settings-input {
-  width: 100%;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  color: var(--text);
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  padding: 9px 12px;
-  outline: none;
-  transition: border-color 0.15s;
-}
+.settings-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; display: block; }
+.settings-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 11px; padding: 9px 12px; outline: none; transition: border-color 0.15s; }
 .settings-input:focus { border-color: var(--accent); }
-.settings-hint {
-  font-size: 11px;
-  color: var(--faint);
-  margin-top: 4px;
-  line-height: 1.45;
-}
-.save-btn {
-  background: var(--accent);
-  color: #000;
-  border: none;
-  border-radius: 4px;
-  padding: 10px 20px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 1px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.12s;
-}
-.save-btn:active { transform: scale(0.97); }
-.connection-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 10px;
-}
-.status-dot {
-  width: 6px; height: 6px;
-  border-radius: 50%;
-  background: var(--faint);
-}
+.settings-hint { font-size: 11px; color: var(--faint); margin-top: 4px; line-height: 1.45; }
+.btn-save { background: var(--accent); color: #000; border: none; border-radius: 4px; padding: 10px 20px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; font-weight: 700; cursor: pointer; }
+.btn-save:active { opacity: 0.85; }
+.connection-status { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 10px; }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
 .status-dot.ok { background: var(--accent); }
-.status-dot.err { background: #ff3366; }
+.status-dot.err { background: var(--race-text); }
+.pr-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.pr-dist-lbl { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); width: 72px; flex-shrink: 0; }
 
-/* ── BOTTOM NAV ── */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 480px;
-  background: rgba(13,13,13,0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-top: 1px solid var(--border);
-  display: flex;
-  padding-bottom: var(--safe-bottom);
-  z-index: 100;
-}
-.bn-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 10px 8px;
-  cursor: pointer;
-  background: none;
-  border: none;
-  color: var(--faint);
-  transition: color 0.15s;
-}
+/* BOTTOM NAV */
+.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(13,13,13,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; padding-bottom: var(--sb); z-index: 100; }
+.bn-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 8px; cursor: pointer; background: none; border: none; color: var(--faint); transition: color 0.15s; }
 .bn-item:hover { color: var(--muted); }
 .bn-item.active { color: var(--accent); }
 .bn-icon { font-size: 20px; line-height: 1; }
-.bn-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-}
+.bn-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
 
-/* ── LOADING OVERLAY ── */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  transition: opacity 0.3s;
-}
+/* LOADING */
+.loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; transition: opacity 0.3s; }
 .loading-overlay.hidden { opacity: 0; pointer-events: none; }
-.loading-logo {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 52px;
-  letter-spacing: 3px;
-  color: var(--text);
-  margin-bottom: 6px;
-}
+.loading-logo { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 3px; color: var(--text); margin-bottom: 6px; }
 .loading-logo span { color: var(--accent); }
-.loading-sub {
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 2px;
-  color: var(--faint);
-  text-transform: uppercase;
-  margin-bottom: 28px;
-}
-.loading-bar {
-  width: 120px;
-  height: 2px;
-  background: var(--border);
-  border-radius: 1px;
-  overflow: hidden;
-}
-.loading-bar-fill {
-  height: 100%;
-  background: var(--accent);
-  border-radius: 1px;
-  animation: loadbar 1.8s ease-in-out infinite;
-}
-@keyframes loadbar {
-  0% { width: 0; transform: translateX(0); }
-  50% { width: 80px; }
-  100% { width: 0; transform: translateX(120px); }
-}
+.loading-sub { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--faint); text-transform: uppercase; margin-bottom: 28px; }
+.loading-bar { width: 120px; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
+.loading-bar-fill { height: 100%; background: var(--accent); border-radius: 1px; animation: loadbar 1.8s ease-in-out infinite; }
+@keyframes loadbar { 0%{width:0;transform:translateX(0)} 50%{width:80px} 100%{width:0;transform:translateX(120px)} }
 
-/* ── ERROR STATE ── */
-.error-state {
-  text-align: center;
-  padding: 40px 24px;
-}
-.error-state h3 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 24px;
-  color: var(--accent2);
-  margin-bottom: 8px;
-}
-.error-state p {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 14px;
-}
-
-/* ── TOAST ── */
-.toast {
-  position: fixed;
-  bottom: calc(var(--safe-bottom) + 72px);
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--accent);
-  color: #000;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-  padding: 10px 18px;
-  border-radius: 20px;
-  opacity: 0;
-  transition: all 0.25s;
-  pointer-events: none;
-  z-index: 200;
-  white-space: nowrap;
-}
+/* MISC */
+.no-data { text-align: center; padding: 32px; color: var(--faint); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.5px; }
+.toast { position: fixed; bottom: calc(var(--sb) + 72px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--accent); color: #000; font-family: 'DM Mono', monospace; font-size: 11px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 200; white-space: nowrap; }
 .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-/* ── MISC ── */
-.tag-badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 2px 7px;
-  border-radius: 2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-}
-.no-data {
-  text-align: center;
-  padding: 32px;
-  color: var(--faint);
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  letter-spacing: 0.5px;
-}
-
-/* ── PHASE BANNER MINI ── */
-.phase-banner-mini {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--accent);
-  border-radius: 4px;
-  padding: 12px 14px;
-  margin-bottom: 12px;
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.pbm-num {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 40px;
-  line-height: 1;
-  color: var(--accent);
-  opacity: 0.2;
-}
-.pbm-info h3 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 18px;
-  letter-spacing: 0.5px;
-}
-.pbm-goal { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-@media (min-width: 480px) {
-  .bottom-nav { left: 0; right: 0; transform: none; }
-}
+@media (min-width: 480px) { .bottom-nav { left: 0; right: 0; transform: none; } }
 </style>
 </head>
 <body>
 
-<!-- Loading overlay -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-logo">RUNNING<span>X</span></div>
-  <div class="loading-sub">Trainingsplan laden…</div>
+  <div class="loading-sub" id="loadingSub">Laden…</div>
   <div class="loading-bar"><div class="loading-bar-fill"></div></div>
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- App shell -->
 <div class="app">
-
-  <!-- Top bar -->
   <div class="topbar">
-    <div class="topbar-logo">RUNNING<span style="color:var(--accent)">X</span></div>
-    <div class="topbar-pr">
-      PR <strong>37:56</strong> → doel <strong>sub 37:30</strong>
+    <div>
+      <div class="topbar-logo">RUNNING<span>X</span></div>
+      <div class="topbar-sub" id="topbarName"></div>
     </div>
+    <div class="topbar-right" id="topbarRight">
+      <div id="topbarGoal"></div>
+      <div id="topbarPR"></div>
+    </div>
+    <button id="langToggle" onclick="toggleLang()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:0;flex-shrink:0;">🇳🇱</button>
   </div>
 
-  <!-- Countdown strip -->
-  <div class="countdown-strip" id="countdownStrip">
-    <!-- filled by JS -->
+  <div class="countdown-strip" id="countdownStrip"></div>
+
+  <div class="tabs" id="tabsEl">
+    <button class="tab active" data-tab="today"></button>
+    <button class="tab" data-tab="week"></button>
+    <button class="tab" data-tab="plan"></button>
+    <button class="tab" data-tab="stats"></button>
+    <button class="tab" data-tab="settings"></button>
   </div>
 
-  <!-- Tabs -->
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab('today')">Vandaag</button>
-    <button class="tab" onclick="switchTab('week')">Week</button>
-    <button class="tab" onclick="switchTab('plan')">Plan</button>
-    <button class="tab" onclick="switchTab('stats')">Stats</button>
-    <button class="tab" onclick="switchTab('settings')">⚙</button>
-  </div>
-
-  <!-- Scroll area -->
   <div class="scroll-area" id="scrollArea">
 
-    <!-- TODAY VIEW -->
-    <div class="view active" id="view-today">
-      <div id="todayContent"><div class="no-data">Laden…</div></div>
-    </div>
+    <div class="view active" id="view-today"><div id="todayContent"><div class="no-data">…</div></div></div>
+    <div class="view" id="view-week"><div id="weekContent"><div class="no-data">…</div></div></div>
 
-    <!-- WEEK VIEW -->
-    <div class="view" id="view-week">
-      <div id="weekContent"><div class="no-data">Laden…</div></div>
-    </div>
-
-    <!-- PLAN VIEW -->
     <div class="view" id="view-plan">
       <div class="phase-tabs" id="phaseTabs">
-        <button class="phase-tab active" onclick="selectPhase(1)">Fase 1 · Herstel</button>
-        <button class="phase-tab" onclick="selectPhase(2)">Fase 2 · Opbouw</button>
-        <button class="phase-tab" onclick="selectPhase(3)">Fase 3 · Intensiteit</button>
-        <button class="phase-tab" onclick="selectPhase(4)">Fase 4 · Tapering</button>
+        <button class="phase-tab active" data-phase="1"></button>
+        <button class="phase-tab" data-phase="2"></button>
+        <button class="phase-tab" data-phase="3"></button>
+        <button class="phase-tab" data-phase="4"></button>
       </div>
-      <div id="planContent"><div class="plan-loading">Plan laden</div></div>
+      <div id="planContent"><div class="plan-loading">…</div></div>
     </div>
 
-    <!-- STATS VIEW -->
-    <div class="view" id="view-stats">
-      <div id="statsContent"><div class="no-data">Laden…</div></div>
-    </div>
+    <div class="view" id="view-stats"><div id="statsContent"><div class="no-data">…</div></div></div>
 
-    <!-- SETTINGS VIEW -->
     <div class="view" id="view-settings">
       <div class="settings-section">
-        <div class="settings-title">Google Apps Script URL</div>
+        <div class="settings-title" data-i18n="goal_title"></div>
         <div class="settings-field">
-          <label class="settings-label">Apps Script Web App URL</label>
-          <input type="url" class="settings-input" id="scriptUrl" 
-            placeholder="https://script.google.com/macros/s/…/exec"
-            value="">
-          <div class="settings-hint">Plak hier de URL van je gepubliceerde Google Apps Script Web App. Zie de setup-instructies hieronder.</div>
+          <label class="settings-label" data-i18n="goal_name"></label>
+          <input type="text" class="settings-input" id="goalName" oninput="saveGoal()">
         </div>
-        <button class="save-btn" onclick="saveSettings()">Opslaan & verbinden</button>
-        <div class="connection-status" id="connectionStatus">
-          <div class="status-dot" id="statusDot"></div>
-          <span id="statusText">Niet verbonden</span>
+        <div class="settings-field">
+          <label class="settings-label" data-i18n="goal_dist"></label>
+          <select class="settings-input" id="goalDist" onchange="saveGoal()">
+            <option value="">—</option>
+            <option value="800m">800m</option><option value="1500m">1500m</option>
+            <option value="1mile">1 mile</option><option value="5km">5 km</option>
+            <option value="10km">10 km</option><option value="10mile">10 mile</option>
+            <option value="HM" data-i18n-opt="hm"></option>
+            <option value="M" data-i18n-opt="marathon"></option>
+          </select>
+        </div>
+        <div class="settings-field">
+          <label class="settings-label" data-i18n="goal_time"></label>
+          <input type="text" class="settings-input" id="goalTime" placeholder="37:30" oninput="saveGoal()">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label" data-i18n="goal_race"></label>
+          <input type="text" class="settings-input" id="goalRace" oninput="saveGoal()">
+        </div>
+        <div class="settings-field">
+          <label class="settings-label" data-i18n="goal_date"></label>
+          <input type="date" class="settings-input" id="goalDate" oninput="saveGoal()">
         </div>
       </div>
 
       <div class="settings-section">
-        <div class="settings-title">App info</div>
-        <div style="font-size:11px; color:var(--faint); line-height:1.8; font-family:'DM Mono',monospace;">
-          <div>Versie: 1.0.0</div>
-          <div>PR: 37:56 → Doel: sub 37:30</div>
-          <div>Race: 5 sept 2026 · Rotterdam</div>
-          <div style="margin-top:8px; color:var(--accent);">RunningX 🏃</div>
+        <div class="settings-title" data-i18n="pr_title"></div>
+        <div class="settings-field">
+          <label class="settings-label" data-i18n="pr_add"></label>
+          <select class="settings-input" id="prDistSelect" onchange="addPrField()">
+            <option value="">—</option>
+            <option value="800m">800m</option><option value="1500m">1500m</option>
+            <option value="1mile">1 mile</option><option value="5km">5 km</option>
+            <option value="10km">10 km</option><option value="10mile">10 mile</option>
+            <option value="HM" data-i18n-opt="hm"></option>
+            <option value="M" data-i18n-opt="marathon"></option>
+          </select>
         </div>
+        <div id="prFields"></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">API</div>
+        <div class="settings-field">
+          <label class="settings-label">Apps Script URL</label>
+          <input type="url" class="settings-input" id="scriptUrl" placeholder="https://script.google.com/macros/s/…/exec">
+          <div class="settings-hint" data-i18n="api_hint"></div>
+        </div>
+        <button class="btn-save" onclick="saveSettings()" data-i18n="api_save"></button>
+        <div class="connection-status">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText" data-i18n="not_connected"></span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title" data-i18n="appinfo_title"></div>
+        <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.0.0<br><span style="color:var(--accent)">🏃</span></div>
       </div>
     </div>
 
-  </div><!-- /scroll-area -->
-
-  <!-- Bottom nav -->
-  <div class="bottom-nav">
-    <button class="bn-item active" onclick="switchTab('today')" id="bn-today">
-      <span class="bn-icon">📍</span>
-      <span class="bn-label">Vandaag</span>
-    </button>
-    <button class="bn-item" onclick="switchTab('week')" id="bn-week">
-      <span class="bn-icon">📅</span>
-      <span class="bn-label">Week</span>
-    </button>
-    <button class="bn-item" onclick="switchTab('plan')" id="bn-plan">
-      <span class="bn-icon">🗓</span>
-      <span class="bn-label">Plan</span>
-    </button>
-    <button class="bn-item" onclick="switchTab('stats')" id="bn-stats">
-      <span class="bn-icon">📊</span>
-      <span class="bn-label">Stats</span>
-    </button>
-    <button class="bn-item" onclick="switchTab('settings')" id="bn-settings">
-      <span class="bn-icon">⚙️</span>
-      <span class="bn-label">Instellingen</span>
-    </button>
   </div>
 
-</div><!-- /app -->
+  <div class="bottom-nav" id="bottomNav">
+    <button class="bn-item active" data-tab="today"><span class="bn-icon">📍</span><span class="bn-label"></span></button>
+    <button class="bn-item" data-tab="week"><span class="bn-icon">📅</span><span class="bn-label"></span></button>
+    <button class="bn-item" data-tab="plan"><span class="bn-icon">🗓</span><span class="bn-label"></span></button>
+    <button class="bn-item" data-tab="stats"><span class="bn-icon">📊</span><span class="bn-label"></span></button>
+    <button class="bn-item" data-tab="settings"><span class="bn-icon">⚙️</span><span class="bn-label"></span></button>
+  </div>
+</div>
 
 <script>
-// ═══════════════════════════════════════
-// CONFIG & STATE
-// ═══════════════════════════════════════
+// ── CONSTANTS ──────────────────────────────────────────────────────────────
 const RACES = [
-  { name: 'Koning v. Spanje', date: '2026-05-09', dist: '~20km trail' },
-  { name: 'Bijlmerrun',       date: '2026-05-16', dist: '10km' },
-  { name: 'Big5 ⚡',          date: '2026-06-13', dist: '5km Utrecht', target: true },
-  { name: 'Big10 🎯',         date: '2026-09-05', dist: '10km Rotterdam PR', target: true },
+  { name:'Koning v. Spanje', date:'2026-05-09', dist:'~20km trail' },
+  { name:'Bijlmerrun',       date:'2026-05-16', dist:'10km' },
+  { name:'Big5 ⚡',          date:'2026-06-13', dist:'5km Utrecht', hi:true },
+  { name:'Big10 🎯',         date:'2026-09-05', dist:'10km Rotterdam', hi:true },
 ];
 
-const PHASE_DATES = [
-  { num: 1, name: 'Herstel',    start: '2026-04-20', end: '2026-05-18' },
-  { num: 2, name: 'Opbouw',     start: '2026-05-19', end: '2026-06-13' },
-  { num: 3, name: 'Intensiteit',start: '2026-06-14', end: '2026-08-17' },
-  { num: 4, name: 'Tapering',   start: '2026-08-18', end: '2026-09-05' },
+const PHASES = [
+  { num:1, key:'phase_1', start:'2026-04-20', end:'2026-05-18' },
+  { num:2, key:'phase_2', start:'2026-05-19', end:'2026-06-13' },
+  { num:3, key:'phase_3', start:'2026-06-14', end:'2026-08-17' },
+  { num:4, key:'phase_4', start:'2026-08-18', end:'2026-09-05' },
 ];
 
-const TYPE_COLORS = {
-  'run':      { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Hardlopen' },
-  'duurloop': { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Duurloop' },
-  'interval': { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Interval' },
-  'tempo':    { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Tempo' },
-  'kracht':   { bg: 'var(--strength-bg)',text: 'var(--strength-text)', label: 'Kracht' },
-  'mob':      { bg: 'var(--mob-bg)',      text: 'var(--mob-text)',      label: 'Mobiliteit' },
-  'mobiliteit':{ bg: 'var(--mob-bg)',     text: 'var(--mob-text)',      label: 'Mobiliteit' },
-  'race':     { bg: 'var(--race-bg)',     text: 'var(--race-text)',     label: 'Race' },
-  'work':     { bg: 'var(--work-bg)',     text: 'var(--work-text)',     label: 'Colorado' },
-  'colorado': { bg: 'var(--work-bg)',     text: 'var(--work-text)',     label: 'Colorado' },
-  'rust':     { bg: 'var(--rest-bg)',     text: 'var(--rest-text)',     label: 'Rust' },
-  'herstel':  { bg: 'var(--rest-bg)',     text: 'var(--rest-text)',     label: 'Herstel' },
-};
+const TYPE_MAP = [
+  { keys:['interval','tempo','duur','run'], bg:'var(--run-bg)', text:'var(--run-text)', i18n:'type_run' },
+  { keys:['kracht','strength'],             bg:'var(--str-bg)', text:'var(--str-text)', i18n:'type_str' },
+  { keys:['mob'],                           bg:'var(--mob-bg)', text:'var(--mob-text)', i18n:'type_mob' },
+  { keys:['race'],                          bg:'var(--race-bg)',text:'var(--race-text)',i18n:'type_race' },
+  { keys:['colorado','work'],               bg:'var(--work-bg)',text:'var(--work-text)',i18n:'type_work' },
+];
+const TYPE_REST = { bg:'var(--rest-bg)', text:'var(--rest-text)', i18n:'type_rest' };
 
-function getTypeColor(type) {
-  if (!type) return TYPE_COLORS['rust'];
-  const t = type.toLowerCase();
-  for (const key of Object.keys(TYPE_COLORS)) {
-    if (t.includes(key)) return TYPE_COLORS[key];
-  }
-  return TYPE_COLORS['rust'];
-}
-
-let state = {
-  scriptUrl: localStorage.getItem('scriptUrl') || '',
-  data: null,
-  loading: false,
-  currentTab: 'today',
-  currentPhase: 1,
-  selectedRating: 0,
-  connected: false,
-  editingFeedback: false,
-};
+const PR_ORDER = ['800m','1500m','1mile','5km','10km','10mile','HM','M'];
 
 const DAYS_NL = ['Zo','Ma','Di','Wo','Do','Vr','Za'];
+const DAYS_EN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 const MONTHS_NL = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const MONTHS_EN = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
-function today() { return new Date().toISOString().split('T')[0]; }
-function parseDate(s) { return new Date(s + 'T00:00:00'); }
-function fmtDate(s) {
-  const d = parseDate(s);
-  return `${DAYS_NL[d.getDay()]} ${d.getDate()} ${MONTHS_NL[d.getMonth()]}`;
-}
-function fmtShort(s) {
-  const d = parseDate(s);
-  return `${DAYS_NL[d.getDay()]}\n${d.getDate()}`;
-}
-function daysUntil(dateStr) {
-  const now = new Date(); now.setHours(0,0,0,0);
-  const d = parseDate(dateStr);
-  return Math.round((d - now) / 86400000);
-}
-
-// ═══════════════════════════════════════
-// DATA FETCHING
-// ═══════════════════════════════════════
-async function fetchData() {
-  if (!state.scriptUrl) {
-    hideLoading();
-    renderAll();
-    return;
+// ── I18N ──────────────────────────────────────────────────────────────────
+const STRINGS = {
+  nl:{
+    today:'Vandaag',week:'Week',plan:'Plan',stats:'Stats',settings:'Instellingen',
+    goal_title:'Doel',goal_name:'Naam',goal_dist:'Doelafstand',goal_time:'Doeltijd',goal_race:'Race naam',goal_date:'Racedatum',
+    pr_title:'Persoonlijke Records',pr_add:'Afstand toevoegen',
+    api_hint:'URL van je gepubliceerde Google Apps Script Web App.',
+    api_save:'Opslaan & verbinden',not_connected:'Niet verbonden',appinfo_title:'App info',
+    enter_url:'Voer een URL in',connecting:'Verbinding testen…',
+    goal_lbl:'Doel',pr_lbl:'PR',
+    rest_day:'Rustdag',mob_reminder:'Dagelijkse routine',mob_text:'💪 Kuit mobiliteit · 🦵 Heup mobiliteit · Elke dag!',
+    tomorrow:'Morgen →',setup_title:'Setup vereist',setup_body:'Ga naar Instellingen en voer je Apps Script URL in.',
+    feedback_q:'Hoe ging de training?',feedback_save:'Feedback opslaan',
+    feedback_logged:'✓ Feedback gelogd',feedback_edit:'Aanpassen',feedback_update:'Bijwerken',feedback_cancel:'Annuleren',
+    select_score:'Selecteer eerst een score',
+    week_planned:'km gepland',week_sessions:'trainingen',week_work:'colorado',
+    week_progress:'Weekvoortgang',week_done:'gedaan',week_feedback:'feedback',week_todo:'Nog te doen',
+    phase_1:'Herstel',phase_2:'Opbouw',phase_3:'Intensiteit',phase_4:'Tapering',fase:'Fase',
+    type_run:'Hardlopen',type_str:'Kracht',type_mob:'Mobiliteit',type_race:'Race',type_work:'Colorado',type_rest:'Rust',
+    days_ago:'geweest',days_today:'VANDAAG!',days_label:'dagen',hm:'Halve marathon',marathon:'Marathon',
+    pr_none:'Nog geen afstanden toegevoegd.',
+    stats_total:'Totaal km',stats_done:'km in plan',stats_days:'Dagen tot race',
+    stats_runs:'Runs gelogd',stats_sessions:'trainingen gedaan',stats_week:'Deze week',stats_week_sub:'km tot nu toe',
+    stats_feel:'Gem. gevoel',stats_feedback:'Feedback',stats_fb_sub:'sessies gelogd',stats_recent:'Recente feedback',
+    phase_km:'km gepland',no_data:'Geen data',
+  },
+  en:{
+    today:'Today',week:'Week',plan:'Plan',stats:'Stats',settings:'Settings',
+    goal_title:'Goal',goal_name:'Name',goal_dist:'Target distance',goal_time:'Target time',goal_race:'Race name',goal_date:'Race date',
+    pr_title:'Personal Records',pr_add:'Add distance',
+    api_hint:'URL of your published Google Apps Script Web App.',
+    api_save:'Save & connect',not_connected:'Not connected',appinfo_title:'App info',
+    enter_url:'Enter a URL',connecting:'Testing connection…',
+    goal_lbl:'Goal',pr_lbl:'PR',
+    rest_day:'Rest day',mob_reminder:'Daily routine',mob_text:'💪 Calf mobility · 🦵 Hip mobility · Every day!',
+    tomorrow:'Tomorrow →',setup_title:'Setup required',setup_body:'Go to Settings and enter your Apps Script URL.',
+    feedback_q:'How did the session go?',feedback_save:'Save feedback',
+    feedback_logged:'✓ Feedback logged',feedback_edit:'Edit',feedback_update:'Update',feedback_cancel:'Cancel',
+    select_score:'Select a score first',
+    week_planned:'km planned',week_sessions:'sessions',week_work:'work days',
+    week_progress:'Week progress',week_done:'done',week_feedback:'feedback',week_todo:'Still to do',
+    phase_1:'Recovery',phase_2:'Base build',phase_3:'Intensity',phase_4:'Tapering',fase:'Phase',
+    type_run:'Running',type_str:'Strength',type_mob:'Mobility',type_race:'Race',type_work:'Work',type_rest:'Rest',
+    days_ago:'past',days_today:'TODAY!',days_label:'days',hm:'Half marathon',marathon:'Marathon',
+    pr_none:'No distances added yet.',
+    stats_total:'Total km',stats_done:'km in plan',stats_days:'Days to race',
+    stats_runs:'Runs logged',stats_sessions:'sessions done',stats_week:'This week',stats_week_sub:'km so far',
+    stats_feel:'Avg feeling',stats_feedback:'Feedback',stats_fb_sub:'sessions logged',stats_recent:'Recent feedback',
+    phase_km:'km planned',no_data:'No data',
   }
-  state.loading = true;
+};
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+const state = {
+  scriptUrl:       localStorage.getItem('scriptUrl') || '',
+  lang:            localStorage.getItem('lang') || 'nl',
+  data:            null,
+  currentTab:      'today',
+  currentPhase:    1,
+  selectedRating:  0,
+  editingFeedback: false,
+  _goal: null, _prs: null,  // localStorage cache
+};
+
+// ── HELPERS ───────────────────────────────────────────────────────────────
+const T = k => STRINGS[state.lang]?.[k] ?? STRINGS.nl[k] ?? k;
+const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const todayStr = () => new Date().toISOString().split('T')[0];
+const parseDate = s => new Date(s + 'T00:00:00');
+const daysUntil = s => { const n=new Date(); n.setHours(0,0,0,0); return Math.round((parseDate(s)-n)/86400000); };
+
+function fmtDate(s) {
+  const d = parseDate(s), days = state.lang==='en'?DAYS_EN:DAYS_NL, months = state.lang==='en'?MONTHS_EN:MONTHS_NL;
+  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+}
+
+function getMondayStr() {
+  const n = new Date(); n.setHours(0,0,0,0);
+  n.setDate(n.getDate() - (n.getDay()===0 ? 6 : n.getDay()-1));
+  return n.toISOString().split('T')[0];
+}
+
+function getWeekDates() {
+  const m = parseDate(getMondayStr());
+  return Array.from({length:7}, (_,i) => { const d=new Date(m); d.setDate(m.getDate()+i); return d.toISOString().split('T')[0]; });
+}
+
+function typeOf(type) {
+  if (!type) return TYPE_REST;
+  const t = type.toLowerCase();
+  return TYPE_MAP.find(m => m.keys.some(k => t.includes(k))) ?? TYPE_REST;
+}
+
+const isWork = t => ['colorado','work'].some(k => (t||'').toLowerCase().includes(k));
+const isRace = t => (t||'').toLowerCase().includes('race');
+
+// ── LOCALSTORAGE CACHE ────────────────────────────────────────────────────
+function loadGoal() {
+  if (!state._goal) { try { state._goal = JSON.parse(localStorage.getItem('goal')||'{}'); } catch { state._goal={}; } }
+  return state._goal;
+}
+function loadPRs() {
+  if (!state._prs) { try { state._prs = JSON.parse(localStorage.getItem('prs')||'{}'); } catch { state._prs={}; } }
+  return state._prs;
+}
+function persistGoal(g) { state._goal=g; localStorage.setItem('goal',JSON.stringify(g)); }
+function persistPRs(p)  { state._prs=p;  localStorage.setItem('prs', JSON.stringify(p)); }
+
+// ── DATA ──────────────────────────────────────────────────────────────────
+async function fetchData() {
+  if (!state.scriptUrl) { hideLoading(); renderActiveView(); renderCountdown(); return; }
   try {
-    const url = state.scriptUrl + '?action=getAll';
-    const res = await fetch(url);
+    const res = await fetch(state.scriptUrl + '?action=getAll');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
-    if (json.status === 'ok') {
-      state.data = json.rows;
-      state.connected = true;
-      updateConnectionStatus(true);
-    } else {
-      throw new Error(json.message || 'Fout');
-    }
+    if (json.status !== 'ok') throw new Error(json.message || 'Error');
+    state.data = json.rows;
+    updateConnectionStatus(true);
   } catch(e) {
-    console.error('Fetch error:', e);
-    state.connected = false;
     updateConnectionStatus(false, e.message);
   }
-  state.loading = false;
   hideLoading();
-  renderAll();
+  renderActiveView();
+  renderCountdown();
+  updateHeader();
 }
 
 async function submitFeedback(datum, rating, tekst) {
-  if (!state.scriptUrl) { showToast('❌ Geen API URL ingesteld'); return false; }
+  if (!state.scriptUrl) { showToast('❌ ' + T('enter_url')); return false; }
   try {
-    const params = new URLSearchParams({
-      action: 'setFeedback',
-      datum,
-      rating,
-      tekst: tekst || ''
-    });
-    const res = await fetch(state.scriptUrl + '?' + params);
-    const json = await res.json();
-    if (json.status === 'ok') {
-      // update local cache
-      if (state.data) {
-        const row = state.data.find(r => r.datum === datum);
-        if (row) row.feedback = rating + (tekst ? ' – ' + tekst : '');
+    const params = new URLSearchParams({ action:'setFeedback', datum, rating, tekst:tekst||'' });
+    const json = await (await fetch(state.scriptUrl + '?' + params)).json();
+    if (json.status !== 'ok') throw new Error(json.message);
+    if (state.data) {
+      const row = state.data.find(r => r.datum === datum);
+      if (row) {
+        const emojis = ['😵','😓','😐','💪','🔥'];
+        row.feedback = `${rating}/5 ${emojis[rating-1]}${tekst?' – '+tekst:''}`;
       }
-      showToast('✓ Feedback opgeslagen!');
-      return true;
-    } else {
-      throw new Error(json.message);
     }
-  } catch(e) {
-    showToast('❌ ' + e.message);
-    return false;
+    showToast('✓ ' + T('feedback_logged'));
+    return true;
+  } catch(e) { showToast('❌ ' + e.message); return false; }
+}
+
+// ── RENDER DISPATCH ───────────────────────────────────────────────────────
+function renderActiveView() {
+  switch(state.currentTab) {
+    case 'today':    renderToday();          break;
+    case 'week':     renderWeek();           break;
+    case 'plan':     renderPlan();           break;
+    case 'stats':    renderStats();          break;
+    case 'settings': renderSettingsFields(); break;
   }
 }
 
-// ═══════════════════════════════════════
-// RENDER FUNCTIONS
-// ═══════════════════════════════════════
-function renderAll() {
-  renderCountdown();
-  renderToday();
-  renderWeek();
-  renderPlan();
-  renderStats();
-}
-
+// ── COUNTDOWN ─────────────────────────────────────────────────────────────
 function renderCountdown() {
-  const strip = document.getElementById('countdownStrip');
-  const now = new Date(); now.setHours(0,0,0,0);
-  const items = RACES.map((r, i) => {
-    const days = daysUntil(r.date);
-    if (days < -1) return '';
-    const cls = r.target ? 'cd-item target' : 'cd-item';
-    const sep = i > 0 ? '<div class="cd-sep"></div>' : '';
-    return `${sep}<div class="${cls}">
-      <div class="cd-race ${r.target?'target':''}">${r.name}</div>
-      <div class="cd-days">${days < 0 ? '✓' : days}</div>
-      <div class="cd-label">${days < 0 ? 'GEWEEST' : days === 0 ? 'VANDAAG!' : 'DAGEN'}</div>
-      <div class="cd-label" style="margin-top:1px">${r.dist}</div>
+  const visible = RACES.filter(r => daysUntil(r.date) >= -1);
+  document.getElementById('countdownStrip').innerHTML = visible.map((r,i) => {
+    const d = daysUntil(r.date);
+    return `${i>0?'<div class="cd-sep"></div>':''}
+    <div class="cd-item${r.hi?' hi':''}">
+      <div class="cd-race${r.hi?' hi':''}">${esc(r.name)}</div>
+      <div class="cd-days">${d<0?'✓':d}</div>
+      <div class="cd-label">${d<0?T('days_ago'):d===0?T('days_today'):T('days_label')}</div>
+      <div class="cd-label">${r.dist}</div>
     </div>`;
-  }).filter(Boolean).join('');
-  strip.innerHTML = items || '<div class="cd-item"><div class="cd-label" style="padding:4px">Races laden…</div></div>';
+  }).join('');
 }
 
-function renderDaysToRace() {
-  const days = daysUntil('2026-09-05');
-  const el = document.getElementById('daysToRace');
-  el.innerHTML = `nog <strong style="color:var(--accent)">${days}</strong> <span style="color:var(--faint)">dagen tot Big10</span>`;
-}
-
-function getTodayRow() {
-  if (!state.data) return null;
-  return state.data.find(r => r.datum === today());
-}
-
+// ── TODAY ─────────────────────────────────────────────────────────────────
 function getCurrentPhase() {
-  const t = today();
-  for (const p of PHASE_DATES) {
-    if (t >= p.start && t <= p.end) return p;
-  }
-  return PHASE_DATES[0];
+  const t = todayStr();
+  return PHASES.find(p => t>=p.start && t<=p.end) ?? PHASES[0];
 }
 
 function renderToday() {
   const el = document.getElementById('todayContent');
-  const row = getTodayRow();
-  const phase = getCurrentPhase();
-  
-  let html = `<div class="today-header">
-    <div class="today-date">${fmtDate(today())}</div>
-    <div class="today-phase">Fase ${phase.num} · ${phase.name}</div>
+  const t = todayStr(), phase = getCurrentPhase();
+
+  let h = `<div class="today-header">
+    <div class="today-date">${fmtDate(t)}</div>
+    <div class="today-phase">${T('fase')} ${phase.num} · ${T(phase.key)}</div>
   </div>`;
 
   if (!state.scriptUrl) {
-    html += `<div class="today-card">
-      <div class="tc-top">
-        <div class="tc-emoji">⚙️</div>
-        <div class="tc-main">
-          <div class="tc-type">Setup vereist</div>
-          <div class="tc-title" style="font-size:20px">Verbind met Google Sheet</div>
-        </div>
-      </div>
-      <div class="tc-detail">Ga naar <strong>Instellingen</strong> en voer je Apps Script URL in om je trainingsplan te laden.</div>
-    </div>`;
-    el.innerHTML = html;
-    return;
+    h += simpleCard('⚙️', T('setup_title'), null, null, T('setup_body'));
+    el.innerHTML = h; return;
   }
-
   if (!state.data) {
-    html += `<div class="today-card"><div class="tc-top"><div class="tc-emoji">⏳</div><div class="tc-main"><div class="tc-type">Laden</div><div class="tc-title" style="font-size:20px">Even geduld…</div></div></div></div>`;
-    el.innerHTML = html;
-    return;
+    h += simpleCard('⏳', T('connecting'), null, null, null);
+    el.innerHTML = h; return;
   }
 
+  const row = state.data.find(r => r.datum === t);
   if (!row) {
-    html += `<div class="today-card rest-card">
-      <div class="tc-top">
-        <div class="tc-emoji">😴</div>
-        <div class="tc-main">
-          <div class="tc-type">Geen training</div>
-          <div class="tc-title">Rustdag</div>
-        </div>
-      </div>
-      <div class="tc-detail">Vandaag staat er niets ingepland. Vergeet de mobiliteit niet!</div>
-    </div>`;
+    h += simpleCard('😴', T('rest_day'), null, null, null, 'faded');
   } else {
-    const tc = getTypeColor(row.type);
-    const isWork = row.type?.toLowerCase().includes('colorado') || row.type?.toLowerCase().includes('work');
-    const isRace = row.type?.toLowerCase().includes('race');
-    const cardClass = isWork ? 'work-card' : isRace ? 'race-card' : '';
-    
-    html += `<div class="today-card ${cardClass}">
+    const ti = typeOf(row.type);
+    const border = isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
+    h += `<div class="card ${border}">
       <div class="tc-top">
-        <div class="tc-emoji">${row.emoji || '🏃'}</div>
+        <div class="tc-emoji">${row.emoji||'🏃'}</div>
         <div class="tc-main">
-          <div class="tc-type" style="color:${tc.text}">${tc.label}</div>
-          <div class="tc-title">${row.titel || 'Training'}</div>
-          ${row.km ? `<div class="tc-metric">${row.km} km</div>` : ''}
+          <div class="tc-type" style="color:${ti.text}">${T(ti.i18n)}</div>
+          <div class="tc-title">${esc(row.titel||'Training')}</div>
+          ${row.km?`<div class="tc-metric">${esc(row.km)} km</div>`:''}
         </div>
       </div>
-      ${row.detail ? `<div class="tc-detail">${row.detail}</div>` : ''}
+      ${row.detail?`<div class="tc-detail">${esc(row.detail)}</div>`:''}
     </div>`;
-
-    // Feedback form (only for non-rest, non-colorado days)
-    if (!isWork) {
-      html += renderFeedbackForm(row.datum, row.feedback);
-    }
+    if (!isWork(row.type)) h += feedbackHtml(row.datum, row.feedback);
   }
 
-  // Tomorrow preview
-  const tomorrowDate = new Date(); tomorrowDate.setDate(tomorrowDate.getDate() + 1);
-  const tomorrowStr = tomorrowDate.toISOString().split('T')[0];
-  const tmrRow = state.data.find(r => r.datum === tomorrowStr);
-  if (tmrRow) {
-    const tc = getTypeColor(tmrRow.type);
-    html += `<div class="tomorrow-card">
-      <div class="tmr-label">Morgen →</div>
-      <div class="tmr-title">${tmrRow.emoji || ''} ${tmrRow.titel || 'Training'}</div>
-      ${tmrRow.km ? `<div class="tmr-detail">${tmrRow.km} km</div>` : ''}
-    </div>`;
-  }
-
-  // Mob reminder
-  html += `<div style="background:rgba(66,212,245,0.05); border:1px solid rgba(66,212,245,0.15); border-radius:4px; padding:12px 14px; margin-top:4px;">
-    <div style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; color:var(--accent3); text-transform:uppercase; margin-bottom:4px;">Dagelijkse routine</div>
-    <div style="font-size:12px; color:var(--muted);">💪 Kuit mobiliteit &nbsp;·&nbsp; 🦵 Heup mobiliteit &nbsp;·&nbsp; Elke dag!</div>
+  // Tomorrow
+  const tmrDate = new Date(); tmrDate.setDate(tmrDate.getDate()+1);
+  const tmr = state.data.find(r => r.datum === tmrDate.toISOString().split('T')[0]);
+  if (tmr) h += `<div class="card card-pad faded">
+    <div class="tmr-label">${T('tomorrow')}</div>
+    <div class="tmr-title">${tmr.emoji||''} ${esc(tmr.titel||'')}</div>
+    ${tmr.km?`<div class="tmr-metric">${esc(tmr.km)} km</div>`:''}
   </div>`;
 
-  el.innerHTML = html;
+  h += `<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
 
-  // Re-attach star listeners + restore pre-selected state
-  const row2 = getTodayRow();
-  if (row2?.feedback && state.editingFeedback) {
-    const match = row2.feedback.match(/^(\d)/);
-    if (match) {
-      state.selectedRating = parseInt(match[1]);
-      document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val) <= state.selectedRating));
-    }
+  el.innerHTML = h;
+  attachStarListeners();
+}
+
+function simpleCard(emoji, title, km, type, detail, extra='') {
+  const ti = type ? typeOf(type) : null;
+  return `<div class="card ${extra}">
+    <div class="tc-top">
+      <div class="tc-emoji">${emoji}</div>
+      <div class="tc-main">
+        ${ti?`<div class="tc-type" style="color:${ti.text}">${T(ti.i18n)}</div>`:''}
+        <div class="tc-title" style="font-size:20px">${esc(title)}</div>
+        ${km?`<div class="tc-metric">${esc(km)} km</div>`:''}
+      </div>
+    </div>
+    ${detail?`<div class="tc-detail">${esc(detail)}</div>`:''}
+  </div>`;
+}
+
+function feedbackHtml(datum, existing) {
+  const isEdit = !!existing;
+  let rating=0, text='';
+  if (isEdit) {
+    const m = existing.match(/^(\d)/); if (m) rating=parseInt(m[1]);
+    const mt = existing.match(/–\s*(.+)$/); if (mt) text=mt[1];
+  }
+  if (isEdit && !state.editingFeedback) {
+    return `<div class="prev-feedback">
+      <div class="prev-feedback-header">
+        <span class="prev-feedback-label">${T('feedback_logged')}</span>
+        <button class="edit-link" onclick="state.editingFeedback=true;renderToday()">${T('feedback_edit')}</button>
+      </div>
+      <div class="prev-feedback-text">${esc(existing)}</div>
+    </div>`;
+  }
+  const stars = ['😵','😓','😐','💪','🔥'].map((e,i) =>
+    `<button class="star-btn${rating>0&&(i+1)<=rating?' active':''}" data-val="${i+1}">${e}</button>`
+  ).join('');
+  return `<div class="feedback-section">
+    <div class="feedback-title">${T('feedback_q')}</div>
+    <div class="feedback-stars">${stars}</div>
+    <textarea class="feedback-textarea" id="feedbackText">${esc(text)}</textarea>
+    <button class="btn-primary" id="submitBtn" onclick="handleFeedbackSubmit('${esc(datum)}')">${isEdit?T('feedback_update'):T('feedback_save')}</button>
+    ${isEdit?`<button class="btn-secondary" onclick="state.editingFeedback=false;renderToday()">${T('feedback_cancel')}</button>`:''}
+  </div>`;
+}
+
+function attachStarListeners() {
+  if (state.editingFeedback && state.selectedRating) {
+    document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val)<=state.selectedRating));
   }
   document.querySelectorAll('.star-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       state.selectedRating = parseInt(btn.dataset.val);
-      document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val) <= state.selectedRating));
+      document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val)<=state.selectedRating));
     });
   });
 }
 
-function renderFeedbackForm(datum, existingFeedback) {
-  const isEdit = !!existingFeedback;
-  // Parse existing rating if editing
-  let existingRating = 0;
-  let existingTekst = '';
-  if (isEdit) {
-    const match = existingFeedback.match(/^(\d)/);
-    if (match) existingRating = parseInt(match[1]);
-    const tekstMatch = existingFeedback.match(/– (.+)$/);
-    if (tekstMatch) existingTekst = tekstMatch[1];
-  }
-
-  const stars = ['😵','😓','😐','💪','🔥'].map((e, i) => {
-    const selected = existingRating > 0 && (i+1) <= existingRating ? 'selected' : '';
-    return `<button class="star-btn ${selected}" data-val="${i+1}">${e}</button>`;
-  }).join('');
-
-  if (isEdit && !state.editingFeedback) {
-    return `<div class="prev-feedback">
-      <div class="prev-feedback-label" style="display:flex;align-items:center;justify-content:space-between;">
-        <span>✓ Feedback gelogd</span>
-        <button onclick="state.editingFeedback=true;renderToday();" style="background:none;border:none;color:var(--accent);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">Aanpassen</button>
-      </div>
-      <div class="prev-feedback-text">${existingFeedback}</div>
-    </div>`;
-  }
-
-  return `<div class="feedback-section">
-    <div class="feedback-title">${isEdit ? 'Feedback aanpassen' : 'Hoe ging de training?'}</div>
-    <div class="feedback-stars">${stars}</div>
-    <textarea class="feedback-textarea" id="feedbackText" placeholder="Notities, kniestatus, hoe voelde het…">${existingTekst}</textarea>
-    <button class="submit-btn" id="submitBtn" onclick="handleSubmitFeedback('${datum}')">${isEdit ? 'Bijwerken' : 'Feedback opslaan'}</button>
-    ${isEdit ? `<button onclick="state.editingFeedback=false;renderToday();" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;">Annuleren</button>` : ''}
-    <div class="feedback-saved" id="feedbackSaved">✓ Opgeslagen!</div>
-  </div>`;
-}
-
-async function handleSubmitFeedback(datum) {
+async function handleFeedbackSubmit(datum) {
+  if (!state.selectedRating) { showToast(T('select_score')); return; }
   const btn = document.getElementById('submitBtn');
   const tekst = document.getElementById('feedbackText')?.value || '';
-  const rating = state.selectedRating;
-  
-  if (!rating) { showToast('Selecteer eerst een score'); return; }
-  
-  btn.disabled = true;
-  btn.textContent = 'Opslaan…';
-  
-  const ok = await submitFeedback(datum, rating, tekst);
-  if (ok) {
-    state.editingFeedback = false;
-    document.getElementById('feedbackSaved').classList.add('show');
-    setTimeout(() => renderToday(), 1200);
-  } else {
-    btn.disabled = false;
-    btn.textContent = 'Feedback opslaan';
-  }
+  btn.disabled = true; btn.textContent = '…';
+  const ok = await submitFeedback(datum, state.selectedRating, tekst);
+  if (ok) { state.editingFeedback=false; state.selectedRating=0; setTimeout(renderToday, 800); }
+  else { btn.disabled=false; btn.textContent=T('feedback_save'); }
 }
 
+// ── WEEK ──────────────────────────────────────────────────────────────────
 function renderWeek() {
   const el = document.getElementById('weekContent');
-  if (!state.data) { el.innerHTML = '<div class="no-data">Laden…</div>'; return; }
+  if (!state.data) { el.innerHTML=`<div class="no-data">${T('no_data')}</div>`; return; }
 
-  const now = new Date(); now.setHours(0,0,0,0);
-  const dayOfWeek = now.getDay();
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  const t = todayStr(), dates = getWeekDates();
+  const days = state.lang==='en'?DAYS_EN:DAYS_NL;
+  const wd = dates.map(d => ({ date:d, row:state.data.find(r=>r.datum===d)??null }));
 
-  const days = [];
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(monday);
-    d.setDate(monday.getDate() + i);
-    days.push(d.toISOString().split('T')[0]);
-  }
+  const plannedKm = wd.reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
+  const doneKm    = wd.filter(({date})=>date<=t).reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
+  const trainDays = wd.filter(({row})=>row&&!isWork(row.type)&&!['rust','herstel','rest'].some(k=>(row.type||'').toLowerCase().includes(k))).length;
+  const workDays  = wd.filter(({row})=>row&&isWork(row.type)).length;
+  const fbDone    = wd.filter(({row})=>row?.feedback).length;
+  const pct       = plannedKm>0 ? Math.min(100,Math.round(doneKm/plannedKm*100)) : 0;
 
-  const todayStr = today();
-
-  // Collect week data
-  const weekRows = days.map(d => ({ date: d, row: state.data.find(r => r.datum === d) }));
-  const plannedKm = weekRows.reduce((a, {row}) => a + (row?.km ? parseFloat(row.km)||0 : 0), 0);
-  const doneKm = weekRows
-    .filter(({date}) => date <= todayStr)
-    .reduce((a, {row}) => a + (row?.km ? parseFloat(row.km)||0 : 0), 0);
-  const trainDays = weekRows.filter(({row}) => row && !row.type?.toLowerCase().includes('colorado') && !row.type?.toLowerCase().includes('rust') && !row.type?.toLowerCase().includes('herstel')).length;
-  const workDays = weekRows.filter(({row}) => row?.type?.toLowerCase().includes('colorado')).length;
-  const feedbackDone = weekRows.filter(({row}) => row?.feedback).length;
-  const progressPct = plannedKm > 0 ? Math.min(100, Math.round((doneKm / plannedKm) * 100)) : 0;
-
-  // Header stats
-  let html = `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 10px;text-align:center;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);line-height:1;">${plannedKm.toFixed(0)}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px;">KM GEPLAND</div>
+  let h = `<div class="week-stat-grid">
+    <div class="week-stat"><div class="week-stat-val" style="color:var(--accent)">${plannedKm.toFixed(0)}</div><div class="week-stat-lbl">${T('week_planned')}</div></div>
+    <div class="week-stat"><div class="week-stat-val">${trainDays}</div><div class="week-stat-lbl">${T('week_sessions')}</div></div>
+    <div class="week-stat"><div class="week-stat-val" style="color:var(--work-text)">${workDays}</div><div class="week-stat-lbl">${T('week_work')}</div></div>
+  </div>
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-header">
+      <span class="progress-bar-label">${T('week_progress')}</span>
+      <span class="progress-bar-val">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 10px;text-align:center;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);line-height:1;">${trainDays}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px;">TRAININGEN</div>
+    <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+    <div class="progress-bar-footer">
+      <span>${pct}% ${T('week_done')}</span>
+      <span style="color:${fbDone?'var(--accent)':'var(--faint)'}">✓ ${fbDone} ${T('week_feedback')}</span>
     </div>
-    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 10px;text-align:center;">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--work-text);line-height:1;">${workDays}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px;">COLORADO</div>
-    </div>
-  </div>`;
+  </div>
+  <div class="day-tiles">`;
 
-  // Progress bar
-  html += `<div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 14px;margin-bottom:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase;">Weekvoortgang</span>
-      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span>
-    </div>
-    <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
-      <div style="height:100%;width:${progressPct}%;background:var(--accent);border-radius:3px;transition:width 0.4s ease;"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px;">
-      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);">${progressPct}% gedaan</span>
-      <span style="font-family:'DM Mono',monospace;font-size:9px;color:${feedbackDone>0?'var(--accent)':'var(--faint)'};">✓ ${feedbackDone} feedback</span>
-    </div>
-  </div>`;
-
-  // Day tiles — 7 tiles in a compact grid
-  html += `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px;">`;
-  days.forEach(d => {
-    const row = weekRows.find(w => w.date === d).row;
-    const isPast = d < todayStr;
-    const isToday = d === todayStr;
-    const date = parseDate(d);
-    const isWork = row?.type?.toLowerCase().includes('colorado');
-    const isRace = row?.type?.toLowerCase().includes('race');
-    const tc = row ? getTypeColor(row.type) : null;
-    const hasFeedback = !!row?.feedback;
-
-    let tileColor = 'var(--surface)';
-    let tileBorder = 'var(--border)';
-    let dotColor = 'transparent';
-    if (isToday) { tileBorder = 'rgba(212,245,66,0.5)'; tileColor = 'rgba(212,245,66,0.05)'; }
-    if (isWork) { dotColor = 'var(--work-text)'; }
-    else if (isRace) { dotColor = 'var(--race-text)'; }
-    else if (row && !isWork) { dotColor = tc.text; }
-
-    html += `<div style="background:${tileColor};border:1px solid ${tileBorder};border-radius:4px;padding:8px 4px;text-align:center;${isPast&&!isToday?'opacity:0.45':''}">
-      <div style="font-family:'DM Mono',monospace;font-size:8px;color:${isToday?'var(--accent)':'var(--faint)'};letter-spacing:0.5px;">${DAYS_NL[date.getDay()]}</div>
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${isToday?'var(--accent)':'var(--text)'};line-height:1.1;">${date.getDate()}</div>
-      <div style="width:6px;height:6px;border-radius:50%;background:${dotColor};margin:4px auto 0;"></div>
-      ${hasFeedback ? `<div style="font-size:8px;color:var(--accent);margin-top:2px;">✓</div>` : '<div style="height:12px;"></div>'}
-      ${row?.km ? `<div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:1px;">${parseFloat(row.km).toFixed(0)}k</div>` : ''}
+  wd.forEach(({date,row}) => {
+    const isPast=date<t, isTdy=date===t, d=parseDate(date);
+    const ti = row?typeOf(row.type):null;
+    const dot = row ? (isWork(row.type)?'var(--work-text)':isRace(row.type)?'var(--race-text)':ti.text) : 'transparent';
+    h += `<div class="day-tile${isTdy?' is-today':''}${isPast&&!isTdy?' is-past':''}">
+      <div class="day-tile-day">${days[d.getDay()]}</div>
+      <div class="day-tile-num">${d.getDate()}</div>
+      <div class="day-tile-dot" style="background:${dot}"></div>
+      <div class="day-tile-check">${row?.feedback?'✓':''}</div>
+      ${row?.km?`<div class="day-tile-km">${parseFloat(row.km).toFixed(0)}k</div>`:''}
     </div>`;
   });
-  html += `</div>`;
+  h += '</div>';
 
-  // Upcoming this week — only future/today rows
-  const upcoming = weekRows.filter(({date, row}) => date >= todayStr && row && !row.type?.toLowerCase().includes('herstel') && row.type !== '');
-  if (upcoming.length > 0) {
-    html += `<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Nog te doen</div>`;
-    upcoming.forEach(({date, row}) => {
-      const isToday = date === todayStr;
-      const tc = getTypeColor(row.type);
-      const isWork = row.type?.toLowerCase().includes('colorado');
-      html += `<div style="background:var(--surface);border:1px solid ${isToday?'rgba(212,245,66,0.3)':'var(--border)'};border-radius:4px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;${isToday?'background:rgba(212,245,66,0.03)':''}">
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:${isToday?'var(--accent)':'var(--faint)'};flex-shrink:0;text-align:center;width:28px;">
-          <div style="font-size:8px;text-transform:uppercase;">${DAYS_NL[parseDate(date).getDay()]}</div>
-          <div style="font-size:16px;font-weight:500;line-height:1.1;">${parseDate(date).getDate()}</div>
+  const upcoming = wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
+  if (upcoming.length) {
+    h += `<div class="section-label">${T('week_todo')}</div>`;
+    upcoming.forEach(({date,row}) => {
+      const isTdy=date===t, ti=typeOf(row.type), d=parseDate(date);
+      h += `<div class="upcoming-row${isTdy?' is-today':''}">
+        <div class="upcoming-date${isTdy?' is-today':''}">
+          <div class="upcoming-date-day">${days[d.getDay()]}</div>
+          <div class="upcoming-date-num">${d.getDate()}</div>
         </div>
-        <div style="flex:1;min-width:0;">
-          <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:${tc.bg};color:${tc.text};display:inline-block;margin-bottom:3px;">${tc.label}</span>
-          <div style="font-size:13px;font-weight:600;">${row.titel||''}</div>
-          ${row.km?`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-top:2px;">${row.km} km</div>`:''}
+        <div class="upcoming-body">
+          <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:3px;">${T(ti.i18n)}</span>
+          <div class="upcoming-title">${esc(row.titel||'')}</div>
+          ${row.km?`<div class="upcoming-metric">${esc(row.km)} km</div>`:''}
         </div>
-        <div style="font-size:20px;flex-shrink:0;">${row.emoji||''}</div>
+        <div class="upcoming-emoji">${row.emoji||''}</div>
       </div>`;
     });
   }
-
-  el.innerHTML = html;
+  el.innerHTML = h;
 }
 
+// ── PLAN ──────────────────────────────────────────────────────────────────
 function renderPlan() {
   const el = document.getElementById('planContent');
-  if (!state.data) { el.innerHTML = '<div class="plan-loading">Plan laden</div>'; return; }
+  if (!state.data) { el.innerHTML='<div class="plan-loading">…</div>'; return; }
 
-  const phase = PHASE_DATES.find(p => p.num === state.currentPhase) || PHASE_DATES[0];
-  const rows = state.data.filter(r => r.datum >= phase.start && r.datum <= phase.end);
-  
-  const todayStr = today();
-  
-  let html = `<div class="phase-banner-mini">
-    <div class="pbm-num">0${phase.num}</div>
-    <div class="pbm-info">
-      <h3>${phase.name}</h3>
-      <div class="pbm-goal">${phase.start} → ${phase.end} · ${rows.filter(r=>r.km).reduce((a,r)=>a+(parseFloat(r.km)||0),0).toFixed(0)} km gepland</div>
-    </div>
+  const phase = PHASES.find(p=>p.num===state.currentPhase) ?? PHASES[0];
+  const rows = state.data.filter(r=>r.datum>=phase.start&&r.datum<=phase.end);
+  const t = todayStr();
+  const totalKm = rows.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+
+  let h = `<div class="phase-banner">
+    <div class="phase-num">0${phase.num}</div>
+    <div><div class="phase-name">${T(phase.key)}</div>
+    <div class="phase-meta">${phase.start} → ${phase.end} · ${totalKm.toFixed(0)} ${T('phase_km')}</div></div>
   </div>`;
 
-  if (rows.length === 0) {
-    html += '<div class="no-data">Geen data voor deze fase</div>';
-    el.innerHTML = html;
-    return;
-  }
+  if (!rows.length) { h+=`<div class="no-data">${T('no_data')}</div>`; el.innerHTML=h; return; }
 
-  html += '<div class="plan-table">';
+  h += '<div class="plan-table">';
   rows.forEach(row => {
-    const isPast = row.datum < todayStr;
-    const isToday = row.datum === todayStr;
-    const tc = getTypeColor(row.type);
-    const isWork = row.type?.toLowerCase().includes('colorado') || row.type?.toLowerCase().includes('work');
-    
-    html += `<div class="plan-row ${isPast?'is-past':''} ${isToday?'is-today':''} ${isWork?'is-work':''}">
-      <div class="pr-date-col">
-        <strong>${fmtDate(row.datum).split(' ').slice(0,2).join(' ')}</strong>
-        ${fmtDate(row.datum).split(' ')[2]}
+    const isPast=row.datum<t, isTdy=row.datum===t, work=isWork(row.type), ti=typeOf(row.type);
+    const parts = fmtDate(row.datum).split(' ');
+    h += `<div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}">
+      <div class="plan-date"><strong>${parts[0]} ${parts[1]}</strong>${parts[2]}</div>
+      <div>
+        <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:4px;">${T(ti.i18n)}</span>
+        <div class="plan-title">${esc(row.titel||'')}</div>
+        ${row.detail?`<div class="plan-detail">${esc(row.detail)}</div>`:''}
+        ${row.feedback?`<div class="plan-feedback">✓ ${esc(row.feedback)}</div>`:''}
       </div>
-      <div class="pr-body-col">
-        <span class="wdr-tag" style="background:${tc.bg}; color:${tc.text}; margin-bottom:4px;">${tc.label}</span>
-        <div class="pr-title">${row.titel || ''}</div>
-        ${row.detail ? `<div class="pr-detail">${row.detail}</div>` : ''}
-        ${row.feedback ? `<div class="pr-feedback-badge">✓ ${row.feedback}</div>` : ''}
-      </div>
-      <div class="pr-km">${row.km ? row.km+'km' : ''}</div>
+      <div class="plan-km">${row.km?esc(row.km)+'km':''}</div>
     </div>`;
   });
-  html += '</div>';
-
-  el.innerHTML = html;
-
-  // Scroll to today
-  setTimeout(() => {
-    const todayEl = el.querySelector('.is-today');
-    if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 100);
+  h += '</div>';
+  el.innerHTML = h;
+  requestAnimationFrame(() => el.querySelector('.is-today')?.scrollIntoView({behavior:'smooth',block:'center'}));
 }
 
+// ── STATS ─────────────────────────────────────────────────────────────────
 function renderStats() {
   const el = document.getElementById('statsContent');
-  if (!state.data) { el.innerHTML = '<div class="no-data">Laden…</div>'; return; }
+  if (!state.data) { el.innerHTML=`<div class="no-data">${T('no_data')}</div>`; return; }
 
-  const todayStr = today();
-  const pastRows = state.data.filter(r => r.datum <= todayStr && r.km);
-  const totalKm = pastRows.reduce((a, r) => a + (parseFloat(r.km) || 0), 0);
-  const runRows = pastRows.filter(r => {
-    const t = r.type?.toLowerCase() || '';
-    return t.includes('run') || t.includes('duur') || t.includes('interval') || t.includes('tempo') || t.includes('race');
-  });
-  const feedbackRows = state.data.filter(r => r.feedback && r.datum <= todayStr);
-  
-  // Average rating from feedback
-  let avgRating = 0;
-  const ratingRows = feedbackRows.filter(r => /^\d/.test(r.feedback));
-  if (ratingRows.length > 0) {
-    avgRating = ratingRows.reduce((a,r) => a + parseInt(r.feedback[0]), 0) / ratingRows.length;
-  }
+  const t = todayStr();
+  const past = state.data.filter(r=>r.datum<=t);
+  const totalKm = past.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+  const runCount = past.filter(r=>['run','duur','interval','tempo','race'].some(k=>(r.type||'').toLowerCase().includes(k))).length;
+  const fbRows = past.filter(r=>r.feedback);
+  const ratingRows = fbRows.filter(r=>/^\d/.test(r.feedback));
+  const avgRating = ratingRows.length ? ratingRows.reduce((s,r)=>s+parseInt(r.feedback[0]),0)/ratingRows.length : 0;
+  const goal = loadGoal();
+  const daysLeft = daysUntil(goal.date||'2026-09-05');
+  const mondayStr = getMondayStr();
+  const weekKm = state.data.filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+  const months = state.lang==='en'?MONTHS_EN:MONTHS_NL;
 
-  // Days to go
-  const daysLeft = daysUntil('2026-09-05');
-
-  // This week km
-  const now = new Date(); now.setHours(0,0,0,0);
-  const dayOfWeek = now.getDay();
-  const monday = new Date(now);
-  monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-  const mondayStr = monday.toISOString().split('T')[0];
-  const weekKm = state.data.filter(r => r.datum >= mondayStr && r.datum <= todayStr && r.km)
-    .reduce((a, r) => a + (parseFloat(r.km)||0), 0);
-
-  let html = `<div class="stats-grid">
-    <div class="stat-card">
-      <div class="stat-label">Totaal km</div>
-      <div class="stat-val">${totalKm.toFixed(0)}</div>
-      <div class="stat-sub">km gelopen in plan</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Dagen tot Big10</div>
-      <div class="stat-val">${daysLeft}</div>
-      <div class="stat-sub">5 sept · Rotterdam</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Runs gelogd</div>
-      <div class="stat-val">${runRows.length}</div>
-      <div class="stat-sub">trainingen gedaan</div>
-    </div>
-    <div class="stat-card">
-      <div class="stat-label">Deze week</div>
-      <div class="stat-val">${weekKm.toFixed(0)}</div>
-      <div class="stat-sub">km tot nu toe</div>
-    </div>
-    ${avgRating > 0 ? `<div class="stat-card">
-      <div class="stat-label">Gem. gevoel</div>
-      <div class="stat-val" style="font-size:28px">${['😵','😓','😐','💪','🔥'][Math.round(avgRating)-1]}</div>
-      <div class="stat-sub">${avgRating.toFixed(1)} / 5 · ${ratingRows.length} sessies</div>
-    </div>` : ''}
-    <div class="stat-card">
-      <div class="stat-label">Feedback</div>
-      <div class="stat-val">${feedbackRows.length}</div>
-      <div class="stat-sub">sessies gelogd</div>
-    </div>
+  let h = `<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">${T('stats_total')}</div><div class="stat-val">${totalKm.toFixed(0)}</div><div class="stat-sub">${T('stats_done')}</div></div>
+    <div class="stat-card"><div class="stat-label">${T('stats_days')}</div><div class="stat-val">${daysLeft}</div><div class="stat-sub">${esc(goal.race||'Big10')}</div></div>
+    <div class="stat-card"><div class="stat-label">${T('stats_runs')}</div><div class="stat-val">${runCount}</div><div class="stat-sub">${T('stats_sessions')}</div></div>
+    <div class="stat-card"><div class="stat-label">${T('stats_week')}</div><div class="stat-val">${weekKm.toFixed(0)}</div><div class="stat-sub">${T('stats_week_sub')}</div></div>
+    ${avgRating>0?`<div class="stat-card"><div class="stat-label">${T('stats_feel')}</div><div class="stat-val" style="font-size:28px">${['😵','😓','😐','💪','🔥'][Math.round(avgRating)-1]}</div><div class="stat-sub">${avgRating.toFixed(1)}/5 · ${ratingRows.length} ${T('stats_fb_sub')}</div></div>`:''}
+    <div class="stat-card"><div class="stat-label">${T('stats_feedback')}</div><div class="stat-val">${fbRows.length}</div><div class="stat-sub">${T('stats_fb_sub')}</div></div>
   </div>`;
 
-  // Recent feedback
-  const recentFeedback = feedbackRows.slice(-8).reverse();
-  if (recentFeedback.length > 0) {
-    html += `<div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--faint); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; margin-top:4px;">Recente feedback</div>`;
-    html += '<div class="feedback-history">';
-    recentFeedback.forEach(row => {
-      const d = parseDate(row.datum);
-      html += `<div class="fh-row">
-        <div class="fh-date">${d.getDate()} ${MONTHS_NL[d.getMonth()]}</div>
-        <div class="fh-body">
-          <div class="fh-title">${row.titel || row.type || 'Training'}</div>
-          <div class="fh-text">${row.feedback}</div>
-        </div>
-        ${row.km ? `<div class="fh-score">${row.km}km</div>` : ''}
+  const recent = fbRows.slice(-8).reverse();
+  if (recent.length) {
+    h += `<div class="section-label" style="margin-bottom:10px">${T('stats_recent')}</div><div class="feedback-history">`;
+    recent.forEach(row => {
+      const d=parseDate(row.datum);
+      h += `<div class="fh-row">
+        <div class="fh-date">${d.getDate()} ${months[d.getMonth()]}</div>
+        <div class="fh-body"><div class="fh-title">${esc(row.titel||row.type||'Training')}</div><div class="fh-text">${esc(row.feedback)}</div></div>
+        ${row.km?`<div class="fh-km">${esc(row.km)}km</div>`:''}
       </div>`;
     });
-    html += '</div>';
+    h += '</div>';
   }
-
-  el.innerHTML = html;
+  el.innerHTML = h;
 }
 
-// ═══════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════
+// ── SETTINGS ──────────────────────────────────────────────────────────────
+function saveGoal() {
+  const g = { name:document.getElementById('goalName')?.value||'', dist:document.getElementById('goalDist')?.value||'', time:document.getElementById('goalTime')?.value||'', race:document.getElementById('goalRace')?.value||'', date:document.getElementById('goalDate')?.value||'' };
+  persistGoal(g); updateHeader();
+}
+
+function addPrField() {
+  const sel=document.getElementById('prDistSelect'), dist=sel.value;
+  if (!dist) return; sel.value='';
+  const prs=loadPRs(); if (dist in prs) return;
+  prs[dist]=''; persistPRs(prs); renderPrFields();
+}
+
+function removePrField(dist) {
+  const prs=loadPRs(); delete prs[dist]; persistPRs(prs); renderPrFields(); updateHeader();
+}
+
+function updatePR(dist, val) {
+  const prs=loadPRs(); prs[dist]=val; persistPRs(prs); updateHeader();
+}
+
+function renderPrFields() {
+  const container=document.getElementById('prFields'); if (!container) return;
+  const prs=loadPRs(), active=PR_ORDER.filter(d=>d in prs);
+  if (!active.length) { container.innerHTML=`<div style="font-size:11px;color:var(--faint);padding:4px 0">${T('pr_none')}</div>`; return; }
+  const ph=state.lang==='en'?'e.g. 37:56':'bijv. 37:56';
+  container.innerHTML=active.map(d=>`
+    <div class="pr-row">
+      <label class="pr-dist-lbl">${d}</label>
+      <input type="text" class="settings-input" style="flex:1" placeholder="${ph}" value="${esc(prs[d]||'')}" oninput="updatePR('${d}',this.value)">
+      <button onclick="removePrField('${d}')" style="background:none;border:none;color:var(--faint);cursor:pointer;font-size:18px;padding:0 4px;line-height:1">×</button>
+    </div>`).join('');
+}
+
+function renderSettingsFields() {
+  const g=loadGoal();
+  ['goalName','goalDist','goalTime','goalRace','goalDate'].forEach((id,i)=>{
+    const el=document.getElementById(id); if (el) el.value=Object.values(g)[i]||'';
+  });
+  const urlEl=document.getElementById('scriptUrl'); if (urlEl) urlEl.value=state.scriptUrl;
+  renderPrFields(); applyI18n();
+}
+
+function saveSettings() {
+  const url=document.getElementById('scriptUrl')?.value.trim();
+  if (!url) { showToast(T('enter_url')); return; }
+  state.scriptUrl=url; localStorage.setItem('scriptUrl',url);
+  showToast(T('connecting')); fetchData();
+}
+
+// ── HEADER ────────────────────────────────────────────────────────────────
+function updateHeader() {
+  const goal=loadGoal(), prs=loadPRs();
+  const nameEl=document.getElementById('topbarName');
+  if (nameEl) nameEl.textContent=goal.name||'';
+  const goalEl=document.getElementById('topbarGoal');
+  if (goalEl) {
+    if (goal.race&&goal.time) goalEl.innerHTML=`<span style="color:var(--muted)">${T('goal_lbl')}: </span><strong>${esc(goal.race)}</strong> <strong style="color:var(--accent)">${esc(goal.time)}</strong>`;
+    else if (goal.time) goalEl.innerHTML=`<span style="color:var(--muted)">${T('goal_lbl')}: </span><strong style="color:var(--accent)">${esc(goal.time)}</strong>`;
+    else goalEl.innerHTML='';
+  }
+  const prEl=document.getElementById('topbarPR');
+  if (prEl) {
+    const pr=goal.dist&&prs[goal.dist];
+    prEl.innerHTML=pr?`<span style="color:var(--faint)">${T('pr_lbl')}: </span><strong>${esc(pr)}</strong>`:'';
+  }
+}
+
+// ── I18N ──────────────────────────────────────────────────────────────────
+function applyI18n() {
+  const tabKeys=['today','week','plan','stats','settings'];
+  document.querySelectorAll('#tabsEl .tab').forEach((el,i)=>{ el.textContent=T(tabKeys[i]); });
+  document.querySelectorAll('#bottomNav .bn-label').forEach((el,i)=>{ el.textContent=T(tabKeys[i]); });
+  document.querySelectorAll('#phaseTabs .phase-tab').forEach((el,i)=>{ el.textContent=`${T('fase')} ${i+1} · ${T(PHASES[i].key)}`; });
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent=T(el.dataset.i18n); });
+  document.querySelectorAll('[data-i18n-opt]').forEach(el=>{ el.textContent=T(el.dataset.i18nOpt); });
+  document.documentElement.lang=state.lang;
+}
+
+function toggleLang() {
+  state.lang=state.lang==='nl'?'en':'nl';
+  localStorage.setItem('lang',state.lang);
+  document.getElementById('langToggle').textContent=state.lang==='nl'?'🇳🇱':'🇬🇧';
+  applyI18n(); updateHeader(); renderActiveView(); renderCountdown();
+}
+
+// ── UI ────────────────────────────────────────────────────────────────────
 function switchTab(tab) {
-  state.currentTab = tab;
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', t.getAttribute('onclick').includes(tab));
-  });
-  document.querySelectorAll('.bn-item').forEach(b => {
-    b.classList.toggle('active', b.id === 'bn-' + tab);
-  });
-  document.querySelectorAll('.view').forEach(v => {
-    v.classList.toggle('active', v.id === 'view-' + tab);
-  });
-  document.getElementById('scrollArea').scrollTop = 0;
-  state.selectedRating = 0;
+  state.currentTab=tab; state.selectedRating=0;
+  document.querySelectorAll('#tabsEl .tab, #bottomNav .bn-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));
+  document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+tab));
+  document.getElementById('scrollArea').scrollTop=0;
+  renderActiveView();
 }
 
 function selectPhase(num) {
-  state.currentPhase = num;
-  document.querySelectorAll('.phase-tab').forEach((t, i) => {
-    t.classList.toggle('active', i + 1 === num);
-  });
+  state.currentPhase=num;
+  document.querySelectorAll('#phaseTabs .phase-tab').forEach(el=>el.classList.toggle('active',parseInt(el.dataset.phase)===num));
   renderPlan();
 }
 
 function hideLoading() {
-  const overlay = document.getElementById('loadingOverlay');
-  overlay.classList.add('hidden');
-  setTimeout(() => overlay.style.display = 'none', 350);
+  const el=document.getElementById('loadingOverlay');
+  el.classList.add('hidden');
+  setTimeout(()=>el.style.display='none',350);
 }
 
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
-function updateConnectionStatus(ok, errMsg) {
-  const dot = document.getElementById('statusDot');
-  const txt = document.getElementById('statusText');
-  if (dot && txt) {
-    dot.className = 'status-dot ' + (ok ? 'ok' : 'err');
-    txt.textContent = ok ? 'Verbonden ✓' : ('Fout: ' + (errMsg || 'verbinding mislukt'));
-  }
+function updateConnectionStatus(ok, err) {
+  const dot=document.getElementById('statusDot'), txt=document.getElementById('statusText');
+  if (!dot||!txt) return;
+  dot.className='status-dot '+(ok?'ok':'err');
+  txt.textContent=ok?'Verbonden ✓':`Fout: ${err||'verbinding mislukt'}`;
 }
 
-function saveSettings() {
-  const url = document.getElementById('scriptUrl').value.trim();
-  if (!url) { showToast('Voer een URL in'); return; }
-  state.scriptUrl = url;
-  localStorage.setItem('scriptUrl', url);
-  showToast('URL opgeslagen, verbinding testen…');
-  fetchData();
-}
-
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
+// ── INIT ──────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  // Restore settings
-  const savedUrl = localStorage.getItem('scriptUrl') || '';
-  state.scriptUrl = savedUrl;
-  const urlInput = document.getElementById('scriptUrl');
-  if (urlInput && savedUrl) urlInput.value = savedUrl;
-  
-  // Auto-select current phase in plan view
-  const phase = getCurrentPhase();
-  state.currentPhase = phase.num;
-  document.querySelectorAll('.phase-tab').forEach((t, i) => {
-    t.classList.toggle('active', i + 1 === phase.num);
+  // Event delegation — one listener per container
+  document.getElementById('tabsEl').addEventListener('click', e => {
+    const tab = e.target.closest('.tab')?.dataset.tab; if (tab) switchTab(tab);
+  });
+  document.getElementById('bottomNav').addEventListener('click', e => {
+    const tab = e.target.closest('.bn-item')?.dataset.tab; if (tab) switchTab(tab);
+  });
+  document.getElementById('phaseTabs').addEventListener('click', e => {
+    const phase = e.target.closest('.phase-tab')?.dataset.phase; if (phase) selectPhase(parseInt(phase));
   });
 
-  // Start loading
-  if (savedUrl) {
+  state.currentPhase = (getCurrentPhase() ?? PHASES[0]).num;
+  document.getElementById('langToggle').textContent = state.lang==='nl'?'🇳🇱':'🇬🇧';
+  applyI18n();
+  updateHeader();
+
+  if (state.scriptUrl) {
     fetchData();
   } else {
-    setTimeout(() => {
-      hideLoading();
-      renderAll();
-    }, 800);
+    setTimeout(() => { hideLoading(); renderActiveView(); renderCountdown(); }, 600);
   }
 });
 </script>
