@@ -857,10 +857,9 @@ html, body {
 
   <!-- Top bar -->
   <div class="topbar">
-    <div class="topbar-logo">RUNNING<span>X</span></div>
+    <div class="topbar-logo">RUNNING<span style="color:var(--accent)">X</span></div>
     <div class="topbar-pr">
-      PR <strong>37:56</strong> → doel <strong>sub 37:30</strong><br>
-      <span id="daysToRace" style="color:var(--faint)">…</span>
+      PR <strong>37:56</strong> → doel <strong>sub 37:30</strong>
     </div>
   </div>
 
@@ -1101,7 +1100,6 @@ async function submitFeedback(datum, rating, tekst) {
 // ═══════════════════════════════════════
 function renderAll() {
   renderCountdown();
-  renderDaysToRace();
   renderToday();
   renderWeek();
   renderPlan();
