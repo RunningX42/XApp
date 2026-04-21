@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Big10">
+<meta name="apple-mobile-web-app-title" content="RunningX">
 <meta name="theme-color" content="#0d0d0d">
-<title>Road to Big10 PR</title>
+<title>RunningX</title>
 <link rel="manifest" href="manifest.json">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -844,7 +844,7 @@ html, body {
 
 <!-- Loading overlay -->
 <div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-logo">ROAD TO <span>BIG10</span></div>
+  <div class="loading-logo">RUNNING<span>X</span></div>
   <div class="loading-sub">Trainingsplan laden…</div>
   <div class="loading-bar"><div class="loading-bar-fill"></div></div>
 </div>
@@ -857,7 +857,7 @@ html, body {
 
   <!-- Top bar -->
   <div class="topbar">
-    <div class="topbar-logo">ROAD TO <span>BIG10</span></div>
+    <div class="topbar-logo">RUNNING<span>X</span></div>
     <div class="topbar-pr">
       PR <strong>37:56</strong> → doel <strong>sub 37:30</strong><br>
       <span id="daysToRace" style="color:var(--faint)">…</span>
@@ -926,25 +926,12 @@ html, body {
       </div>
 
       <div class="settings-section">
-        <div class="settings-title">Setup: Google Apps Script</div>
-        <div style="font-size:12px; color:var(--muted); line-height:1.7;">
-          <p style="margin-bottom:10px;">Volg deze stappen om de app te verbinden met je Google Sheet:</p>
-          <p>1. Ga naar <strong style="color:var(--text)">script.google.com</strong> → Nieuw project</p>
-          <p>2. Plak de Apps Script code (zie README of vraag RunBot)</p>
-          <p>3. <strong style="color:var(--text)">Deploy → New deployment</strong> → Web App</p>
-          <p>4. Stel in: <em style="color:var(--accent3)">Execute as: Me</em> · <em style="color:var(--accent3)">Who has access: Anyone</em></p>
-          <p>5. Kopieer de URL en plak hem hierboven</p>
-          <p style="margin-top:10px; color:var(--faint)">Sheet ID: <code style="font-family:DM Mono; font-size:10px; color:var(--accent)">1DVUAikxDpvDuYiWIT8hEuEFszkWEvpBXBxXiQgLtMPE</code></p>
-        </div>
-      </div>
-
-      <div class="settings-section">
         <div class="settings-title">App info</div>
         <div style="font-size:11px; color:var(--faint); line-height:1.8; font-family:'DM Mono',monospace;">
           <div>Versie: 1.0.0</div>
           <div>PR: 37:56 → Doel: sub 37:30</div>
           <div>Race: 5 sept 2026 · Rotterdam</div>
-          <div style="margin-top:8px; color:var(--accent);">🏃 Road to Big10 PR</div>
+          <div style="margin-top:8px; color:var(--accent);">RunningX 🏃</div>
         </div>
       </div>
     </div>
@@ -1027,6 +1014,7 @@ let state = {
   currentPhase: 1,
   selectedRating: 0,
   connected: false,
+  editingFeedback: false,
 };
 
 const DAYS_NL = ['Zo','Ma','Di','Wo','Do','Vr','Za'];
@@ -1217,14 +1205,6 @@ function renderToday() {
       ${row.detail ? `<div class="tc-detail">${row.detail}</div>` : ''}
     </div>`;
 
-    // Previous feedback display
-    if (row.feedback) {
-      html += `<div class="prev-feedback">
-        <div class="prev-feedback-label">✓ Feedback al ingevuld</div>
-        <div class="prev-feedback-text">${row.feedback}</div>
-      </div>`;
-    }
-
     // Feedback form (only for non-rest, non-colorado days)
     if (!isWork) {
       html += renderFeedbackForm(row.datum, row.feedback);
@@ -1252,7 +1232,15 @@ function renderToday() {
 
   el.innerHTML = html;
 
-  // Re-attach star listeners
+  // Re-attach star listeners + restore pre-selected state
+  const row2 = getTodayRow();
+  if (row2?.feedback && state.editingFeedback) {
+    const match = row2.feedback.match(/^(\d)/);
+    if (match) {
+      state.selectedRating = parseInt(match[1]);
+      document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val) <= state.selectedRating));
+    }
+  }
   document.querySelectorAll('.star-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       state.selectedRating = parseInt(btn.dataset.val);
@@ -1262,16 +1250,38 @@ function renderToday() {
 }
 
 function renderFeedbackForm(datum, existingFeedback) {
-  if (existingFeedback) return ''; // already logged
-  const stars = ['😵','😓','😐','💪','🔥'].map((e, i) => 
-    `<button class="star-btn" data-val="${i+1}">${e}</button>`
-  ).join('');
-  
+  const isEdit = !!existingFeedback;
+  // Parse existing rating if editing
+  let existingRating = 0;
+  let existingTekst = '';
+  if (isEdit) {
+    const match = existingFeedback.match(/^(\d)/);
+    if (match) existingRating = parseInt(match[1]);
+    const tekstMatch = existingFeedback.match(/– (.+)$/);
+    if (tekstMatch) existingTekst = tekstMatch[1];
+  }
+
+  const stars = ['😵','😓','😐','💪','🔥'].map((e, i) => {
+    const selected = existingRating > 0 && (i+1) <= existingRating ? 'selected' : '';
+    return `<button class="star-btn ${selected}" data-val="${i+1}">${e}</button>`;
+  }).join('');
+
+  if (isEdit && !state.editingFeedback) {
+    return `<div class="prev-feedback">
+      <div class="prev-feedback-label" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>✓ Feedback gelogd</span>
+        <button onclick="state.editingFeedback=true;renderToday();" style="background:none;border:none;color:var(--accent);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;">Aanpassen</button>
+      </div>
+      <div class="prev-feedback-text">${existingFeedback}</div>
+    </div>`;
+  }
+
   return `<div class="feedback-section">
-    <div class="feedback-title">Hoe ging de training?</div>
+    <div class="feedback-title">${isEdit ? 'Feedback aanpassen' : 'Hoe ging de training?'}</div>
     <div class="feedback-stars">${stars}</div>
-    <textarea class="feedback-textarea" id="feedbackText" placeholder="Notities, kniestatus, hoe voelde het…"></textarea>
-    <button class="submit-btn" id="submitBtn" onclick="handleSubmitFeedback('${datum}')">Feedback opslaan</button>
+    <textarea class="feedback-textarea" id="feedbackText" placeholder="Notities, kniestatus, hoe voelde het…">${existingTekst}</textarea>
+    <button class="submit-btn" id="submitBtn" onclick="handleSubmitFeedback('${datum}')">${isEdit ? 'Bijwerken' : 'Feedback opslaan'}</button>
+    ${isEdit ? `<button onclick="state.editingFeedback=false;renderToday();" style="width:100%;margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;">Annuleren</button>` : ''}
     <div class="feedback-saved" id="feedbackSaved">✓ Opgeslagen!</div>
   </div>`;
 }
@@ -1288,6 +1298,7 @@ async function handleSubmitFeedback(datum) {
   
   const ok = await submitFeedback(datum, rating, tekst);
   if (ok) {
+    state.editingFeedback = false;
     document.getElementById('feedbackSaved').classList.add('show');
     setTimeout(() => renderToday(), 1200);
   } else {
@@ -1300,12 +1311,11 @@ function renderWeek() {
   const el = document.getElementById('weekContent');
   if (!state.data) { el.innerHTML = '<div class="no-data">Laden…</div>'; return; }
 
-  // Current week: mon to sun
   const now = new Date(); now.setHours(0,0,0,0);
-  const dayOfWeek = now.getDay(); // 0=sun
+  const dayOfWeek = now.getDay();
   const monday = new Date(now);
   monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
-  
+
   const days = [];
   for (let i = 0; i < 7; i++) {
     const d = new Date(monday);
@@ -1314,54 +1324,101 @@ function renderWeek() {
   }
 
   const todayStr = today();
-  let html = `<div class="week-label">Week van ${fmtDate(days[0])} → ${fmtDate(days[6])}</div>`;
 
-  // Total km this week
-  let weekKm = 0;
-  days.forEach(d => {
-    const row = state.data.find(r => r.datum === d);
-    if (row && row.km) weekKm += parseFloat(row.km) || 0;
-  });
-  
-  if (weekKm > 0) {
-    html += `<div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:12px; padding:0 2px;">
-      Week totaal: <span style="color:var(--accent)">${weekKm.toFixed(0)} km</span>
-    </div>`;
-  }
+  // Collect week data
+  const weekRows = days.map(d => ({ date: d, row: state.data.find(r => r.datum === d) }));
+  const plannedKm = weekRows.reduce((a, {row}) => a + (row?.km ? parseFloat(row.km)||0 : 0), 0);
+  const doneKm = weekRows
+    .filter(({date}) => date <= todayStr)
+    .reduce((a, {row}) => a + (row?.km ? parseFloat(row.km)||0 : 0), 0);
+  const trainDays = weekRows.filter(({row}) => row && !row.type?.toLowerCase().includes('colorado') && !row.type?.toLowerCase().includes('rust') && !row.type?.toLowerCase().includes('herstel')).length;
+  const workDays = weekRows.filter(({row}) => row?.type?.toLowerCase().includes('colorado')).length;
+  const feedbackDone = weekRows.filter(({row}) => row?.feedback).length;
+  const progressPct = plannedKm > 0 ? Math.min(100, Math.round((doneKm / plannedKm) * 100)) : 0;
 
-  html += '<div class="week-section">';
+  // Header stats
+  let html = `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px;">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 10px;text-align:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);line-height:1;">${plannedKm.toFixed(0)}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px;">KM GEPLAND</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 10px;text-align:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text);line-height:1;">${trainDays}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px;">TRAININGEN</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 10px;text-align:center;">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--work-text);line-height:1;">${workDays}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px;">COLORADO</div>
+    </div>
+  </div>`;
+
+  // Progress bar
+  html += `<div style="background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 14px;margin-bottom:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase;">Weekvoortgang</span>
+      <span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span>
+    </div>
+    <div style="height:6px;background:var(--border);border-radius:3px;overflow:hidden;">
+      <div style="height:100%;width:${progressPct}%;background:var(--accent);border-radius:3px;transition:width 0.4s ease;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px;">
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);">${progressPct}% gedaan</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:${feedbackDone>0?'var(--accent)':'var(--faint)'};">✓ ${feedbackDone} feedback</span>
+    </div>
+  </div>`;
+
+  // Day tiles — 7 tiles in a compact grid
+  html += `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:14px;">`;
   days.forEach(d => {
-    const row = state.data.find(r => r.datum === d);
+    const row = weekRows.find(w => w.date === d).row;
     const isPast = d < todayStr;
     const isToday = d === todayStr;
     const date = parseDate(d);
-    const dateLabel = `${DAYS_NL[date.getDay()]}<br>${date.getDate()}`;
-    
-    if (!row) {
-      html += `<div class="week-day-row ${isPast?'is-past':''} ${isToday?'is-today':''}">
-        <div class="wdr-date"><div class="wdr-date-day">${DAYS_NL[date.getDay()]}</div><div class="wdr-date-num">${date.getDate()}</div></div>
-        <div class="wdr-body">
-          <div class="wdr-title" style="color:var(--faint)">Rust</div>
-        </div>
-        <div class="wdr-emoji" style="opacity:0.3">😴</div>
-      </div>`;
-      return;
-    }
+    const isWork = row?.type?.toLowerCase().includes('colorado');
+    const isRace = row?.type?.toLowerCase().includes('race');
+    const tc = row ? getTypeColor(row.type) : null;
+    const hasFeedback = !!row?.feedback;
 
-    const tc = getTypeColor(row.type);
-    const isWork = row.type?.toLowerCase().includes('colorado') || row.type?.toLowerCase().includes('work');
-    html += `<div class="week-day-row ${isPast?'is-past':''} ${isToday?'is-today':''} ${isWork?'is-work':''}">
-      <div class="wdr-date"><div class="wdr-date-day">${DAYS_NL[date.getDay()]}</div><div class="wdr-date-num">${date.getDate()}</div></div>
-      <div class="wdr-body">
-        <span class="wdr-tag" style="background:${tc.bg}; color:${tc.text}">${tc.label}</span>
-        <div class="wdr-title">${row.titel || ''}</div>
-        ${row.km ? `<div class="wdr-metric">${row.km} km</div>` : ''}
-        ${row.feedback ? `<div style="font-size:10px; color:var(--accent); margin-top:3px; font-family:'DM Mono',monospace;">✓ feedback</div>` : ''}
-      </div>
-      <div class="wdr-emoji">${row.emoji || ''}</div>
+    let tileColor = 'var(--surface)';
+    let tileBorder = 'var(--border)';
+    let dotColor = 'transparent';
+    if (isToday) { tileBorder = 'rgba(212,245,66,0.5)'; tileColor = 'rgba(212,245,66,0.05)'; }
+    if (isWork) { dotColor = 'var(--work-text)'; }
+    else if (isRace) { dotColor = 'var(--race-text)'; }
+    else if (row && !isWork) { dotColor = tc.text; }
+
+    html += `<div style="background:${tileColor};border:1px solid ${tileBorder};border-radius:4px;padding:8px 4px;text-align:center;${isPast&&!isToday?'opacity:0.45':''}">
+      <div style="font-family:'DM Mono',monospace;font-size:8px;color:${isToday?'var(--accent)':'var(--faint)'};letter-spacing:0.5px;">${DAYS_NL[date.getDay()]}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:${isToday?'var(--accent)':'var(--text)'};line-height:1.1;">${date.getDate()}</div>
+      <div style="width:6px;height:6px;border-radius:50%;background:${dotColor};margin:4px auto 0;"></div>
+      ${hasFeedback ? `<div style="font-size:8px;color:var(--accent);margin-top:2px;">✓</div>` : '<div style="height:12px;"></div>'}
+      ${row?.km ? `<div style="font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:1px;">${parseFloat(row.km).toFixed(0)}k</div>` : ''}
     </div>`;
   });
-  html += '</div>';
+  html += `</div>`;
+
+  // Upcoming this week — only future/today rows
+  const upcoming = weekRows.filter(({date, row}) => date >= todayStr && row && !row.type?.toLowerCase().includes('herstel') && row.type !== '');
+  if (upcoming.length > 0) {
+    html += `<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Nog te doen</div>`;
+    upcoming.forEach(({date, row}) => {
+      const isToday = date === todayStr;
+      const tc = getTypeColor(row.type);
+      const isWork = row.type?.toLowerCase().includes('colorado');
+      html += `<div style="background:var(--surface);border:1px solid ${isToday?'rgba(212,245,66,0.3)':'var(--border)'};border-radius:4px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;${isToday?'background:rgba(212,245,66,0.03)':''}">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:${isToday?'var(--accent)':'var(--faint)'};flex-shrink:0;text-align:center;width:28px;">
+          <div style="font-size:8px;text-transform:uppercase;">${DAYS_NL[parseDate(date).getDay()]}</div>
+          <div style="font-size:16px;font-weight:500;line-height:1.1;">${parseDate(date).getDate()}</div>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <span style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;padding:2px 6px;border-radius:2px;background:${tc.bg};color:${tc.text};display:inline-block;margin-bottom:3px;">${tc.label}</span>
+          <div style="font-size:13px;font-weight:600;">${row.titel||''}</div>
+          ${row.km?`<div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-top:2px;">${row.km} km</div>`:''}
+        </div>
+        <div style="font-size:20px;flex-shrink:0;">${row.emoji||''}</div>
+      </div>`;
+    });
+  }
 
   el.innerHTML = html;
 }
