@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Big10">
+<meta name="theme-color" content="#0d0d0d">
+<title>Road to Big10 PR</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0d0d;
+  --surface: #181818;
+  --surface2: #222222;
+  --border: #2e2e2e;
+  --accent: #d4f542;
+  --accent2: #ff6b35;
+  --accent3: #42d4f5;
+  --text: #ededed;
+  --muted: #999;
+  --faint: #555;
+  --run-bg: rgba(212,245,66,0.13);
+  --run-text: #d4f542;
+  --strength-bg: rgba(255,107,53,0.13);
+  --strength-text: #ff8c5e;
+  --mob-bg: rgba(66,212,245,0.13);
+  --mob-text: #42d4f5;
+  --rest-bg: rgba(255,255,255,0.05);
+  --rest-text: #666;
+  --race-bg: rgba(255,51,102,0.15);
+  --race-text: #ff3366;
+  --work-bg: rgba(255,180,0,0.12);
+  --work-text: #ffb400;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  height: 100%;
+  overscroll-behavior: none;
+}
+
+/* ── APP SHELL ── */
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(var(--safe-top) + 14px) 18px 14px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+}
+.topbar-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  letter-spacing: 1.5px;
+  color: var(--text);
+  line-height: 1;
+}
+.topbar-logo span { color: var(--accent); }
+.topbar-pr {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.5px;
+  text-align: right;
+  line-height: 1.4;
+}
+.topbar-pr strong { color: var(--accent); }
+
+/* ── COUNTDOWN STRIP ── */
+.countdown-strip {
+  display: flex;
+  background: linear-gradient(90deg, rgba(212,245,66,0.06) 0%, transparent 60%);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 18px;
+  gap: 16px;
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.countdown-strip::-webkit-scrollbar { display: none; }
+.cd-item {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cd-race { font-size: 11px; font-weight: 600; color: var(--text); }
+.cd-race.target { color: var(--accent); }
+.cd-days {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  line-height: 1;
+  color: var(--muted);
+}
+.cd-item.target .cd-days { color: var(--accent); }
+.cd-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; }
+.cd-sep { width: 1px; background: var(--border); flex-shrink: 0; margin: 2px 0; }
+
+/* ── NAV TABS ── */
+.tabs {
+  display: flex;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.tabs::-webkit-scrollbar { display: none; }
+.tab {
+  flex-shrink: 0;
+  padding: 12px 16px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+/* ── SCROLL AREA ── */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(var(--safe-bottom) + 80px);
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── VIEWS ── */
+.view { display: none; padding: 16px; }
+.view.active { display: block; }
+
+/* ── TODAY CARD ── */
+.today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.today-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+.today-phase {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 0.5px;
+}
+
+.today-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+.today-card.work-card { border-color: rgba(255,180,0,0.3); }
+.today-card.race-card { border-color: rgba(255,51,102,0.4); }
+.today-card.rest-card { opacity: 0.7; }
+
+.tc-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px 10px;
+}
+.tc-emoji { font-size: 28px; flex-shrink: 0; }
+.tc-main { flex: 1; min-width: 0; }
+.tc-type {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.tc-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+.tc-metric {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--accent);
+  margin-top: 4px;
+  font-weight: 500;
+}
+.tc-detail {
+  padding: 0 16px 14px;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.55;
+  border-top: 1px solid var(--border);
+  padding-top: 10px;
+  margin-top: 4px;
+}
+
+/* FEEDBACK SECTION */
+.feedback-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+}
+.feedback-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.feedback-stars {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.star-btn {
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  border-radius: 4px;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s;
+}
+.star-btn.selected { background: rgba(212,245,66,0.15); border-color: var(--accent); transform: scale(1.08); }
+.star-btn:active { transform: scale(0.95); }
+
+.feedback-textarea {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  padding: 10px 12px;
+  resize: none;
+  height: 72px;
+  margin-bottom: 10px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.feedback-textarea:focus { border-color: var(--accent); }
+.feedback-textarea::placeholder { color: var(--faint); }
+
+.submit-btn {
+  width: 100%;
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.submit-btn:hover { background: #c8ec30; }
+.submit-btn:active { transform: scale(0.98); }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.feedback-saved {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  padding: 10px 0 4px;
+}
+.feedback-saved.show { display: flex; }
+
+/* PREVIOUS FEEDBACK */
+.prev-feedback {
+  background: rgba(212,245,66,0.04);
+  border: 1px solid rgba(212,245,66,0.15);
+  border-radius: 4px;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+}
+.prev-feedback-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
+.prev-feedback-text {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* TOMORROW CARD */
+.tomorrow-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  opacity: 0.75;
+}
+.tmr-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 8px;
+}
+.tmr-title {
+  font-size: 15px;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.tmr-detail {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+}
+
+/* ── WEEK VIEW ── */
+.week-section {
+  margin-bottom: 8px;
+}
+.week-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+.week-day-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+  transition: opacity 0.15s;
+}
+.week-day-row.is-past { opacity: 0.45; }
+.week-day-row.is-today { border-color: rgba(212,245,66,0.4); background: rgba(212,245,66,0.03); }
+.week-day-row.is-work { border-color: rgba(255,180,0,0.2); }
+.wdr-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+  margin-top: 1px;
+}
+.wdr-date-day { font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+.wdr-date-num { font-size: 16px; font-weight: 500; line-height: 1.1; }
+.week-day-row.is-today .wdr-date { color: var(--accent); }
+.wdr-body { flex: 1; min-width: 0; }
+.wdr-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-bottom: 4px;
+}
+.wdr-title { font-size: 13px; font-weight: 600; line-height: 1.3; }
+.wdr-metric { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 2px; }
+.wdr-emoji { font-size: 20px; flex-shrink: 0; }
+.wdr-feedback-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+/* ── PLAN VIEW (phases) ── */
+.phase-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.phase-tab {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.12s;
+}
+.phase-tab:hover { color: var(--accent); border-color: var(--accent); }
+.phase-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
+
+.plan-loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 1px;
+}
+.plan-loading::after {
+  content: '';
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  margin: 16px auto 0;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Plan table */
+.plan-table {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.plan-row {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 10px;
+  padding: 11px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  align-items: start;
+}
+.plan-row:last-child { border-bottom: none; }
+.plan-row.is-today { background: rgba(212,245,66,0.04); }
+.plan-row.is-past { opacity: 0.4; }
+.plan-row.is-work { background: rgba(255,180,0,0.03); }
+.pr-date-col {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  line-height: 1.5;
+}
+.pr-date-col strong { color: var(--muted); display: block; }
+.plan-row.is-today .pr-date-col strong { color: var(--accent); }
+.pr-body-col {}
+.pr-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+.pr-detail { font-size: 11px; color: var(--muted); line-height: 1.4; }
+.pr-km {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pr-feedback-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  background: rgba(212,245,66,0.1);
+  color: var(--accent);
+  padding: 2px 6px;
+  border-radius: 2px;
+  margin-top: 4px;
+  display: inline-block;
+}
+
+/* ── STATS VIEW ── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+}
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 6px;
+}
+.stat-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px;
+  line-height: 1;
+  color: var(--accent);
+}
+.stat-sub {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.stat-card.wide {
+  grid-column: 1 / -1;
+}
+
+/* Feedback history */
+.feedback-history { display: flex; flex-direction: column; gap: 6px; }
+.fh-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 11px 14px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.fh-date {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  flex-shrink: 0;
+  width: 36px;
+}
+.fh-body { flex: 1; }
+.fh-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.fh-text { font-size: 11px; color: var(--muted); line-height: 1.45; }
+.fh-score {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── SETTINGS VIEW ── */
+.settings-section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.settings-title {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.settings-field { margin-bottom: 12px; }
+.settings-label {
+  font-size: 11px;
+  color: var(--muted);
+  margin-bottom: 5px;
+  display: block;
+}
+.settings-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 9px 12px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.settings-input:focus { border-color: var(--accent); }
+.settings-hint {
+  font-size: 11px;
+  color: var(--faint);
+  margin-top: 4px;
+  line-height: 1.45;
+}
+.save-btn {
+  background: var(--accent);
+  color: #000;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 1px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.save-btn:active { transform: scale(0.97); }
+.connection-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--faint);
+}
+.status-dot.ok { background: var(--accent); }
+.status-dot.err { background: #ff3366; }
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: rgba(13,13,13,0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: var(--safe-bottom);
+  z-index: 100;
+}
+.bn-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 8px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  color: var(--faint);
+  transition: color 0.15s;
+}
+.bn-item:hover { color: var(--muted); }
+.bn-item.active { color: var(--accent); }
+.bn-icon { font-size: 20px; line-height: 1; }
+.bn-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+/* ── LOADING OVERLAY ── */
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  transition: opacity 0.3s;
+}
+.loading-overlay.hidden { opacity: 0; pointer-events: none; }
+.loading-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  letter-spacing: 3px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.loading-logo span { color: var(--accent); }
+.loading-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--faint);
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+.loading-bar {
+  width: 120px;
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+.loading-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 1px;
+  animation: loadbar 1.8s ease-in-out infinite;
+}
+@keyframes loadbar {
+  0% { width: 0; transform: translateX(0); }
+  50% { width: 80px; }
+  100% { width: 0; transform: translateX(120px); }
+}
+
+/* ── ERROR STATE ── */
+.error-state {
+  text-align: center;
+  padding: 40px 24px;
+}
+.error-state h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 24px;
+  color: var(--accent2);
+  margin-bottom: 8px;
+}
+.error-state p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.6;
+  margin-bottom: 14px;
+}
+
+/* ── TOAST ── */
+.toast {
+  position: fixed;
+  bottom: calc(var(--safe-bottom) + 72px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--accent);
+  color: #000;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+  padding: 10px 18px;
+  border-radius: 20px;
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  z-index: 200;
+  white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── MISC ── */
+.tag-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+.no-data {
+  text-align: center;
+  padding: 32px;
+  color: var(--faint);
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+/* ── PHASE BANNER MINI ── */
+.phase-banner-mini {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 4px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.pbm-num {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--accent);
+  opacity: 0.2;
+}
+.pbm-info h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+}
+.pbm-goal { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+@media (min-width: 480px) {
+  .bottom-nav { left: 0; right: 0; transform: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-logo">ROAD TO <span>BIG10</span></div>
+  <div class="loading-sub">Trainingsplan laden…</div>
+  <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- App shell -->
+<div class="app">
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="topbar-logo">ROAD TO <span>BIG10</span></div>
+    <div class="topbar-pr">
+      PR <strong>37:56</strong> → doel <strong>sub 37:30</strong><br>
+      <span id="daysToRace" style="color:var(--faint)">…</span>
+    </div>
+  </div>
+
+  <!-- Countdown strip -->
+  <div class="countdown-strip" id="countdownStrip">
+    <!-- filled by JS -->
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('today')">Vandaag</button>
+    <button class="tab" onclick="switchTab('week')">Week</button>
+    <button class="tab" onclick="switchTab('plan')">Plan</button>
+    <button class="tab" onclick="switchTab('stats')">Stats</button>
+    <button class="tab" onclick="switchTab('settings')">⚙</button>
+  </div>
+
+  <!-- Scroll area -->
+  <div class="scroll-area" id="scrollArea">
+
+    <!-- TODAY VIEW -->
+    <div class="view active" id="view-today">
+      <div id="todayContent"><div class="no-data">Laden…</div></div>
+    </div>
+
+    <!-- WEEK VIEW -->
+    <div class="view" id="view-week">
+      <div id="weekContent"><div class="no-data">Laden…</div></div>
+    </div>
+
+    <!-- PLAN VIEW -->
+    <div class="view" id="view-plan">
+      <div class="phase-tabs" id="phaseTabs">
+        <button class="phase-tab active" onclick="selectPhase(1)">Fase 1 · Herstel</button>
+        <button class="phase-tab" onclick="selectPhase(2)">Fase 2 · Opbouw</button>
+        <button class="phase-tab" onclick="selectPhase(3)">Fase 3 · Intensiteit</button>
+        <button class="phase-tab" onclick="selectPhase(4)">Fase 4 · Tapering</button>
+      </div>
+      <div id="planContent"><div class="plan-loading">Plan laden</div></div>
+    </div>
+
+    <!-- STATS VIEW -->
+    <div class="view" id="view-stats">
+      <div id="statsContent"><div class="no-data">Laden…</div></div>
+    </div>
+
+    <!-- SETTINGS VIEW -->
+    <div class="view" id="view-settings">
+      <div class="settings-section">
+        <div class="settings-title">Google Apps Script URL</div>
+        <div class="settings-field">
+          <label class="settings-label">Apps Script Web App URL</label>
+          <input type="url" class="settings-input" id="scriptUrl" 
+            placeholder="https://script.google.com/macros/s/…/exec"
+            value="">
+          <div class="settings-hint">Plak hier de URL van je gepubliceerde Google Apps Script Web App. Zie de setup-instructies hieronder.</div>
+        </div>
+        <button class="save-btn" onclick="saveSettings()">Opslaan & verbinden</button>
+        <div class="connection-status" id="connectionStatus">
+          <div class="status-dot" id="statusDot"></div>
+          <span id="statusText">Niet verbonden</span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Setup: Google Apps Script</div>
+        <div style="font-size:12px; color:var(--muted); line-height:1.7;">
+          <p style="margin-bottom:10px;">Volg deze stappen om de app te verbinden met je Google Sheet:</p>
+          <p>1. Ga naar <strong style="color:var(--text)">script.google.com</strong> → Nieuw project</p>
+          <p>2. Plak de Apps Script code (zie README of vraag RunBot)</p>
+          <p>3. <strong style="color:var(--text)">Deploy → New deployment</strong> → Web App</p>
+          <p>4. Stel in: <em style="color:var(--accent3)">Execute as: Me</em> · <em style="color:var(--accent3)">Who has access: Anyone</em></p>
+          <p>5. Kopieer de URL en plak hem hierboven</p>
+          <p style="margin-top:10px; color:var(--faint)">Sheet ID: <code style="font-family:DM Mono; font-size:10px; color:var(--accent)">1DVUAikxDpvDuYiWIT8hEuEFszkWEvpBXBxXiQgLtMPE</code></p>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">App info</div>
+        <div style="font-size:11px; color:var(--faint); line-height:1.8; font-family:'DM Mono',monospace;">
+          <div>Versie: 1.0.0</div>
+          <div>PR: 37:56 → Doel: sub 37:30</div>
+          <div>Race: 5 sept 2026 · Rotterdam</div>
+          <div style="margin-top:8px; color:var(--accent);">🏃 Road to Big10 PR</div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <button class="bn-item active" onclick="switchTab('today')" id="bn-today">
+      <span class="bn-icon">📍</span>
+      <span class="bn-label">Vandaag</span>
+    </button>
+    <button class="bn-item" onclick="switchTab('week')" id="bn-week">
+      <span class="bn-icon">📅</span>
+      <span class="bn-label">Week</span>
+    </button>
+    <button class="bn-item" onclick="switchTab('plan')" id="bn-plan">
+      <span class="bn-icon">🗓</span>
+      <span class="bn-label">Plan</span>
+    </button>
+    <button class="bn-item" onclick="switchTab('stats')" id="bn-stats">
+      <span class="bn-icon">📊</span>
+      <span class="bn-label">Stats</span>
+    </button>
+    <button class="bn-item" onclick="switchTab('settings')" id="bn-settings">
+      <span class="bn-icon">⚙️</span>
+      <span class="bn-label">Instellingen</span>
+    </button>
+  </div>
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════
+// CONFIG & STATE
+// ═══════════════════════════════════════
+const RACES = [
+  { name: 'Koning v. Spanje', date: '2026-05-09', dist: '~20km trail' },
+  { name: 'Bijlmerrun',       date: '2026-05-16', dist: '10km' },
+  { name: 'Big5 ⚡',          date: '2026-06-13', dist: '5km Utrecht', target: true },
+  { name: 'Big10 🎯',         date: '2026-09-05', dist: '10km Rotterdam PR', target: true },
+];
+
+const PHASE_DATES = [
+  { num: 1, name: 'Herstel',    start: '2026-04-20', end: '2026-05-18' },
+  { num: 2, name: 'Opbouw',     start: '2026-05-19', end: '2026-06-13' },
+  { num: 3, name: 'Intensiteit',start: '2026-06-14', end: '2026-08-17' },
+  { num: 4, name: 'Tapering',   start: '2026-08-18', end: '2026-09-05' },
+];
+
+const TYPE_COLORS = {
+  'run':      { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Hardlopen' },
+  'duurloop': { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Duurloop' },
+  'interval': { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Interval' },
+  'tempo':    { bg: 'var(--run-bg)',      text: 'var(--run-text)',      label: 'Tempo' },
+  'kracht':   { bg: 'var(--strength-bg)',text: 'var(--strength-text)', label: 'Kracht' },
+  'mob':      { bg: 'var(--mob-bg)',      text: 'var(--mob-text)',      label: 'Mobiliteit' },
+  'mobiliteit':{ bg: 'var(--mob-bg)',     text: 'var(--mob-text)',      label: 'Mobiliteit' },
+  'race':     { bg: 'var(--race-bg)',     text: 'var(--race-text)',     label: 'Race' },
+  'work':     { bg: 'var(--work-bg)',     text: 'var(--work-text)',     label: 'Colorado' },
+  'colorado': { bg: 'var(--work-bg)',     text: 'var(--work-text)',     label: 'Colorado' },
+  'rust':     { bg: 'var(--rest-bg)',     text: 'var(--rest-text)',     label: 'Rust' },
+  'herstel':  { bg: 'var(--rest-bg)',     text: 'var(--rest-text)',     label: 'Herstel' },
+};
+
+function getTypeColor(type) {
+  if (!type) return TYPE_COLORS['rust'];
+  const t = type.toLowerCase();
+  for (const key of Object.keys(TYPE_COLORS)) {
+    if (t.includes(key)) return TYPE_COLORS[key];
+  }
+  return TYPE_COLORS['rust'];
+}
+
+let state = {
+  scriptUrl: localStorage.getItem('scriptUrl') || '',
+  data: null,
+  loading: false,
+  currentTab: 'today',
+  currentPhase: 1,
+  selectedRating: 0,
+  connected: false,
+};
+
+const DAYS_NL = ['Zo','Ma','Di','Wo','Do','Vr','Za'];
+const MONTHS_NL = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+
+function today() { return new Date().toISOString().split('T')[0]; }
+function parseDate(s) { return new Date(s + 'T00:00:00'); }
+function fmtDate(s) {
+  const d = parseDate(s);
+  return `${DAYS_NL[d.getDay()]} ${d.getDate()} ${MONTHS_NL[d.getMonth()]}`;
+}
+function fmtShort(s) {
+  const d = parseDate(s);
+  return `${DAYS_NL[d.getDay()]}\n${d.getDate()}`;
+}
+function daysUntil(dateStr) {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const d = parseDate(dateStr);
+  return Math.round((d - now) / 86400000);
+}
+
+// ═══════════════════════════════════════
+// DATA FETCHING
+// ═══════════════════════════════════════
+async function fetchData() {
+  if (!state.scriptUrl) {
+    hideLoading();
+    renderAll();
+    return;
+  }
+  state.loading = true;
+  try {
+    const url = state.scriptUrl + '?action=getAll';
+    const res = await fetch(url);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (json.status === 'ok') {
+      state.data = json.rows;
+      state.connected = true;
+      updateConnectionStatus(true);
+    } else {
+      throw new Error(json.message || 'Fout');
+    }
+  } catch(e) {
+    console.error('Fetch error:', e);
+    state.connected = false;
+    updateConnectionStatus(false, e.message);
+  }
+  state.loading = false;
+  hideLoading();
+  renderAll();
+}
+
+async function submitFeedback(datum, rating, tekst) {
+  if (!state.scriptUrl) { showToast('❌ Geen API URL ingesteld'); return false; }
+  try {
+    const params = new URLSearchParams({
+      action: 'setFeedback',
+      datum,
+      rating,
+      tekst: tekst || ''
+    });
+    const res = await fetch(state.scriptUrl + '?' + params);
+    const json = await res.json();
+    if (json.status === 'ok') {
+      // update local cache
+      if (state.data) {
+        const row = state.data.find(r => r.datum === datum);
+        if (row) row.feedback = rating + (tekst ? ' – ' + tekst : '');
+      }
+      showToast('✓ Feedback opgeslagen!');
+      return true;
+    } else {
+      throw new Error(json.message);
+    }
+  } catch(e) {
+    showToast('❌ ' + e.message);
+    return false;
+  }
+}
+
+// ═══════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════
+function renderAll() {
+  renderCountdown();
+  renderDaysToRace();
+  renderToday();
+  renderWeek();
+  renderPlan();
+  renderStats();
+}
+
+function renderCountdown() {
+  const strip = document.getElementById('countdownStrip');
+  const now = new Date(); now.setHours(0,0,0,0);
+  const items = RACES.map((r, i) => {
+    const days = daysUntil(r.date);
+    if (days < -1) return '';
+    const cls = r.target ? 'cd-item target' : 'cd-item';
+    const sep = i > 0 ? '<div class="cd-sep"></div>' : '';
+    return `${sep}<div class="${cls}">
+      <div class="cd-race ${r.target?'target':''}">${r.name}</div>
+      <div class="cd-days">${days < 0 ? '✓' : days}</div>
+      <div class="cd-label">${days < 0 ? 'GEWEEST' : days === 0 ? 'VANDAAG!' : 'DAGEN'}</div>
+      <div class="cd-label" style="margin-top:1px">${r.dist}</div>
+    </div>`;
+  }).filter(Boolean).join('');
+  strip.innerHTML = items || '<div class="cd-item"><div class="cd-label" style="padding:4px">Races laden…</div></div>';
+}
+
+function renderDaysToRace() {
+  const days = daysUntil('2026-09-05');
+  const el = document.getElementById('daysToRace');
+  el.innerHTML = `nog <strong style="color:var(--accent)">${days}</strong> <span style="color:var(--faint)">dagen tot Big10</span>`;
+}
+
+function getTodayRow() {
+  if (!state.data) return null;
+  return state.data.find(r => r.datum === today());
+}
+
+function getCurrentPhase() {
+  const t = today();
+  for (const p of PHASE_DATES) {
+    if (t >= p.start && t <= p.end) return p;
+  }
+  return PHASE_DATES[0];
+}
+
+function renderToday() {
+  const el = document.getElementById('todayContent');
+  const row = getTodayRow();
+  const phase = getCurrentPhase();
+  
+  let html = `<div class="today-header">
+    <div class="today-date">${fmtDate(today())}</div>
+    <div class="today-phase">Fase ${phase.num} · ${phase.name}</div>
+  </div>`;
+
+  if (!state.scriptUrl) {
+    html += `<div class="today-card">
+      <div class="tc-top">
+        <div class="tc-emoji">⚙️</div>
+        <div class="tc-main">
+          <div class="tc-type">Setup vereist</div>
+          <div class="tc-title" style="font-size:20px">Verbind met Google Sheet</div>
+        </div>
+      </div>
+      <div class="tc-detail">Ga naar <strong>Instellingen</strong> en voer je Apps Script URL in om je trainingsplan te laden.</div>
+    </div>`;
+    el.innerHTML = html;
+    return;
+  }
+
+  if (!state.data) {
+    html += `<div class="today-card"><div class="tc-top"><div class="tc-emoji">⏳</div><div class="tc-main"><div class="tc-type">Laden</div><div class="tc-title" style="font-size:20px">Even geduld…</div></div></div></div>`;
+    el.innerHTML = html;
+    return;
+  }
+
+  if (!row) {
+    html += `<div class="today-card rest-card">
+      <div class="tc-top">
+        <div class="tc-emoji">😴</div>
+        <div class="tc-main">
+          <div class="tc-type">Geen training</div>
+          <div class="tc-title">Rustdag</div>
+        </div>
+      </div>
+      <div class="tc-detail">Vandaag staat er niets ingepland. Vergeet de mobiliteit niet!</div>
+    </div>`;
+  } else {
+    const tc = getTypeColor(row.type);
+    const isWork = row.type?.toLowerCase().includes('colorado') || row.type?.toLowerCase().includes('work');
+    const isRace = row.type?.toLowerCase().includes('race');
+    const cardClass = isWork ? 'work-card' : isRace ? 'race-card' : '';
+    
+    html += `<div class="today-card ${cardClass}">
+      <div class="tc-top">
+        <div class="tc-emoji">${row.emoji || '🏃'}</div>
+        <div class="tc-main">
+          <div class="tc-type" style="color:${tc.text}">${tc.label}</div>
+          <div class="tc-title">${row.titel || 'Training'}</div>
+          ${row.km ? `<div class="tc-metric">${row.km} km</div>` : ''}
+        </div>
+      </div>
+      ${row.detail ? `<div class="tc-detail">${row.detail}</div>` : ''}
+    </div>`;
+
+    // Previous feedback display
+    if (row.feedback) {
+      html += `<div class="prev-feedback">
+        <div class="prev-feedback-label">✓ Feedback al ingevuld</div>
+        <div class="prev-feedback-text">${row.feedback}</div>
+      </div>`;
+    }
+
+    // Feedback form (only for non-rest, non-colorado days)
+    if (!isWork) {
+      html += renderFeedbackForm(row.datum, row.feedback);
+    }
+  }
+
+  // Tomorrow preview
+  const tomorrowDate = new Date(); tomorrowDate.setDate(tomorrowDate.getDate() + 1);
+  const tomorrowStr = tomorrowDate.toISOString().split('T')[0];
+  const tmrRow = state.data.find(r => r.datum === tomorrowStr);
+  if (tmrRow) {
+    const tc = getTypeColor(tmrRow.type);
+    html += `<div class="tomorrow-card">
+      <div class="tmr-label">Morgen →</div>
+      <div class="tmr-title">${tmrRow.emoji || ''} ${tmrRow.titel || 'Training'}</div>
+      ${tmrRow.km ? `<div class="tmr-detail">${tmrRow.km} km</div>` : ''}
+    </div>`;
+  }
+
+  // Mob reminder
+  html += `<div style="background:rgba(66,212,245,0.05); border:1px solid rgba(66,212,245,0.15); border-radius:4px; padding:12px 14px; margin-top:4px;">
+    <div style="font-family:'DM Mono',monospace; font-size:9px; letter-spacing:1px; color:var(--accent3); text-transform:uppercase; margin-bottom:4px;">Dagelijkse routine</div>
+    <div style="font-size:12px; color:var(--muted);">💪 Kuit mobiliteit &nbsp;·&nbsp; 🦵 Heup mobiliteit &nbsp;·&nbsp; Elke dag!</div>
+  </div>`;
+
+  el.innerHTML = html;
+
+  // Re-attach star listeners
+  document.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.selectedRating = parseInt(btn.dataset.val);
+      document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('selected', parseInt(b.dataset.val) <= state.selectedRating));
+    });
+  });
+}
+
+function renderFeedbackForm(datum, existingFeedback) {
+  if (existingFeedback) return ''; // already logged
+  const stars = ['😵','😓','😐','💪','🔥'].map((e, i) => 
+    `<button class="star-btn" data-val="${i+1}">${e}</button>`
+  ).join('');
+  
+  return `<div class="feedback-section">
+    <div class="feedback-title">Hoe ging de training?</div>
+    <div class="feedback-stars">${stars}</div>
+    <textarea class="feedback-textarea" id="feedbackText" placeholder="Notities, kniestatus, hoe voelde het…"></textarea>
+    <button class="submit-btn" id="submitBtn" onclick="handleSubmitFeedback('${datum}')">Feedback opslaan</button>
+    <div class="feedback-saved" id="feedbackSaved">✓ Opgeslagen!</div>
+  </div>`;
+}
+
+async function handleSubmitFeedback(datum) {
+  const btn = document.getElementById('submitBtn');
+  const tekst = document.getElementById('feedbackText')?.value || '';
+  const rating = state.selectedRating;
+  
+  if (!rating) { showToast('Selecteer eerst een score'); return; }
+  
+  btn.disabled = true;
+  btn.textContent = 'Opslaan…';
+  
+  const ok = await submitFeedback(datum, rating, tekst);
+  if (ok) {
+    document.getElementById('feedbackSaved').classList.add('show');
+    setTimeout(() => renderToday(), 1200);
+  } else {
+    btn.disabled = false;
+    btn.textContent = 'Feedback opslaan';
+  }
+}
+
+function renderWeek() {
+  const el = document.getElementById('weekContent');
+  if (!state.data) { el.innerHTML = '<div class="no-data">Laden…</div>'; return; }
+
+  // Current week: mon to sun
+  const now = new Date(); now.setHours(0,0,0,0);
+  const dayOfWeek = now.getDay(); // 0=sun
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+
+  const todayStr = today();
+  let html = `<div class="week-label">Week van ${fmtDate(days[0])} → ${fmtDate(days[6])}</div>`;
+
+  // Total km this week
+  let weekKm = 0;
+  days.forEach(d => {
+    const row = state.data.find(r => r.datum === d);
+    if (row && row.km) weekKm += parseFloat(row.km) || 0;
+  });
+  
+  if (weekKm > 0) {
+    html += `<div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:12px; padding:0 2px;">
+      Week totaal: <span style="color:var(--accent)">${weekKm.toFixed(0)} km</span>
+    </div>`;
+  }
+
+  html += '<div class="week-section">';
+  days.forEach(d => {
+    const row = state.data.find(r => r.datum === d);
+    const isPast = d < todayStr;
+    const isToday = d === todayStr;
+    const date = parseDate(d);
+    const dateLabel = `${DAYS_NL[date.getDay()]}<br>${date.getDate()}`;
+    
+    if (!row) {
+      html += `<div class="week-day-row ${isPast?'is-past':''} ${isToday?'is-today':''}">
+        <div class="wdr-date"><div class="wdr-date-day">${DAYS_NL[date.getDay()]}</div><div class="wdr-date-num">${date.getDate()}</div></div>
+        <div class="wdr-body">
+          <div class="wdr-title" style="color:var(--faint)">Rust</div>
+        </div>
+        <div class="wdr-emoji" style="opacity:0.3">😴</div>
+      </div>`;
+      return;
+    }
+
+    const tc = getTypeColor(row.type);
+    const isWork = row.type?.toLowerCase().includes('colorado') || row.type?.toLowerCase().includes('work');
+    html += `<div class="week-day-row ${isPast?'is-past':''} ${isToday?'is-today':''} ${isWork?'is-work':''}">
+      <div class="wdr-date"><div class="wdr-date-day">${DAYS_NL[date.getDay()]}</div><div class="wdr-date-num">${date.getDate()}</div></div>
+      <div class="wdr-body">
+        <span class="wdr-tag" style="background:${tc.bg}; color:${tc.text}">${tc.label}</span>
+        <div class="wdr-title">${row.titel || ''}</div>
+        ${row.km ? `<div class="wdr-metric">${row.km} km</div>` : ''}
+        ${row.feedback ? `<div style="font-size:10px; color:var(--accent); margin-top:3px; font-family:'DM Mono',monospace;">✓ feedback</div>` : ''}
+      </div>
+      <div class="wdr-emoji">${row.emoji || ''}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+function renderPlan() {
+  const el = document.getElementById('planContent');
+  if (!state.data) { el.innerHTML = '<div class="plan-loading">Plan laden</div>'; return; }
+
+  const phase = PHASE_DATES.find(p => p.num === state.currentPhase) || PHASE_DATES[0];
+  const rows = state.data.filter(r => r.datum >= phase.start && r.datum <= phase.end);
+  
+  const todayStr = today();
+  
+  let html = `<div class="phase-banner-mini">
+    <div class="pbm-num">0${phase.num}</div>
+    <div class="pbm-info">
+      <h3>${phase.name}</h3>
+      <div class="pbm-goal">${phase.start} → ${phase.end} · ${rows.filter(r=>r.km).reduce((a,r)=>a+(parseFloat(r.km)||0),0).toFixed(0)} km gepland</div>
+    </div>
+  </div>`;
+
+  if (rows.length === 0) {
+    html += '<div class="no-data">Geen data voor deze fase</div>';
+    el.innerHTML = html;
+    return;
+  }
+
+  html += '<div class="plan-table">';
+  rows.forEach(row => {
+    const isPast = row.datum < todayStr;
+    const isToday = row.datum === todayStr;
+    const tc = getTypeColor(row.type);
+    const isWork = row.type?.toLowerCase().includes('colorado') || row.type?.toLowerCase().includes('work');
+    
+    html += `<div class="plan-row ${isPast?'is-past':''} ${isToday?'is-today':''} ${isWork?'is-work':''}">
+      <div class="pr-date-col">
+        <strong>${fmtDate(row.datum).split(' ').slice(0,2).join(' ')}</strong>
+        ${fmtDate(row.datum).split(' ')[2]}
+      </div>
+      <div class="pr-body-col">
+        <span class="wdr-tag" style="background:${tc.bg}; color:${tc.text}; margin-bottom:4px;">${tc.label}</span>
+        <div class="pr-title">${row.titel || ''}</div>
+        ${row.detail ? `<div class="pr-detail">${row.detail}</div>` : ''}
+        ${row.feedback ? `<div class="pr-feedback-badge">✓ ${row.feedback}</div>` : ''}
+      </div>
+      <div class="pr-km">${row.km ? row.km+'km' : ''}</div>
+    </div>`;
+  });
+  html += '</div>';
+
+  el.innerHTML = html;
+
+  // Scroll to today
+  setTimeout(() => {
+    const todayEl = el.querySelector('.is-today');
+    if (todayEl) todayEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 100);
+}
+
+function renderStats() {
+  const el = document.getElementById('statsContent');
+  if (!state.data) { el.innerHTML = '<div class="no-data">Laden…</div>'; return; }
+
+  const todayStr = today();
+  const pastRows = state.data.filter(r => r.datum <= todayStr && r.km);
+  const totalKm = pastRows.reduce((a, r) => a + (parseFloat(r.km) || 0), 0);
+  const runRows = pastRows.filter(r => {
+    const t = r.type?.toLowerCase() || '';
+    return t.includes('run') || t.includes('duur') || t.includes('interval') || t.includes('tempo') || t.includes('race');
+  });
+  const feedbackRows = state.data.filter(r => r.feedback && r.datum <= todayStr);
+  
+  // Average rating from feedback
+  let avgRating = 0;
+  const ratingRows = feedbackRows.filter(r => /^\d/.test(r.feedback));
+  if (ratingRows.length > 0) {
+    avgRating = ratingRows.reduce((a,r) => a + parseInt(r.feedback[0]), 0) / ratingRows.length;
+  }
+
+  // Days to go
+  const daysLeft = daysUntil('2026-09-05');
+
+  // This week km
+  const now = new Date(); now.setHours(0,0,0,0);
+  const dayOfWeek = now.getDay();
+  const monday = new Date(now);
+  monday.setDate(now.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1));
+  const mondayStr = monday.toISOString().split('T')[0];
+  const weekKm = state.data.filter(r => r.datum >= mondayStr && r.datum <= todayStr && r.km)
+    .reduce((a, r) => a + (parseFloat(r.km)||0), 0);
+
+  let html = `<div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-label">Totaal km</div>
+      <div class="stat-val">${totalKm.toFixed(0)}</div>
+      <div class="stat-sub">km gelopen in plan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Dagen tot Big10</div>
+      <div class="stat-val">${daysLeft}</div>
+      <div class="stat-sub">5 sept · Rotterdam</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Runs gelogd</div>
+      <div class="stat-val">${runRows.length}</div>
+      <div class="stat-sub">trainingen gedaan</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Deze week</div>
+      <div class="stat-val">${weekKm.toFixed(0)}</div>
+      <div class="stat-sub">km tot nu toe</div>
+    </div>
+    ${avgRating > 0 ? `<div class="stat-card">
+      <div class="stat-label">Gem. gevoel</div>
+      <div class="stat-val" style="font-size:28px">${['😵','😓','😐','💪','🔥'][Math.round(avgRating)-1]}</div>
+      <div class="stat-sub">${avgRating.toFixed(1)} / 5 · ${ratingRows.length} sessies</div>
+    </div>` : ''}
+    <div class="stat-card">
+      <div class="stat-label">Feedback</div>
+      <div class="stat-val">${feedbackRows.length}</div>
+      <div class="stat-sub">sessies gelogd</div>
+    </div>
+  </div>`;
+
+  // Recent feedback
+  const recentFeedback = feedbackRows.slice(-8).reverse();
+  if (recentFeedback.length > 0) {
+    html += `<div style="font-family:'DM Mono',monospace; font-size:10px; color:var(--faint); letter-spacing:1px; text-transform:uppercase; margin-bottom:10px; margin-top:4px;">Recente feedback</div>`;
+    html += '<div class="feedback-history">';
+    recentFeedback.forEach(row => {
+      const d = parseDate(row.datum);
+      html += `<div class="fh-row">
+        <div class="fh-date">${d.getDate()} ${MONTHS_NL[d.getMonth()]}</div>
+        <div class="fh-body">
+          <div class="fh-title">${row.titel || row.type || 'Training'}</div>
+          <div class="fh-text">${row.feedback}</div>
+        </div>
+        ${row.km ? `<div class="fh-score">${row.km}km</div>` : ''}
+      </div>`;
+    });
+    html += '</div>';
+  }
+
+  el.innerHTML = html;
+}
+
+// ═══════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════
+function switchTab(tab) {
+  state.currentTab = tab;
+  document.querySelectorAll('.tab').forEach((t, i) => {
+    t.classList.toggle('active', t.getAttribute('onclick').includes(tab));
+  });
+  document.querySelectorAll('.bn-item').forEach(b => {
+    b.classList.toggle('active', b.id === 'bn-' + tab);
+  });
+  document.querySelectorAll('.view').forEach(v => {
+    v.classList.toggle('active', v.id === 'view-' + tab);
+  });
+  document.getElementById('scrollArea').scrollTop = 0;
+  state.selectedRating = 0;
+}
+
+function selectPhase(num) {
+  state.currentPhase = num;
+  document.querySelectorAll('.phase-tab').forEach((t, i) => {
+    t.classList.toggle('active', i + 1 === num);
+  });
+  renderPlan();
+}
+
+function hideLoading() {
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.classList.add('hidden');
+  setTimeout(() => overlay.style.display = 'none', 350);
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function updateConnectionStatus(ok, errMsg) {
+  const dot = document.getElementById('statusDot');
+  const txt = document.getElementById('statusText');
+  if (dot && txt) {
+    dot.className = 'status-dot ' + (ok ? 'ok' : 'err');
+    txt.textContent = ok ? 'Verbonden ✓' : ('Fout: ' + (errMsg || 'verbinding mislukt'));
+  }
+}
+
+function saveSettings() {
+  const url = document.getElementById('scriptUrl').value.trim();
+  if (!url) { showToast('Voer een URL in'); return; }
+  state.scriptUrl = url;
+  localStorage.setItem('scriptUrl', url);
+  showToast('URL opgeslagen, verbinding testen…');
+  fetchData();
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  // Restore settings
+  const savedUrl = localStorage.getItem('scriptUrl') || '';
+  state.scriptUrl = savedUrl;
+  const urlInput = document.getElementById('scriptUrl');
+  if (urlInput && savedUrl) urlInput.value = savedUrl;
+  
+  // Auto-select current phase in plan view
+  const phase = getCurrentPhase();
+  state.currentPhase = phase.num;
+  document.querySelectorAll('.phase-tab').forEach((t, i) => {
+    t.classList.toggle('active', i + 1 === phase.num);
+  });
+
+  // Start loading
+  if (savedUrl) {
+    fetchData();
+  } else {
+    setTimeout(() => {
+      hideLoading();
+      renderAll();
+    }, 800);
+  }
+});
+</script>
+</body>
+</html>
