@@ -15,21 +15,22 @@
   --bg:#0d0d0d;--surface:#181818;--border:#2e2e2e;
   --accent:#d4f542;--accent2:#ff6b35;--accent3:#42d4f5;
   --text:#ededed;--muted:#888;--faint:#4a4a4a;
-  --run-bg:rgba(212,245,66,0.12);--run-text:#d4f542;
-  --str-bg:rgba(255,107,53,0.12);--str-text:#ff8c5e;
-  --mob-bg:rgba(66,212,245,0.12);--mob-text:#42d4f5;
-  --rest-bg:rgba(255,255,255,0.04);--rest-text:#555;
-  --race-bg:rgba(255,51,102,0.13);--race-text:#ff3366;
-  --work-bg:rgba(255,180,0,0.10);--work-text:#ffb400;
+  /* C25: standardised type colours */
+  --run-bg:rgba(76,175,80,0.14);   --run-text:#4CAF50;
+  --str-bg:rgba(33,150,243,0.14);  --str-text:#2196F3;
+  --mob-bg:rgba(0,188,212,0.14);   --mob-text:#00BCD4;
+  --rest-bg:rgba(158,158,158,0.12);--rest-text:#9E9E9E;
+  --race-bg:rgba(244,67,54,0.14);  --race-text:#F44336;
+  --work-bg:rgba(255,193,7,0.14);  --work-text:#FFC107;
+  --herstel-bg:rgba(156,39,176,0.14);--herstel-text:#9C27B0;
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;height:100%;overscroll-behavior:none}
 
-/* ── SHELL ── */
 .app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto}
 
-/* ── TOPBAR ── */
+/* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--st) + 12px) 16px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;gap:8px}
 .topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:1.5px;line-height:1;flex-shrink:0}
 .topbar-logo span{color:var(--accent)}
@@ -48,22 +49,26 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .topbar-gear{background:none;border:none;cursor:pointer;color:var(--faint);font-size:18px;padding:0;flex-shrink:0;line-height:1;transition:color 0.15s}
 .topbar-gear:hover{color:var(--muted)}
 
-/* ── SCROLL ── */
+/* UPDATE BANNER */
+.update-banner{background:var(--accent);color:#000;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;cursor:pointer;letter-spacing:0.5px}
+.update-banner button{background:none;border:1px solid rgba(0,0,0,0.25);border-radius:4px;padding:4px 10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;color:#000;letter-spacing:0.5px}
+
+/* SCROLL */
 .scroll-area{flex:1;overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--sb) + 80px);-webkit-overflow-scrolling:touch}
 .view{display:none;padding:16px;animation:fadeIn 0.18s ease}
 .view.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-/* ── CARD ── */
+/* CARD */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:10px}
 .card.faded{opacity:0.65}
-.card.work-border{border-color:rgba(255,180,0,0.3)}
-.card.race-border{border-color:rgba(255,51,102,0.35)}
+.card.work-border{border-color:rgba(255,193,7,0.35)}
+.card.race-border{border-color:rgba(244,67,54,0.35)}
 .card.accent-border{border-color:rgba(212,245,66,0.28)}
 .card-pad{padding:14px 16px}
 .badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
 
-/* ── TODAY ── */
+/* TODAY */
 .today-header{margin-bottom:18px}
 .today-date-big{font-family:'DM Sans',sans-serif;font-size:28px;font-weight:300;letter-spacing:-0.5px;line-height:1;color:var(--muted)}
 .today-phase-line{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:0.5px;margin-top:4px;opacity:0.8}
@@ -78,8 +83,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .rest-emoji{font-size:36px;flex-shrink:0}
 .rest-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.5px;margin-bottom:4px}
 .rest-sub{font-size:12px;color:var(--muted);line-height:1.5}
-.mob-reminder{background:rgba(66,212,245,0.04);border:1px solid rgba(66,212,245,0.12);border-radius:6px;padding:12px 14px;margin-top:4px}
-.mob-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--accent3);text-transform:uppercase;margin-bottom:4px}
+.mob-reminder{background:rgba(0,188,212,0.05);border:1px solid rgba(0,188,212,0.15);border-radius:6px;padding:12px 14px;margin-top:4px}
+.mob-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--mob-text);text-transform:uppercase;margin-bottom:4px}
 .mob-text{font-size:12px;color:var(--muted)}
 .tmr-card{padding:12px 16px;opacity:0.65}
 .tmr-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
@@ -91,19 +96,19 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .nch-text{font-size:12px;color:var(--muted);line-height:1.45}
 .nch-link{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:0.5px;margin-top:3px}
 
-/* ── FEEDBACK ── */
+/* FEEDBACK */
 .feedback-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:10px}
 .feedback-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
 .feedback-stars{display:flex;gap:8px;margin-bottom:12px}
 .star-btn{width:42px;height:42px;border:1px solid var(--border);background:var(--bg);border-radius:6px;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.12s,background 0.12s,border-color 0.12s}
-.star-btn.active{background:rgba(212,245,66,0.15);border-color:var(--accent);transform:scale(1.08)}
+.star-btn.active{background:rgba(76,175,80,0.15);border-color:var(--run-text);transform:scale(1.08)}
 .star-btn:active{transform:scale(0.94)}
 .feedback-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;resize:none;height:72px;margin-bottom:10px;outline:none;transition:border-color 0.15s}
 .feedback-textarea:focus{border-color:var(--accent)}
 .feedback-textarea::placeholder{color:var(--faint)}
-.prev-feedback{background:rgba(212,245,66,0.04);border:1px solid rgba(212,245,66,0.14);border-radius:6px;padding:10px 14px;margin-bottom:10px}
+.prev-feedback{background:rgba(76,175,80,0.05);border:1px solid rgba(76,175,80,0.2);border-radius:6px;padding:10px 14px;margin-bottom:10px}
 .prev-feedback-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.prev-feedback-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);opacity:0.7}
+.prev-feedback-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--run-text);opacity:0.8}
 .prev-feedback-text{font-size:12px;color:var(--muted);line-height:1.5}
 .edit-link{background:none;border:none;color:var(--accent);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
 .btn-primary{width:100%;background:var(--accent);color:#000;border:none;border-radius:6px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;cursor:pointer;transition:background 0.12s,transform 0.12s}
@@ -113,7 +118,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .btn-secondary{width:100%;margin-top:8px;background:none;border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:border-color 0.12s,color 0.12s}
 .btn-secondary:hover{border-color:var(--muted);color:var(--text)}
 
-/* ── WEEK ── */
+/* WEEK */
 .week-stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
 .week-stat{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 10px;text-align:center}
 .week-stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1}
@@ -123,7 +128,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .progress-bar-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase}
 .progress-bar-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
 .progress-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
-.progress-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width 0.5s ease}
+.progress-bar-fill{height:100%;background:var(--run-text);border-radius:3px;transition:width 0.5s ease}
 .progress-bar-footer{display:flex;justify-content:space-between;margin-top:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--faint)}
 .day-tiles{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
 .day-tile{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 4px;text-align:center}
@@ -134,7 +139,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .day-tile-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text);line-height:1.1}
 .day-tile.is-today .day-tile-num{color:var(--accent)}
 .day-tile-dot{width:5px;height:5px;border-radius:50%;background:transparent;margin:4px auto 0}
-.day-tile-check{font-size:8px;color:var(--accent);margin-top:2px;height:12px}
+.day-tile-check{font-size:8px;color:var(--run-text);margin-top:2px;height:12px}
 .day-tile-km{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:1px}
 .section-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
 .upcoming-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.12s,background 0.12s}
@@ -148,25 +153,18 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .upcoming-metric{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-top:2px}
 .upcoming-emoji{font-size:20px;flex-shrink:0}
 
-/* ── TRAINING (plan) ── */
+/* TRAINING */
 .phase-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
 .phase-tab{padding:6px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:color 0.12s,border-color 0.12s,background 0.12s}
 .phase-tab:hover{color:var(--accent);border-color:var(--accent)}
 .phase-tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
-.phase-banner{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 6px 6px 0;padding:12px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:center}
-.phase-num{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;color:var(--accent);opacity:0.18}
-.phase-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.5px}
-.phase-meta{font-size:11px;color:var(--muted);margin-top:2px}
-/* Dynamic fase label from sheet */
-.fase-label-row{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1px;text-transform:uppercase;padding:10px 14px 4px;opacity:0.7}
 .plan-table{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
-/* Compact plan rows — detail hidden, revealed on click */
 .plan-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s;position:relative}
 .plan-row:hover{background:rgba(255,255,255,0.02)}
 .plan-row:last-child{border-bottom:none}
 .plan-row.is-today{background:rgba(212,245,66,0.04)}
 .plan-row.is-past .plan-row-date,.plan-row.is-past .plan-row-title,.plan-row.is-past .plan-row-km{opacity:0.4}
-.plan-row.is-work{background:rgba(255,180,0,0.025)}
+.plan-row.is-work{background:rgba(255,193,7,0.025)}
 .plan-row-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);flex-shrink:0;width:36px;line-height:1.4}
 .plan-row-date strong{display:block;color:var(--muted);font-size:10px}
 .plan-row.is-today .plan-row-date strong{color:var(--accent)}
@@ -174,18 +172,19 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .plan-row-body{flex:1;min-width:0}
 .plan-row-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .plan-row-km{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);flex-shrink:0}
-.plan-row-feedback{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;opacity:0.7}
-/* Expanded detail */
-.plan-row-detail{display:none;padding:0 14px 10px 14px;font-size:11px;color:var(--muted);line-height:1.5}
+.plan-row-feedback{width:6px;height:6px;border-radius:50%;background:var(--run-text);flex-shrink:0;opacity:0.7}
+.plan-row-detail{display:none;padding:0 14px 12px 14px;font-size:11px;color:var(--muted);line-height:1.5;border-top:1px solid rgba(255,255,255,0.04)}
 .plan-row-detail.open{display:block}
-.plan-row-detail .badge{margin-bottom:6px}
-.plan-feedback-text{font-family:'DM Mono',monospace;font-size:9px;background:rgba(212,245,66,0.08);color:var(--accent);padding:2px 6px;border-radius:2px;margin-top:6px;display:inline-block}
-
+.plan-feedback-text{font-family:'DM Mono',monospace;font-size:9px;background:rgba(76,175,80,0.1);color:var(--run-text);padding:2px 6px;border-radius:2px;margin-top:6px;display:inline-block}
+.plan-edit-field{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:7px 10px;outline:none;margin-top:4px;transition:border-color 0.15s}
+.plan-edit-field:focus{border-color:var(--accent)}
 .plan-loading{text-align:center;padding:40px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px}
 .plan-loading::after{content:'';display:block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:16px auto 0;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.empty-week-row{padding:10px 14px;color:var(--faint);font-size:12px;font-style:italic;border-bottom:1px solid rgba(255,255,255,0.04)}
+.empty-week-row:last-child{border-bottom:none}
 
-/* ── CALENDAR ── */
+/* CALENDAR */
 .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 2px}
 .cal-nav-btn{background:none;border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:border-color 0.12s,color 0.12s;flex-shrink:0}
 .cal-nav-btn:hover{border-color:var(--accent);color:var(--accent)}
@@ -202,14 +201,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .cal-cell.selected{background:rgba(212,245,66,0.22);color:var(--accent)}
 .cal-cell.has-race::after{content:'';width:5px;height:5px;border-radius:50%;background:var(--race-text);position:absolute;bottom:2px}
 .cal-cell.has-race.main-goal::after{background:var(--accent)}
-.cal-cell.show-add-icon{background:rgba(212,245,66,0.08)}
-/* Race list section */
-.cal-races-section{margin-top:4px}
 .cal-race-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.12s}
 .cal-race-row:hover{border-color:rgba(212,245,66,0.28)}
 .cal-race-main{border-left:2px solid var(--accent)}
 
-/* ── STATS ── */
+/* STATS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px}
 .stat-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
@@ -223,11 +219,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .fh-text{font-size:11px;color:var(--muted);line-height:1.45}
 .fh-km{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);flex-shrink:0}
 
-/* ── SETTINGS ── */
-.settings-group{margin-bottom:24px}
+/* SETTINGS */
+.settings-group{margin-bottom:20px}
 .settings-group-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:8px;padding-left:2px}
-.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:2px}
-.settings-section+.settings-section{border-top-left-radius:0;border-top-right-radius:0;margin-top:1px}
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:8px}
+.settings-divider{height:1px;background:var(--border);margin:12px 0}
 .settings-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 .settings-field{margin-bottom:12px}
 .settings-field:last-child{margin-bottom:0}
@@ -237,18 +233,29 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .settings-hint{font-size:11px;color:var(--faint);margin-top:4px;line-height:1.45}
 .btn-save{background:var(--accent);color:#000;border:none;border-radius:6px;padding:10px 20px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;font-weight:700;cursor:pointer;transition:background 0.12s}
 .btn-save:hover{background:#c8ec30}
-.btn-save:active{opacity:0.85}
 .connection-status{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:10px}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--faint)}
-.status-dot.ok{background:var(--accent)}
+.status-dot.ok{background:var(--run-text)}
 .status-dot.err{background:var(--race-text)}
 .pr-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
 .pr-dist-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:72px;flex-shrink:0}
 .lang-toggle-row{display:flex;gap:8px}
 .lang-btn{flex:1;padding:9px 12px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;border-radius:6px;cursor:pointer;transition:all 0.12s;text-align:center}
 .lang-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(212,245,66,0.06)}
+/* Login UI */
+.account-row{display:flex;align-items:center;gap:10px}
+.account-avatar{width:36px;height:36px;border-radius:50%;background:rgba(212,245,66,0.15);border:1px solid rgba(212,245,66,0.3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.account-info{flex:1;min-width:0}
+.account-email{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.account-status{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);margin-top:1px}
+.account-logout{background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;flex-shrink:0;transition:border-color 0.12s,color 0.12s}
+.account-logout:hover{border-color:var(--race-text);color:var(--race-text)}
+.login-form{display:flex;flex-direction:column;gap:8px}
+.telegram-status{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)}
+.tg-dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
+.tg-dot.linked{background:var(--run-text)}
 
-/* ── BOTTOM NAV ── */
+/* BOTTOM NAV */
 .bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(13,13,13,0.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sb);z-index:100}
 .bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;cursor:pointer;background:none;border:none;color:var(--faint);transition:color 0.15s}
 .bn-item:hover{color:var(--muted)}
@@ -256,7 +263,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .bn-icon{font-size:20px;line-height:1}
 .bn-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.5px;text-transform:uppercase}
 
-/* ── LOADING ── */
+/* LOADING */
 .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 0.3s}
 .loading-overlay.hidden{opacity:0;pointer-events:none}
 .loading-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;color:var(--text);margin-bottom:6px}
@@ -266,7 +273,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .loading-bar-fill{height:100%;background:var(--accent);border-radius:1px;animation:loadbar 1.8s ease-in-out infinite}
 @keyframes loadbar{0%{width:0;transform:translateX(0)}50%{width:80px}100%{width:0;transform:translateX(120px)}}
 
-/* ── MODAL ── */
+/* MODAL */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
 .modal-backdrop.open{opacity:1;pointer-events:all}
 .modal-sheet{background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:480px;max-height:88dvh;overflow-y:auto;padding:20px 18px calc(var(--sb) + 20px);transform:translateY(100%);transition:transform 0.28s cubic-bezier(0.34,1.12,0.64,1)}
@@ -275,23 +282,21 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.5px;margin-bottom:14px}
 .modal-close{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
 
-/* ── ONBOARDING ── */
-.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn 0.2s ease}
-.onboarding-sheet{background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:480px;max-height:90dvh;overflow-y:auto;padding:24px 20px calc(var(--sb) + 20px);animation:slideUp 0.28s cubic-bezier(0.34,1.12,0.64,1)}
+/* ONBOARDING - dimmed overlay, licht wegklikbaar */
+.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn 0.2s ease}
+.onboarding-sheet{background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:480px;max-height:85dvh;overflow-y:auto;padding:20px 20px calc(var(--sb) + 20px);animation:slideUp 0.28s cubic-bezier(0.34,1.12,0.64,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .ob-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
-.ob-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px}
+.ob-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px}
 .ob-logo span{color:var(--accent)}
 .ob-skip{background:none;border:none;color:var(--faint);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.5px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0;transition:color 0.12s}
 .ob-skip:hover{color:var(--muted)}
-.ob-title{font-size:18px;font-weight:600;margin-bottom:16px;line-height:1.3}
+.ob-title{font-size:17px;font-weight:600;margin-bottom:16px;line-height:1.3}
 .ob-step{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
 
-/* ── TOAST ── */
+/* TOAST */
 .toast{position:fixed;bottom:calc(var(--sb) + 72px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#000;font-family:'DM Mono',monospace;font-size:11px;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity 0.22s,transform 0.22s;pointer-events:none;z-index:400;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* ── MISC ── */
 .no-data{text-align:center;padding:32px;color:var(--faint);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px}
 
 @media(min-width:480px){.bottom-nav{left:0;right:0;transform:none}}
@@ -304,10 +309,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   <div class="loading-sub" id="loadingSub">Laden…</div>
   <div class="loading-bar"><div class="loading-bar-fill"></div></div>
 </div>
-
 <div class="toast" id="toast"></div>
 
-<!-- DAY DETAIL MODAL -->
+<!-- DAY MODAL -->
 <div class="modal-backdrop" id="dayModal" onclick="closeDayModal(event)">
   <div class="modal-sheet"><div class="modal-handle"></div>
     <button class="modal-close" onclick="closeDayModal()">×</button>
@@ -315,7 +319,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<!-- RACE ADD/EDIT MODAL -->
+<!-- RACE MODAL -->
 <div class="modal-backdrop" id="raceModal" onclick="closeRaceModal(event)">
   <div class="modal-sheet"><div class="modal-handle"></div>
     <button class="modal-close" onclick="closeRaceModal()">×</button>
@@ -323,9 +327,9 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<!-- ONBOARDING -->
-<div class="onboarding-overlay" id="onboarding" style="display:none">
-  <div class="onboarding-sheet">
+<!-- ONBOARDING — dimmed, tik buiten sheet om te sluiten -->
+<div class="onboarding-overlay" id="onboarding" style="display:none" onclick="onboardingOverlayClick(event)">
+  <div class="onboarding-sheet" id="onboardingSheet">
     <div class="ob-header">
       <div class="ob-logo">RUNNING<span>X</span></div>
       <button class="ob-skip" onclick="onboardingFinish()">Overslaan</button>
@@ -333,10 +337,6 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div id="onboardingStep1">
       <div class="ob-step">Stap 1 van 2</div>
       <div class="ob-title">Welkom bij RunningX 👋<br>Wat is je doel?</div>
-      <div class="settings-field">
-        <label class="settings-label" data-i18n="goal_name"></label>
-        <input type="text" class="settings-input" id="obName" placeholder="Bijv. Luuk">
-      </div>
       <div class="settings-field">
         <label class="settings-label" data-i18n="goal_race"></label>
         <input type="text" class="settings-input" id="obRace" placeholder="Bijv. Big10 Rotterdam">
@@ -350,8 +350,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
         <select class="settings-input" id="obDist">
           <option value="">—</option>
           <option value="5km">5 km</option><option value="10km" selected>10 km</option>
-          <option value="10mile">10 mile</option><option value="HM">Halve marathon</option>
-          <option value="M">Marathon</option><option value="other">Vrij invoer</option>
+          <option value="10mile">10 mile</option><option value="HM" data-i18n-opt="hm"></option>
+          <option value="M" data-i18n-opt="marathon"></option><option value="other" data-i18n-opt="other_dist"></option>
         </select>
       </div>
       <div class="settings-field">
@@ -362,14 +362,14 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     </div>
     <div id="onboardingStep2" style="display:none">
       <div class="ob-step">Stap 2 van 2</div>
-      <div class="ob-title">Persoonlijke records</div>
+      <div class="ob-title" data-i18n="pr_title"></div>
       <div class="settings-field">
         <label class="settings-label" data-i18n="pr_add"></label>
         <select class="settings-input" id="obPrDist" onchange="addObPrField()">
           <option value="">—</option>
           <option value="5km">5 km</option><option value="10km">10 km</option>
-          <option value="10mile">10 mile</option><option value="HM">Halve marathon</option>
-          <option value="M">Marathon</option>
+          <option value="10mile">10 mile</option><option value="HM" data-i18n-opt="hm"></option>
+          <option value="M" data-i18n-opt="marathon"></option>
         </select>
       </div>
       <div id="obPrFields"></div>
@@ -388,24 +388,37 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <div class="topbar-races" id="topbarRaces"></div>
     <button class="topbar-gear" onclick="switchTab('settings')" title="Instellingen">⚙</button>
   </div>
+  <!-- Update banner (hidden by default) -->
+  <div class="update-banner" id="updateBanner" style="display:none" onclick="applyUpdate()">
+    <span id="updateBannerText">🔄 Update beschikbaar</span>
+    <button onclick="applyUpdate();event.stopPropagation()">Nu updaten</button>
+  </div>
 
   <div class="scroll-area" id="scrollArea">
-    <div class="view active" id="view-today"><div id="todayContent"><div class="no-data">…</div></div></div>
-    <div class="view" id="view-week"><div id="weekContent"><div class="no-data">…</div></div></div>
+    <div class="view active" id="view-today"><div id="todayContent"></div></div>
+    <div class="view" id="view-week"><div id="weekContent"></div></div>
     <div class="view" id="view-plan">
       <div class="phase-tabs" id="phaseTabs"></div>
-      <div id="planContent"><div class="plan-loading">…</div></div>
+      <div id="planContent"></div>
     </div>
     <div class="view" id="view-calendar"><div id="calContent"></div></div>
-    <div class="view" id="view-stats"><div id="statsContent"><div class="no-data">…</div></div></div>
+    <div class="view" id="view-stats"><div id="statsContent"></div></div>
     <div class="view" id="view-settings">
+
+      <!-- ACCOUNT -->
+      <div class="settings-group">
+        <div class="settings-group-title" data-i18n="sg_account"></div>
+        <div class="settings-section" id="accountSection">
+          <!-- filled by renderAccountSection() -->
+        </div>
+      </div>
 
       <!-- PROFIEL -->
       <div class="settings-group">
         <div class="settings-group-title" data-i18n="sg_profile"></div>
         <div class="settings-section">
           <div class="settings-field">
-            <label class="settings-label" data-i18n="goal_name"></label>
+            <label class="settings-label" data-i18n="your_name"></label>
             <input type="text" class="settings-input" id="settingsName" oninput="saveSettingsName()">
           </div>
         </div>
@@ -437,11 +450,17 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div class="settings-group">
         <div class="settings-group-title" data-i18n="sg_notif"></div>
         <div class="settings-section">
+          <div class="settings-title" data-i18n="notif_telegram_title"></div>
           <div class="settings-field">
             <label class="settings-label" data-i18n="notif_telegram"></label>
             <input type="text" class="settings-input" id="telegramUser" placeholder="@gebruikersnaam" oninput="saveTelegram()">
             <div class="settings-hint" data-i18n="notif_hint"></div>
           </div>
+          <div class="telegram-status" id="telegramStatus">
+            <div class="tg-dot" id="tgDot"></div>
+            <span id="tgStatusText" data-i18n="tg_not_linked"></span>
+          </div>
+          <button class="btn-save" style="margin-top:10px" onclick="verifyTelegram()" id="tgVerifyBtn" data-i18n="tg_verify"></button>
         </div>
       </div>
 
@@ -453,6 +472,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
           <div class="settings-field">
             <div class="settings-hint" data-i18n="schema_hint"></div>
             <input type="url" class="settings-input" id="scriptUrl" placeholder="https://script.google.com/macros/s/…/exec" style="margin-top:8px">
+          </div>
+          <div class="settings-field" style="display:none" id="sheetNameField">
+            <label class="settings-label" data-i18n="sheet_name_label"></label>
+            <input type="text" class="settings-input" id="sheetNameInput" placeholder="Sheet1 / Blad1" oninput="saveSheetName()">
+            <div class="settings-hint" data-i18n="sheet_name_hint"></div>
           </div>
           <button class="btn-save" onclick="saveSettings()" data-i18n="api_save"></button>
           <div class="connection-status">
@@ -466,11 +490,11 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div class="settings-group">
         <div class="settings-group-title" data-i18n="sg_app"></div>
         <div class="settings-section">
-          <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.3.0<br><span style="color:var(--accent)">🏃</span></div>
+          <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.4.0<br><span style="color:var(--accent)">🏃</span></div>
         </div>
       </div>
 
-    </div><!-- /view-settings -->
+    </div>
   </div>
 
   <div class="bottom-nav" id="bottomNav">
@@ -483,15 +507,19 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 </div>
 
 <script>
-// ── CONSTANTS ──────────────────────────────────────────────────────────────
-const TYPE_MAP=[
-  {keys:['interval','tempo','duur','run'],bg:'var(--run-bg)',text:'var(--run-text)',i18n:'type_run'},
-  {keys:['kracht','strength'],            bg:'var(--str-bg)',text:'var(--str-text)',i18n:'type_str'},
-  {keys:['mob'],                          bg:'var(--mob-bg)',text:'var(--mob-text)',i18n:'type_mob'},
-  {keys:['race'],                         bg:'var(--race-bg)',text:'var(--race-text)',i18n:'type_race'},
-  {keys:['colorado','work'],              bg:'var(--work-bg)',text:'var(--work-text)',i18n:'type_work'},
-];
-const TYPE_REST={bg:'var(--rest-bg)',text:'var(--rest-text)',i18n:'type_rest'};
+// ── CONSTANTS ───────────────────────────────────────────────────────────────
+// C24: standardised type keywords
+const TYPES={
+  run:    {bg:'var(--run-bg)',    text:'var(--run-text)',    i18n:'type_run'},
+  werk:   {bg:'var(--work-bg)',   text:'var(--work-text)',   i18n:'type_werk'},
+  kracht: {bg:'var(--str-bg)',    text:'var(--str-text)',    i18n:'type_kracht'},
+  mobiliteit:{bg:'var(--mob-bg)',text:'var(--mob-text)',    i18n:'type_mob'},
+  rust:   {bg:'var(--rest-bg)',   text:'var(--rest-text)',   i18n:'type_rust'},
+  race:   {bg:'var(--race-bg)',   text:'var(--race-text)',   i18n:'type_race'},
+  herstel:{bg:'var(--herstel-bg)',text:'var(--herstel-text)',i18n:'type_herstel'},
+};
+const TYPE_FALLBACK=TYPES.rust;
+
 const PR_ORDER=['800m','1500m','1mile','5km','10km','10mile','HM','M'];
 const DAYS_NL=['Zo','Ma','Di','Wo','Do','Vr','Za'];
 const DAYS_EN=['Su','Mo','Tu','We','Th','Fr','Sa'];
@@ -500,99 +528,110 @@ const MONTHS_FULL_EN=['January','February','March','April','May','June','July','
 const MONTHS_NL=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
 const MONTHS_EN=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
-const RACE_DIST_OPTIONS=['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra','Vrije tekst'];
-const RACE_TYPE_OPTIONS=['Weg','Baan','Trail','Ultra','Virtueel','Vrije tekst'];
-
-// Race emoji lookup
-function raceEmoji(race){
-  const d=(race.dist||'').toLowerCase(),tp=(race.raceType||'').toLowerCase();
-  if(tp.includes('trail')||tp.includes('ultra'))return'🏔';
-  if(tp.includes('baan'))return'🏟';
-  if(d.includes('marathon'))return'🏅';
-  if(d.includes('halve')||d==='hm')return'🥈';
-  if(d.includes('5km')||d==='5km')return'⚡';
-  if(d.includes('10km')||d==='10km')return'🎯';
-  return'🏁';
-}
-
-// ── I18N ────────────────────────────────────────────────────────────────────
+// ── I18N ─────────────────────────────────────────────────────────────────────
 const STRINGS={
   nl:{
     today:'Vandaag',week:'Week',plan:'Training',calendar:'Kalender',stats:'Stats',settings:'Instellingen',
-    pr_title:'Persoonlijke records',pr_add:'Afstand toevoegen',
+    sg_account:'Account',sg_profile:'Profiel',sg_notif:'Notificaties',sg_connect:'Koppeling',sg_app:'App',
+    your_name:'Jouw naam',
+    pr_title:'Persoonlijke records',pr_add:'Afstand toevoegen',pr_none:'Nog geen records toegevoegd.',
     lang_title:'Taal',
-    notif_telegram:'Telegram gebruikersnaam',notif_hint:'Koppeling met Telegram bot (binnenkort beschikbaar).',
-    schema_title:'Koppel je trainingsschema',schema_hint:'Plak hier de URL van je gepubliceerde Google Apps Script Web App om je schema te synchroniseren.',
+    notif_telegram_title:'Telegram',notif_telegram:'Gebruikersnaam',notif_hint:'Koppel je Telegram-account om dagelijkse schema\'s, weekoverzichten en feedback-verzoeken te ontvangen.',
+    tg_not_linked:'Niet gekoppeld',tg_linked:'Gekoppeld',tg_verify:'Koppeling starten',tg_verifying:'Verificatie starten…',tg_verify_hint:'Stuur /start naar @RunningXBot in Telegram om de koppeling te bevestigen.',
+    schema_title:'Koppel je trainingsschema',schema_hint:'Plak de URL van je gepubliceerde Google Apps Script Web App.',
+    sheet_name_label:'Tabblad naam (optioneel)',sheet_name_hint:'Laat leeg om het eerste tabblad automatisch te gebruiken.',
     api_save:'Opslaan & verbinden',not_connected:'Niet verbonden',
+    connected:'Verbonden ✓',conn_err:'Fout',
     enter_url:'Voer een URL in',connecting:'Verbinding testen…',
-    goal_lbl:'Doel',pr_lbl:'PR',goal_name:'Naam',goal_dist:'Afstand',goal_time:'Doeltijd',goal_race:'Race naam',goal_date:'Racedatum',
-    rest_day:'Rustdag',rest_msg:'Vandaag rust je. Morgen ren je.',
-    mob_reminder:'Dagelijkse routine',mob_text:'💪 Kuit mobiliteit · 🦵 Heup mobiliteit · Elke dag!',
-    tomorrow:'Morgen',setup_title:'Koppel je hardloopschema',setup_body:'Ga naar Instellingen → Koppeling om je schema toe te voegen.',
-    feedback_q:'Hoe ging de training?',feedback_save:'Feedback opslaan',notes_q:'Notities',notes_save:'Notitie opslaan',
-    feedback_logged:'✓ Feedback gelogd',feedback_edit:'Aanpassen',feedback_update:'Bijwerken',feedback_cancel:'Annuleren',
+    goal_dist:'Afstand',goal_time:'Doeltijd',goal_race:'Race naam',goal_date:'Racedatum',
+    rest_day:'Rustdag',rest_msg:'Vandaag herstel je. Morgen ga je er weer voor.',
+    mob_reminder:'Mobiliteit',mob_text:'Dagelijkse routine',
+    tomorrow:'Morgen',setup_title:'Koppel je trainingsschema',setup_body:'Ga naar Instellingen → Koppeling.',
+    no_schema:'Koppel je trainingsschema',
+    feedback_q:'Hoe ging het?',feedback_save:'Feedback opslaan',notes_q:'Notities',notes_save:'Opslaan',
+    feedback_logged:'✓ Gelogd',feedback_edit:'Aanpassen',feedback_update:'Bijwerken',feedback_cancel:'Annuleren',
     select_score:'Selecteer eerst een score',
-    week_planned:'km gepland',week_sessions:'trainingen',week_work:'colorado',
+    week_km:'km gepland',week_sessions:'sessies',week_werk:'werkdagen',
     week_progress:'Weekvoortgang',week_done:'gedaan',week_feedback:'feedback',week_todo:'Nog te doen',
-    type_run:'Hardlopen',type_str:'Kracht',type_mob:'Mobiliteit',type_race:'Race',type_work:'Colorado',type_rest:'Rust',
+    type_run:'Hardlopen',type_kracht:'Kracht',type_mob:'Mobiliteit',type_race:'Race',type_werk:'Werk',type_rust:'Rust',type_herstel:'Herstel',
     days_ago:'geweest',days_today:'Vandaag!',days_label:'dagen',weeks_label:'weken',months_label:'maanden',
-    hm:'Halve marathon',marathon:'Marathon',
-    pr_none:'Nog geen records toegevoegd.',
+    hm:'Halve marathon',marathon:'Marathon',other_dist:'Vrij invoer',
     stats_total:'Totaal km',stats_done:'km in plan',stats_days:'Dagen tot race',
-    stats_runs:'Runs gelogd',stats_sessions:'trainingen gedaan',stats_week:'Deze week',stats_week_sub:'km tot nu toe',
-    stats_feel:'Gem. gevoel',stats_feedback:'Feedback',stats_fb_sub:'sessies gelogd',stats_recent:'Recente feedback',
-    no_data:'Geen data',no_schema:'Koppel je hardloopschema',
+    stats_runs:'Runs gelogd',stats_sessions:'sessies gedaan',stats_week:'Deze week',stats_week_sub:'km tot nu toe',
+    stats_feel:'Gem. gevoel',stats_feedback:'Feedback',stats_fb_sub:'sessies',stats_recent:'Recente feedback',
+    no_data:'Geen data',
     race_add:'Voeg race toe +',race_name:'Race naam',race_date:'Datum',race_dist:'Afstand',race_type:'Type race',race_main:'Hoofddoel',race_save:'Race opslaan',race_delete:'Verwijderen',race_edit:'Bewerken',
-    sg_profile:'Profiel',sg_notif:'Notificaties',sg_connect:'Koppeling',sg_app:'App',
-    appinfo_title:'App info',
+    race_saved:'✓ Race opgeslagen',race_deleted:'Race verwijderd',race_required:'Naam en datum zijn verplicht',
+    main_goal:'Hoofddoel',
     cal_add_race:'Voeg race toe +',races_this_month:'Races deze maand',no_races_month:'Geen races deze maand.',
+    saved:'✓ Opgeslagen',
+    update_available:'🔄 Update beschikbaar',update_apply:'Nu updaten',
+    account_title:'Inloggen',account_hint:'Log in om je gegevens te synchroniseren (binnenkort beschikbaar).',
+    email_placeholder:'naam@voorbeeld.nl',login_btn:'Inloggen',logout_btn:'Uitloggen',
+    logged_in_as:'Ingelogd als',not_logged_in:'Niet ingelogd',
+    edit_day:'Dag bewerken',field_titel:'Titel',field_type:'Type',field_km:'Km',field_detail:'Detail',field_emoji:'Emoji',save_changes:'Wijzigingen opslaan',
+    pr_placeholder:'bijv. 37:56',
   },
   en:{
     today:'Today',week:'Week',plan:'Training',calendar:'Calendar',stats:'Stats',settings:'Settings',
-    pr_title:'Personal records',pr_add:'Add distance',
+    sg_account:'Account',sg_profile:'Profile',sg_notif:'Notifications',sg_connect:'Connection',sg_app:'App',
+    your_name:'Your name',
+    pr_title:'Personal records',pr_add:'Add distance',pr_none:'No records added yet.',
     lang_title:'Language',
-    notif_telegram:'Telegram username',notif_hint:'Telegram bot connection (coming soon).',
-    schema_title:'Connect your training schedule',schema_hint:'Paste the URL of your published Google Apps Script Web App to sync your schedule.',
+    notif_telegram_title:'Telegram',notif_telegram:'Username',notif_hint:'Connect your Telegram account to receive daily schedules, weekly overviews and feedback reminders.',
+    tg_not_linked:'Not linked',tg_linked:'Linked',tg_verify:'Start linking',tg_verifying:'Starting verification…',tg_verify_hint:'Send /start to @RunningXBot in Telegram to confirm the link.',
+    schema_title:'Connect your training schedule',schema_hint:'Paste the URL of your published Google Apps Script Web App.',
+    sheet_name_label:'Sheet tab name (optional)',sheet_name_hint:'Leave empty to auto-detect the first tab.',
     api_save:'Save & connect',not_connected:'Not connected',
+    connected:'Connected ✓',conn_err:'Error',
     enter_url:'Enter a URL',connecting:'Testing connection…',
-    goal_lbl:'Goal',pr_lbl:'PR',goal_name:'Name',goal_dist:'Distance',goal_time:'Target time',goal_race:'Race name',goal_date:'Race date',
-    rest_day:'Rest day',rest_msg:'Today you rest. Tomorrow you run.',
-    mob_reminder:'Daily routine',mob_text:'💪 Calf mobility · 🦵 Hip mobility · Every day!',
-    tomorrow:'Tomorrow',setup_title:'Connect your training schedule',setup_body:'Go to Settings → Connection to add your schedule.',
-    feedback_q:'How did the session go?',feedback_save:'Save feedback',notes_q:'Notes',notes_save:'Save note',
-    feedback_logged:'✓ Feedback logged',feedback_edit:'Edit',feedback_update:'Update',feedback_cancel:'Cancel',
+    goal_dist:'Distance',goal_time:'Target time',goal_race:'Race name',goal_date:'Race date',
+    rest_day:'Rest day',rest_msg:'Today you recover. Tomorrow you push.',
+    mob_reminder:'Mobility',mob_text:'Daily routine',
+    tomorrow:'Tomorrow',setup_title:'Connect your training schedule',setup_body:'Go to Settings → Connection.',
+    no_schema:'Connect your training schedule',
+    feedback_q:'How did it go?',feedback_save:'Save feedback',notes_q:'Notes',notes_save:'Save',
+    feedback_logged:'✓ Logged',feedback_edit:'Edit',feedback_update:'Update',feedback_cancel:'Cancel',
     select_score:'Select a score first',
-    week_planned:'km planned',week_sessions:'sessions',week_work:'work days',
+    week_km:'km planned',week_sessions:'sessions',week_werk:'work days',
     week_progress:'Week progress',week_done:'done',week_feedback:'feedback',week_todo:'Still to do',
-    type_run:'Running',type_str:'Strength',type_mob:'Mobility',type_race:'Race',type_work:'Work',type_rest:'Rest',
+    type_run:'Running',type_kracht:'Strength',type_mob:'Mobility',type_race:'Race',type_werk:'Work',type_rust:'Rest',type_herstel:'Recovery',
     days_ago:'past',days_today:'Today!',days_label:'days',weeks_label:'weeks',months_label:'months',
-    hm:'Half marathon',marathon:'Marathon',
-    pr_none:'No records added yet.',
+    hm:'Half marathon',marathon:'Marathon',other_dist:'Custom',
     stats_total:'Total km',stats_done:'km in plan',stats_days:'Days to race',
     stats_runs:'Runs logged',stats_sessions:'sessions done',stats_week:'This week',stats_week_sub:'km so far',
-    stats_feel:'Avg feeling',stats_feedback:'Feedback',stats_fb_sub:'sessions logged',stats_recent:'Recent feedback',
-    no_data:'No data',no_schema:'Connect your training schedule',
+    stats_feel:'Avg feeling',stats_feedback:'Feedback',stats_fb_sub:'sessions',stats_recent:'Recent feedback',
+    no_data:'No data',
     race_add:'Add race +',race_name:'Race name',race_date:'Date',race_dist:'Distance',race_type:'Race type',race_main:'Main goal',race_save:'Save race',race_delete:'Delete',race_edit:'Edit',
-    sg_profile:'Profile',sg_notif:'Notifications',sg_connect:'Connection',sg_app:'App',
-    appinfo_title:'App info',
+    race_saved:'✓ Race saved',race_deleted:'Race deleted',race_required:'Name and date are required',
+    main_goal:'Main goal',
     cal_add_race:'Add race +',races_this_month:'Races this month',no_races_month:'No races this month.',
+    saved:'✓ Saved',
+    update_available:'🔄 Update available',update_apply:'Update now',
+    account_title:'Sign in',account_hint:'Sign in to sync your data (coming soon).',
+    email_placeholder:'name@example.com',login_btn:'Sign in',logout_btn:'Sign out',
+    logged_in_as:'Signed in as',not_logged_in:'Not signed in',
+    edit_day:'Edit day',field_titel:'Title',field_type:'Type',field_km:'Km',field_detail:'Detail',field_emoji:'Emoji',save_changes:'Save changes',
+    pr_placeholder:'e.g. 37:56',
   }
 };
 
 // ── STATE ────────────────────────────────────────────────────────────────────
 const state={
-  scriptUrl:localStorage.getItem('scriptUrl')||'',
-  lang:localStorage.getItem('lang')||'nl',
-  data:null,
+  scriptUrl: localStorage.getItem('scriptUrl')||'',
+  sheetName: localStorage.getItem('sheetName')||'',
+  lang:      localStorage.getItem('lang')||'nl',
+  data:      null,
   currentTab:'today',
   selectedRating:0,
   editingFeedback:false,
-  calYear:new Date().getFullYear(),
-  calMonth:new Date().getMonth(),
+  calYear:   new Date().getFullYear(),
+  calMonth:  new Date().getMonth(),
   calSelectedDate:null,
   editingRaceId:null,
-  expandedPlanRow:null,
   _prs:null,_races:null,
+  swReg:null, // service worker registration
+  pendingSW:null, // waiting SW
 };
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
@@ -610,8 +649,8 @@ function fmtDateFull(s){
   const d=parseDate(s),days=state.lang==='en'?DAYS_EN:DAYS_NL,mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
   return `${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]} ${d.getFullYear()}`;
 }
-function getMondayStr(base){
-  const n=base?new Date(base):new Date();n.setHours(0,0,0,0);
+function getMondayStr(){
+  const n=new Date();n.setHours(0,0,0,0);
   const dow=n.getDay();n.setDate(n.getDate()-(dow===0?6:dow-1));
   return n.toISOString().split('T')[0];
 }
@@ -619,13 +658,22 @@ function getWeekDates(){
   const m=parseDate(getMondayStr());
   return Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return d.toISOString().split('T')[0];});
 }
-function typeOf(type){
-  if(!type)return TYPE_REST;
-  const t=type.toLowerCase();
-  return TYPE_MAP.find(m=>m.keys.some(k=>t.includes(k)))??TYPE_REST;
+
+// C24: type resolution — comma-separated, first valid type wins for colour
+function typeOf(typeStr){
+  if(!typeStr)return TYPE_FALLBACK;
+  const parts=typeStr.toLowerCase().split(',').map(s=>s.trim());
+  for(const p of parts){
+    if(TYPES[p])return TYPES[p];
+  }
+  return TYPE_FALLBACK;
 }
-const isWork=t=>['colorado','work'].some(k=>(t||'').toLowerCase().includes(k));
-const isRace=t=>(t||'').toLowerCase().includes('race');
+// C24: check for specific type in comma-separated string
+const hasType=(typeStr,key)=>typeStr?.toLowerCase().split(',').map(s=>s.trim()).includes(key)??false;
+const isWork=t=>hasType(t,'werk');
+const isRace=t=>hasType(t,'race');
+const isRust=t=>hasType(t,'rust');
+const isMob=t=>hasType(t,'mobiliteit');
 
 function countdownDisplay(days){
   if(days<0)return{val:'✓',unit:T('days_ago')};
@@ -635,21 +683,74 @@ function countdownDisplay(days){
   return{val:Math.round(days/30),unit:T('months_label')};
 }
 
+// C25: race emoji - language-agnostic
+function raceEmoji(race){
+  const d=(race.dist||'').toLowerCase(),tp=(race.raceType||'').toLowerCase();
+  if(tp.includes('trail')||tp.includes('ultra'))return'🏔';
+  if(tp.includes('baan')||tp.includes('track'))return'🏟';
+  if(d.includes('marathon')&&!d.includes('half')&&!d.includes('halve'))return'🏅';
+  if(d.includes('halve')||d.includes('half')||d==='hm')return'🥈';
+  if(d==='5km'||d==='5 km')return'⚡';
+  if(d==='10km'||d==='10 km')return'🎯';
+  return'🏁';
+}
+
 // ── LOCALSTORAGE ─────────────────────────────────────────────────────────────
 function loadPRs(){if(!state._prs){try{state._prs=JSON.parse(localStorage.getItem('prs')||'{}')}catch{state._prs={}}}return state._prs;}
 function loadRaces(){if(!state._races){try{state._races=JSON.parse(localStorage.getItem('userRaces')||'[]')}catch{state._races=[]}}return state._races;}
 function persistPRs(p){state._prs=p;localStorage.setItem('prs',JSON.stringify(p));}
 function persistRaces(r){state._races=r;localStorage.setItem('userRaces',JSON.stringify(r));}
 
+// ── SERVICE WORKER ───────────────────────────────────────────────────────────
+function initServiceWorker(){
+  if(!('serviceWorker' in navigator))return;
+  navigator.serviceWorker.register('./sw.js').then(reg=>{
+    state.swReg=reg;
+    // Check for waiting SW immediately
+    if(reg.waiting)onSWWaiting(reg.waiting);
+    reg.addEventListener('updatefound',()=>{
+      const nw=reg.installing;
+      nw.addEventListener('statechange',()=>{
+        if(nw.state==='installed'&&navigator.serviceWorker.controller)
+          onSWWaiting(nw);
+      });
+    });
+  }).catch(()=>{});
+  // Listen for message from SW that it has claimed clients after skipWaiting
+  navigator.serviceWorker.addEventListener('controllerchange',()=>{
+    window.location.reload();
+  });
+}
+
+function onSWWaiting(sw){
+  state.pendingSW=sw;
+  const banner=document.getElementById('updateBanner');
+  if(banner){
+    document.getElementById('updateBannerText').textContent=T('update_available');
+    banner.querySelector('button').textContent=T('update_apply');
+    banner.style.display='flex';
+  }
+}
+
+function applyUpdate(){
+  if(state.pendingSW){
+    state.pendingSW.postMessage({type:'SKIP_WAITING'});
+  }
+}
+
 // ── DATA ─────────────────────────────────────────────────────────────────────
+function buildApiUrl(action){
+  const base=state.scriptUrl+'?action='+action;
+  return state.sheetName?base+'&sheetName='+encodeURIComponent(state.sheetName):base;
+}
+
 async function fetchData(){
   if(!state.scriptUrl){hideLoading();renderActiveView();renderHeader();return;}
   try{
-    const res=await fetch(state.scriptUrl+'?action=getAll');
+    const res=await fetch(buildApiUrl('getAll'));
     if(!res.ok)throw new Error('HTTP '+res.status);
     const json=await res.json();
     if(json.status!=='ok')throw new Error(json.message||'Error');
-    // Support 'fase' column
     state.data=json.rows;
     updateConnectionStatus(true);
   }catch(e){updateConnectionStatus(false,e.message);}
@@ -660,6 +761,7 @@ async function submitFeedback(datum,rating,tekst){
   if(!state.scriptUrl){showToast('❌ '+T('enter_url'));return false;}
   try{
     const params=new URLSearchParams({action:'setFeedback',datum,rating,tekst:tekst||''});
+    if(state.sheetName)params.set('sheetName',state.sheetName);
     const json=await(await fetch(state.scriptUrl+'?'+params)).json();
     if(json.status!=='ok')throw new Error(json.message);
     if(state.data){
@@ -687,24 +789,18 @@ function renderHeader(){
   const races=loadRaces();
   const name=localStorage.getItem('userName')||'';
   document.getElementById('topbarName').textContent=name;
-
   const container=document.getElementById('topbarRaces');
   const visible=races.filter(r=>daysUntil(r.date)>=-1).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
-
   let h='';
   visible.forEach(r=>{
     const d=daysUntil(r.date),cd=countdownDisplay(d);
-    const main=r.mainGoal;
-    const emoji=raceEmoji(r);
-    h+=`<div class="race-chip${main?' main-chip':''}" onclick="switchTab('calendar')">
-      <div class="rc-name">${emoji} ${esc(r.name)}</div>
+    h+=`<div class="race-chip${r.mainGoal?' main-chip':''}" onclick="switchTab('calendar')">
+      <div class="rc-name">${raceEmoji(r)} ${esc(r.name)}</div>
       <div class="rc-cd">${cd.val}</div>
       <div class="rc-label">${cd.unit}</div>
     </div>`;
   });
-  // Always add + chip
-  h+=`<div class="race-chip-add${!visible.length?' race-chip-add':''}" onclick="openRaceModal()" title="${T('race_add')}">+</div>`;
-
+  h+=`<div class="race-chip-add${!visible.length?' ':''}" onclick="openRaceModal()" title="${T('race_add')}">+</div>`;
   container.innerHTML=h;
 }
 
@@ -715,41 +811,28 @@ function renderToday(){
   const days=state.lang==='en'?DAYS_EN:DAYS_NL;
   const mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
   const d=parseDate(t);
-  const dateStr=`${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}`;
 
-  // Determine current fase from data
   let faseLine='';
-  if(state.data){
-    const todayRow=state.data.find(r=>r.datum===t);
-    if(todayRow?.fase)faseLine=`<div class="today-phase-line">${esc(todayRow.fase)}</div>`;
-  }
+  if(state.data){const tr=state.data.find(r=>r.datum===t);if(tr?.fase)faseLine=`<div class="today-phase-line">${esc(tr.fase)}</div>`;}
 
   let h=`<div class="today-header">
-    <div class="today-date-big">${dateStr}</div>
+    <div class="today-date-big">${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}</div>
     ${faseLine}
   </div>`;
 
-  if(!state.scriptUrl||!state.data){
-    h+=`<div class="no-connection-hint" onclick="switchTab('settings')">
-      <div class="nch-icon">📋</div>
-      <div>
-        <div class="nch-text">${T('setup_title')}</div>
-        <div class="nch-link">${T('setup_body')}</div>
-      </div>
-    </div>`;
+  if(!state.data){
+    h+=noSchemaHint();
     h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
     el.innerHTML=h;return;
   }
 
   const row=state.data.find(r=>r.datum===t);
-  if(!row){
+  // C24: show rest card only if type is exactly 'rust' or no row
+  if(!row||isRust(row.type)){
     h+=`<div class="card">
       <div class="rest-card-inner">
         <div class="rest-emoji">😴</div>
-        <div>
-          <div class="rest-title">${T('rest_day')}</div>
-          <div class="rest-sub">${T('rest_msg')}</div>
-        </div>
+        <div><div class="rest-title">${T('rest_day')}</div><div class="rest-sub">${T('rest_msg')}</div></div>
       </div>
     </div>`;
   }else{
@@ -773,26 +856,34 @@ function renderToday(){
   const tmrDate=new Date();tmrDate.setDate(tmrDate.getDate()+1);
   const tmr=state.data.find(r=>r.datum===tmrDate.toISOString().split('T')[0]);
   if(tmr){
-    h+=`<div class="card">
-      <div class="tmr-card">
-        <div class="tmr-label">${T('tomorrow')} →</div>
-        <div class="tmr-row">
-          <div class="tmr-title">${tmr.emoji||''} ${esc(tmr.titel||'')}</div>
-          ${tmr.km?`<div class="tmr-metric">${esc(tmr.km)} km</div>`:''}
-        </div>
+    h+=`<div class="card"><div class="tmr-card">
+      <div class="tmr-label">${T('tomorrow')} →</div>
+      <div class="tmr-row">
+        <div class="tmr-title">${tmr.emoji||''} ${esc(tmr.titel||'')}</div>
+        ${tmr.km?`<div class="tmr-metric">${esc(tmr.km)} km</div>`:''}
       </div>
-    </div>`;
+    </div></div>`;
   }
 
-  h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
+  // C24: mob reminder only when type includes 'mobiliteit'
+  if(!row||isMob(row?.type)){
+    h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
+  }
+
   el.innerHTML=h;
   attachStarListeners();
 }
 
+function noSchemaHint(){
+  return `<div class="no-connection-hint" onclick="switchTab('settings')">
+    <div class="nch-icon">📋</div>
+    <div><div class="nch-text">${T('setup_title')}</div><div class="nch-link">${T('setup_body')}</div></div>
+  </div>`;
+}
+
 // ── FEEDBACK ──────────────────────────────────────────────────────────────────
 function feedbackHtml(datum,existing){
-  const isEdit=!!existing;
-  let rating=0,text='';
+  const isEdit=!!existing;let rating=0,text='';
   if(isEdit){const m=existing.match(/^(\d)/);if(m)rating=parseInt(m[1]);const mt=existing.match(/–\s*(.+)$/);if(mt)text=mt[1];}
   if(isEdit&&!state.editingFeedback){
     return `<div class="prev-feedback">
@@ -817,8 +908,6 @@ function feedbackHtml(datum,existing){
 
 function attachStarListeners(scope){
   const sel=scope?`#${scope} .star-btn`:'.star-btn';
-  if(state.editingFeedback&&state.selectedRating)
-    document.querySelectorAll(sel).forEach(b=>b.classList.toggle('active',parseInt(b.dataset.val)<=state.selectedRating));
   document.querySelectorAll(sel).forEach(btn=>{
     btn.addEventListener('click',()=>{
       state.selectedRating=parseInt(btn.dataset.val);
@@ -840,37 +929,34 @@ async function handleFeedbackSubmit(datum){
 // ── WEEK ──────────────────────────────────────────────────────────────────────
 function renderWeek(){
   const el=document.getElementById('weekContent');
-  if(!state.data){
-    el.innerHTML=`<div class="no-connection-hint" onclick="switchTab('settings')">
-      <div class="nch-icon">📋</div><div><div class="nch-text">${T('no_schema')}</div></div>
-    </div>`;return;
-  }
   const t=todayStr(),dates=getWeekDates();
   const days=state.lang==='en'?DAYS_EN:DAYS_NL;
-  const wd=dates.map(d=>({date:d,row:state.data.find(r=>r.datum===d)??null}));
+  const wd=dates.map(d=>({date:d,row:state.data?.find(r=>r.datum===d)??null}));
+
   const plannedKm=wd.reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
   const doneKm=wd.filter(({date})=>date<=t).reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
-  const trainDays=wd.filter(({row})=>row&&!isWork(row.type)&&!['rust','herstel','rest'].some(k=>(row.type||'').toLowerCase().includes(k))).length;
+  // C24: count by standardised types
+  const trainDays=wd.filter(({row})=>row&&hasType(row.type,'run')).length;
   const workDays=wd.filter(({row})=>row&&isWork(row.type)).length;
   const fbDone=wd.filter(({row})=>row?.feedback).length;
   const pct=plannedKm>0?Math.min(100,Math.round(doneKm/plannedKm*100)):0;
 
   let h=`<div class="week-stat-grid">
-    <div class="week-stat"><div class="week-stat-val" style="color:var(--accent)">${plannedKm.toFixed(0)}</div><div class="week-stat-lbl">${T('week_planned')}</div></div>
+    <div class="week-stat"><div class="week-stat-val" style="color:var(--run-text)">${plannedKm.toFixed(0)}</div><div class="week-stat-lbl">${T('week_km')}</div></div>
     <div class="week-stat"><div class="week-stat-val">${trainDays}</div><div class="week-stat-lbl">${T('week_sessions')}</div></div>
-    <div class="week-stat"><div class="week-stat-val" style="color:var(--work-text)">${workDays}</div><div class="week-stat-lbl">${T('week_work')}</div></div>
+    <div class="week-stat"><div class="week-stat-val" style="color:var(--work-text)">${workDays}</div><div class="week-stat-lbl">${T('week_werk')}</div></div>
   </div>
   <div class="progress-bar-wrap">
     <div class="progress-bar-header"><span class="progress-bar-label">${T('week_progress')}</span><span class="progress-bar-val">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span></div>
     <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-    <div class="progress-bar-footer"><span>${pct}% ${T('week_done')}</span><span style="color:${fbDone?'var(--accent)':'var(--faint)'}">✓ ${fbDone} ${T('week_feedback')}</span></div>
+    <div class="progress-bar-footer"><span>${pct}% ${T('week_done')}</span><span style="color:${fbDone?'var(--run-text)':'var(--faint)'}">✓ ${fbDone} ${T('week_feedback')}</span></div>
   </div>
   <div class="day-tiles">`;
 
   wd.forEach(({date,row})=>{
     const isPast=date<t,isTdy=date===t,d=parseDate(date);
     const ti=row?typeOf(row.type):null;
-    const dot=row?(isWork(row.type)?'var(--work-text)':isRace(row.type)?'var(--race-text)':ti.text):'transparent';
+    const dot=ti?ti.text:'transparent';
     h+=`<div class="day-tile${isTdy?' is-today':''}${isPast&&!isTdy?' is-past':''}">
       <div class="day-tile-day">${days[d.getDay()]}</div>
       <div class="day-tile-num">${d.getDate()}</div>
@@ -881,71 +967,97 @@ function renderWeek(){
   });
   h+='</div>';
 
-  const upcoming=wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
-  if(upcoming.length){
-    h+=`<div class="section-label">${T('week_todo')}</div>`;
-    upcoming.forEach(({date,row})=>{
-      const isTdy=date===t,ti=typeOf(row.type),d=parseDate(date);
-      h+=`<div class="upcoming-row${isTdy?' is-today':''}" onclick="openDayModal('${date}')">
-        <div class="upcoming-date${isTdy?' is-today':''}">
-          <div class="upcoming-date-day">${days[d.getDay()]}</div>
-          <div class="upcoming-date-num">${d.getDate()}</div>
-        </div>
-        <div class="upcoming-body">
-          <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:3px">${T(ti.i18n)}</span>
-          <div class="upcoming-title">${esc(row.titel||'')}</div>
-          ${row.km?`<div class="upcoming-metric">${esc(row.km)} km</div>`:''}
-        </div>
-        <div class="upcoming-emoji">${row.emoji||''}</div>
-      </div>`;
-    });
+  // Upcoming or empty
+  if(!state.data){h+=noSchemaHint();}
+  else{
+    const upcoming=wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
+    if(upcoming.length){
+      h+=`<div class="section-label">${T('week_todo')}</div>`;
+      upcoming.forEach(({date,row})=>{
+        const isTdy=date===t,ti=typeOf(row.type),d=parseDate(date);
+        h+=`<div class="upcoming-row${isTdy?' is-today':''}" onclick="openDayModal('${date}')">
+          <div class="upcoming-date${isTdy?' is-today':''}">
+            <div class="upcoming-date-day">${days[d.getDay()]}</div>
+            <div class="upcoming-date-num">${d.getDate()}</div>
+          </div>
+          <div class="upcoming-body">
+            <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:3px">${T(ti.i18n)}</span>
+            <div class="upcoming-title">${esc(row.titel||'')}</div>
+            ${row.km?`<div class="upcoming-metric">${esc(row.km)} km</div>`:''}
+          </div>
+          <div class="upcoming-emoji">${row.emoji||''}</div>
+        </div>`;
+      });
+    }
   }
   el.innerHTML=h;
 }
 
-// ── PLAN (training tab) ───────────────────────────────────────────────────────
+// ── PLAN ──────────────────────────────────────────────────────────────────────
 function renderPlan(){
   const el=document.getElementById('planContent');
-  if(!state.data){
-    el.innerHTML=`<div class="no-connection-hint" onclick="switchTab('settings')">
-      <div class="nch-icon">📋</div><div><div class="nch-text">${T('no_schema')}</div></div>
-    </div>`;return;
-  }
   const t=todayStr();
 
-  // Build dynamic fase groups from 'fase' column
-  const allRows=state.data.filter(r=>r.datum);
-  if(!allRows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;return;}
+  if(!state.data){
+    // C22: show current week even without schema
+    renderPlanWithoutData(t);
+    return;
+  }
 
-  // Group consecutive rows by fase; fase label only shown when it changes
-  // Phase tabs: extract unique fase values
+  const allRows=state.data.filter(r=>r.datum);
+  if(!allRows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;buildPhaseTabs([]);return;}
+
   const faseValues=[...new Set(allRows.map(r=>r.fase||'').filter(Boolean))];
   const phaseTabs=document.getElementById('phaseTabs');
 
   if(faseValues.length>0){
-    // Dynamic fase tabs
-    phaseTabs.innerHTML=faseValues.map((f,i)=>
-      `<button class="phase-tab${i===0?' active':''}" data-fase="${esc(f)}" onclick="selectFase(this,'${esc(f)}')">${esc(f)}</button>`
-    ).join('');
     const activeFase=phaseTabs.querySelector('.phase-tab.active')?.dataset.fase||faseValues[0];
-    renderPlanRows(allRows.filter(r=>r.fase===activeFase||(!r.fase&&activeFase===faseValues[0])),t);
+    phaseTabs.innerHTML=faseValues.map((f,i)=>
+      `<button class="phase-tab${f===activeFase?' active':''}" data-fase="${esc(f)}" onclick="selectFase(this,'${esc(f)}')">${esc(f)}</button>`
+    ).join('');
+    renderPlanRows(allRows.filter(r=>r.fase===activeFase),t);
   }else{
-    // No fase column — show all rows without tabs
     phaseTabs.innerHTML='';
     renderPlanRows(allRows,t);
   }
 }
 
+function buildPhaseTabs(values){
+  document.getElementById('phaseTabs').innerHTML=values.map((f,i)=>
+    `<button class="phase-tab${i===0?' active':''}" data-fase="${esc(f)}">${esc(f)}</button>`
+  ).join('');
+}
+
+function renderPlanWithoutData(t){
+  // C22: show current week structure, editable, without schema
+  const dates=getWeekDates();
+  const days=state.lang==='en'?DAYS_EN:DAYS_NL;
+  document.getElementById('phaseTabs').innerHTML='';
+  let h=`<div style="margin-bottom:10px">${noSchemaHint()}</div><div class="plan-table">`;
+  dates.forEach(date=>{
+    const isPast=date<t,isTdy=date===t,d=parseDate(date);
+    const rowId='pr-empty-'+date;
+    h+=`<div>
+      <div class="plan-row${isTdy?' is-today':''}${isPast?' is-past':''}" onclick="openDayModal('${date}')">
+        <div class="plan-row-date"><strong>${days[d.getDay()]} ${d.getDate()}</strong>${MONTHS_NL[d.getMonth()]}</div>
+        <div class="plan-row-emoji">·</div>
+        <div class="plan-row-body"><div class="plan-row-title" style="color:var(--faint)">—</div></div>
+        <div class="plan-row-km"></div>
+      </div>
+    </div>`;
+  });
+  h+='</div>';
+  document.getElementById('planContent').innerHTML=h;
+}
+
 function selectFase(btn,fase){
   document.querySelectorAll('#phaseTabs .phase-tab').forEach(b=>b.classList.toggle('active',b===btn));
-  const allRows=state.data||[];
-  renderPlanRows(allRows.filter(r=>(r.fase||'')===(fase||'')),todayStr());
+  renderPlanRows((state.data||[]).filter(r=>(r.fase||'')===(fase||'')),todayStr());
 }
 
 function renderPlanRows(rows,t){
   const el=document.getElementById('planContent');
   if(!rows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;return;}
-
   let h='<div class="plan-table">';
   rows.forEach(row=>{
     const isPast=row.datum<t,isTdy=row.datum===t,work=isWork(row.type),ti=typeOf(row.type);
@@ -955,17 +1067,15 @@ function renderPlanRows(rows,t){
       <div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}" onclick="togglePlanRow('${rowId}','${row.datum}')">
         <div class="plan-row-date"><strong>${parts[0]} ${parts[1]}</strong>${parts[2]}</div>
         <div class="plan-row-emoji">${row.emoji||'·'}</div>
-        <div class="plan-row-body">
-          <div class="plan-row-title">${esc(row.titel||'—')}</div>
-        </div>
+        <div class="plan-row-body"><div class="plan-row-title">${esc(row.titel||'—')}</div></div>
         ${row.km?`<div class="plan-row-km">${esc(row.km)}km</div>`:'<div class="plan-row-km"></div>'}
         ${row.feedback?'<div class="plan-row-feedback"></div>':''}
       </div>
       <div class="plan-row-detail" id="${rowId}">
-        <span class="badge" style="background:${ti.bg};color:${ti.text}">${T(ti.i18n)}</span>
-        ${row.detail?`<div style="margin-top:6px;font-size:11px;color:var(--muted)">${esc(row.detail)}</div>`:''}
+        <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:6px">${T(ti.i18n)}</span>
+        ${row.detail?`<div style="margin-top:4px;color:var(--muted)">${esc(row.detail)}</div>`:''}
         ${row.feedback?`<div class="plan-feedback-text">✓ ${esc(row.feedback)}</div>`:''}
-        <button style="margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer" onclick="openDayModal('${row.datum}');event.stopPropagation()">📝 ${T('feedback_save')}</button>
+        <button style="margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer" onclick="openDayModal('${row.datum}');event.stopPropagation()">📝</button>
       </div>
     </div>`;
   });
@@ -974,16 +1084,14 @@ function renderPlanRows(rows,t){
   requestAnimationFrame(()=>el.querySelector('.is-today')?.scrollIntoView({behavior:'smooth',block:'center'}));
 }
 
-function togglePlanRow(id,datum){
-  const detail=document.getElementById(id);
-  if(!detail)return;
+function togglePlanRow(id){
+  const detail=document.getElementById(id);if(!detail)return;
   const isOpen=detail.classList.contains('open');
-  // Close all others
   document.querySelectorAll('.plan-row-detail.open').forEach(d=>d.classList.remove('open'));
   if(!isOpen)detail.classList.add('open');
 }
 
-// ── DAY MODAL ─────────────────────────────────────────────────────────────────
+// ── DAY MODAL (C22: all fields editable) ─────────────────────────────────────
 function openDayModal(dateStr){
   const row=state.data?.find(r=>r.datum===dateStr);
   const t=todayStr(),isPast=dateStr<=t;
@@ -992,9 +1100,9 @@ function openDayModal(dateStr){
   state.editingFeedback=false;state.selectedRating=0;
 
   let h=`<div class="modal-title">${fmtDateFull(dateStr)}</div>`;
-  if(!row){
-    h+=`<div style="color:var(--muted);font-size:13px;margin-bottom:16px">😴 ${T('rest_day')}</div>`;
-  }else{
+
+  // Training info card
+  if(row){
     const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
     h+=`<div class="card ${border}" style="margin-bottom:14px">
       <div class="tc-top">
@@ -1007,10 +1115,14 @@ function openDayModal(dateStr){
       </div>
       ${row.detail?`<div class="tc-detail">${esc(row.detail)}</div>`:''}
     </div>`;
+  }else{
+    h+=`<div style="color:var(--muted);font-size:13px;margin-bottom:14px">😴 ${T('rest_day')}</div>`;
   }
-  if(row&&!isWork(row.type)){
+
+  // Feedback / notes
+  if(!row||!isWork(row.type)){
     if(isPast){
-      h+=feedbackHtmlModal(dateStr,row.feedback);
+      h+=feedbackHtmlModal(dateStr,row?.feedback);
     }else{
       h+=`<div class="feedback-section">
         <div class="feedback-title">${T('notes_q')}</div>
@@ -1019,14 +1131,42 @@ function openDayModal(dateStr){
       </div>`;
     }
   }
+
+  // C22: Editable fields — available with or without schema
+  h+=`<div class="feedback-section" style="margin-top:4px">
+    <div class="feedback-title">${T('edit_day')}</div>
+    <div style="margin-bottom:8px">
+      <label class="settings-label">${T('field_titel')}</label>
+      <input class="plan-edit-field" id="edit-titel" value="${esc(row?.titel||'')}" placeholder="${T('field_titel')}">
+    </div>
+    <div style="margin-bottom:8px">
+      <label class="settings-label">${T('field_type')}</label>
+      <input class="plan-edit-field" id="edit-type" value="${esc(row?.type||'')}" placeholder="run, kracht, mobiliteit…">
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <div style="flex:1">
+        <label class="settings-label">${T('field_km')}</label>
+        <input class="plan-edit-field" id="edit-km" value="${esc(row?.km||'')}" placeholder="0" type="number" step="0.1">
+      </div>
+      <div style="flex:1">
+        <label class="settings-label">${T('field_emoji')}</label>
+        <input class="plan-edit-field" id="edit-emoji" value="${esc(row?.emoji||'')}" placeholder="🏃">
+      </div>
+    </div>
+    <div style="margin-bottom:8px">
+      <label class="settings-label">${T('field_detail')}</label>
+      <textarea class="plan-edit-field" id="edit-detail" style="height:60px;resize:none">${esc(row?.detail||'')}</textarea>
+    </div>
+    <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
+  </div>`;
+
   content.innerHTML=h;
   attachStarListeners('dayModalContent');
   document.getElementById('dayModal').classList.add('open');
 }
 
 function feedbackHtmlModal(datum,existing){
-  const isEdit=!!existing;
-  let rating=0,text='';
+  const isEdit=!!existing;let rating=0,text='';
   if(isEdit){const m=existing.match(/^(\d)/);if(m)rating=parseInt(m[1]);const mt=existing.match(/–\s*(.+)$/);if(mt)text=mt[1];}
   if(isEdit&&!state.editingFeedback){
     return `<div class="prev-feedback">
@@ -1055,7 +1195,7 @@ async function handleModalFeedback(datum){
   const tekst=document.getElementById('modalFbText')?.value||'';
   btn.disabled=true;btn.textContent='…';
   const ok=await submitFeedback(datum,state.selectedRating,tekst);
-  if(ok){state.editingFeedback=false;state.selectedRating=0;closeDayModal();if(state.currentTab==='today')renderToday();else if(state.currentTab==='plan')renderPlan();}
+  if(ok){state.editingFeedback=false;state.selectedRating=0;closeDayModal();renderActiveView();}
   else{btn.disabled=false;btn.textContent=T('feedback_save');}
 }
 
@@ -1064,11 +1204,39 @@ async function saveModalNote(datum){
   if(!state.scriptUrl){showToast('❌ '+T('enter_url'));return;}
   try{
     const params=new URLSearchParams({action:'setFeedback',datum,rating:0,tekst});
+    if(state.sheetName)params.set('sheetName',state.sheetName);
     const json=await(await fetch(state.scriptUrl+'?'+params)).json();
     if(json.status!=='ok')throw new Error(json.message);
     if(state.data){const row=state.data.find(r=>r.datum===datum);if(row)row.feedback=tekst;}
     showToast('✓ '+T('notes_save'));closeDayModal();
   }catch(e){showToast('❌ '+e.message);}
+}
+
+async function saveDayEdit(datum){
+  const titel=document.getElementById('edit-titel')?.value.trim()||'';
+  const type=document.getElementById('edit-type')?.value.trim()||'';
+  const km=document.getElementById('edit-km')?.value.trim()||'';
+  const emoji=document.getElementById('edit-emoji')?.value.trim()||'';
+  const detail=document.getElementById('edit-detail')?.value.trim()||'';
+
+  // Update local cache immediately
+  if(state.data){
+    let row=state.data.find(r=>r.datum===datum);
+    if(row){Object.assign(row,{titel,type,km,emoji,detail});}
+    else{state.data.push({datum,titel,type,km,emoji,detail,feedback:''});}
+  }
+
+  // If connected, try to persist via API
+  if(state.scriptUrl){
+    try{
+      const params=new URLSearchParams({action:'setDay',datum,titel,type,km,emoji,detail});
+      if(state.sheetName)params.set('sheetName',state.sheetName);
+      await fetch(state.scriptUrl+'?'+params);
+    }catch(e){/* silent — local cache updated */}
+  }
+  showToast(T('saved'));
+  closeDayModal();
+  renderActiveView();
 }
 
 function closeDayModal(e){
@@ -1085,8 +1253,8 @@ function renderCalendar(){
   const mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
   const days=state.lang==='en'?DAYS_EN:DAYS_NL;
   const dowOrder=[1,2,3,4,5,6,0];
-  const dowLabels=dowOrder.map(i=>days[i]);
-  const firstDay=new Date(y,m,1),lastDay=new Date(y,m+1,0);
+  const firstDay=new Date(y,m,1);
+  const lastDay=new Date(y,m+1,0);
   const startPad=(firstDay.getDay()+6)%7;
   const t=todayStr();
   const cells=[];
@@ -1101,37 +1269,23 @@ function renderCalendar(){
     <button class="cal-nav-btn" onclick="calNext()">›</button>
   </div>
   <div class="cal-grid">
-    ${dowLabels.map(d=>`<div class="cal-dow">${d}</div>`).join('')}`;
+    ${dowOrder.map(i=>`<div class="cal-dow">${days[i]}</div>`).join('')}`;
 
   cells.forEach(({date,other})=>{
     const ds=date.toISOString().split('T')[0];
-    const isToday=ds===t;
-    const race=races.find(r=>r.date===ds);
-    const isSel=state.calSelectedDate===ds;
-    const cls=[
-      other?'other-month':'',
-      isToday?'is-today':'',
-      race?'has-race':'',
-      race?.mainGoal?'main-goal':'',
-      isSel&&!race?'show-add-icon':'',
-      isSel?'selected':'',
-    ].filter(Boolean).join(' ');
-    const onclick=other?'':`selectCalDate('${ds}')`;
-    h+=`<div class="cal-cell ${cls}" onclick="${onclick}">
-      ${date.getDate()}
-    </div>`;
+    const isToday=ds===t,race=races.find(r=>r.date===ds),isSel=state.calSelectedDate===ds;
+    const cls=[other?'other-month':'',isToday?'is-today':'',race?'has-race':'',race?.mainGoal?'main-goal':'',isSel?'selected':''].filter(Boolean).join(' ');
+    h+=`<div class="cal-cell ${cls}" onclick="${other?'':` selectCalDate('${ds}')`}">${date.getDate()}</div>`;
   });
   h+='</div>';
 
-  // Selected date action bar
   if(state.calSelectedDate){
     const selRace=races.find(r=>r.date===state.calSelectedDate);
     if(selRace){
-      // Show race info inline
       h+=`<div style="background:rgba(212,245,66,0.04);border:1px solid rgba(212,245,66,0.18);border-radius:6px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
         <div style="font-size:22px">${raceEmoji(selRace)}</div>
         <div style="flex:1">
-          ${selRace.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.13);color:var(--accent);margin-bottom:4px">🎯 Hoofddoel</span>`:''}
+          ${selRace.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.13);color:var(--accent);margin-bottom:4px">${T('main_goal')}</span><br>`:''}
           <div style="font-weight:600;font-size:13px">${esc(selRace.name||'Race')}</div>
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${esc(selRace.dist||'')}${selRace.raceType?' · '+esc(selRace.raceType):''}</div>
         </div>
@@ -1145,10 +1299,8 @@ function renderCalendar(){
     }
   }
 
-  // Race list for this month
   const monthRaces=races.filter(r=>{const d=parseDate(r.date);return d.getFullYear()===y&&d.getMonth()===m;}).sort((a,b)=>a.date.localeCompare(b.date));
-  h+=`<div class="cal-races-section">
-    <div class="section-label">${T('races_this_month')}</div>`;
+  h+=`<div><div class="section-label">${T('races_this_month')}</div>`;
   if(!monthRaces.length){
     h+=`<div style="font-size:12px;color:var(--faint);padding:8px 2px">${T('no_races_month')}</div>`;
   }else{
@@ -1156,47 +1308,40 @@ function renderCalendar(){
       h+=`<div class="cal-race-row${r.mainGoal?' cal-race-main':''}" onclick="openRaceModal('${r.id}')">
         <div style="font-size:22px">${raceEmoji(r)}</div>
         <div style="flex:1;min-width:0">
-          ${r.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.1);color:var(--accent);margin-bottom:3px">🎯 Hoofddoel</span><br>`:''}
+          ${r.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.1);color:var(--accent);margin-bottom:3px">${T('main_goal')}</span><br>`:''}
           <div style="font-size:13px;font-weight:600">${esc(r.name||'Race')}</div>
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${fmtDate(r.date)}${r.dist?' · '+esc(r.dist):''}${r.raceType?' · '+esc(r.raceType):''}</div>
         </div>
         <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);flex-shrink:0;text-align:right">
-          ${(()=>{const d=daysUntil(r.date),cd=countdownDisplay(d);return `<div style="font-family:'Bebas Neue',sans-serif;font-size:18px">${cd.val}</div><div style="font-size:8px;color:var(--faint)">${cd.unit}</div>`;})()}
+          ${(()=>{const d=daysUntil(r.date),cd=countdownDisplay(d);return`<div style="font-family:'Bebas Neue',sans-serif;font-size:18px">${cd.val}</div><div style="font-size:8px;color:var(--faint)">${cd.unit}</div>`;})()}
         </div>
       </div>`;
     });
   }
   h+='</div>';
-
   el.innerHTML=h;
 }
 
-function selectCalDate(ds){
-  state.calSelectedDate=state.calSelectedDate===ds?null:ds;
-  renderCalendar();
-}
+function selectCalDate(ds){state.calSelectedDate=state.calSelectedDate===ds?null:ds;renderCalendar();}
 function calPrev(){state.calMonth--;if(state.calMonth<0){state.calMonth=11;state.calYear--;}state.calSelectedDate=null;renderCalendar();}
 function calNext(){state.calMonth++;if(state.calMonth>11){state.calMonth=0;state.calYear++;}state.calSelectedDate=null;renderCalendar();}
 
 // ── RACE MODAL ────────────────────────────────────────────────────────────────
 function openRaceModal(raceId,prefillDate){
   closeRaceModal();
-  const races=loadRaces();
-  const race=raceId?races.find(r=>r.id===raceId):null;
+  const races=loadRaces(),race=raceId?races.find(r=>r.id===raceId):null;
   state.editingRaceId=race?.id||null;
   const content=document.getElementById('raceModalContent');
-
   const distOpts=['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'].map(d=>
-    `<option value="${d}"${(race?.dist||''===d)?'selected':''}>${d}</option>`
+    `<option value="${d}"${race?.dist===d?'selected':''}>${d}</option>`
   ).join('');
   const typeOpts=['Weg','Baan','Trail','Ultra','Virtueel'].map(tp=>
-    `<option value="${tp}"${(race?.raceType||''===tp)?'selected':''}>${tp}</option>`
+    `<option value="${tp}"${race?.raceType===tp?'selected':''}>${tp}</option>`
   ).join('');
-
   content.innerHTML=`<div class="modal-title">${T(raceId?'race_edit':'race_add')}</div>
     <div class="settings-field">
       <label class="settings-label">${T('race_name')}</label>
-      <input type="text" class="settings-input" id="raceNameInput" value="${esc(race?.name||'')}" placeholder="Bijv. Big10 Rotterdam">
+      <input type="text" class="settings-input" id="raceNameInput" value="${esc(race?.name||'')}" placeholder="Big10 Rotterdam">
     </div>
     <div class="settings-field">
       <label class="settings-label">${T('race_date')}</label>
@@ -1205,20 +1350,16 @@ function openRaceModal(raceId,prefillDate){
     <div class="settings-field">
       <label class="settings-label">${T('race_dist')}</label>
       <select class="settings-input" id="raceDistSelect">
-        <option value="">— Kies afstand —</option>
-        ${distOpts}
-        <option value="__custom">Vrije tekst…</option>
+        <option value="">—</option>${distOpts}<option value="__custom">Vrije tekst…</option>
       </select>
-      <input type="text" class="settings-input" id="raceDistCustom" placeholder="Vrije tekst" style="margin-top:6px;display:${['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'].includes(race?.dist||'')?'none':'block'}" value="${esc(['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'].includes(race?.dist||'')?'':race?.dist||'')}">
+      <input type="text" class="settings-input" id="raceDistCustom" placeholder="Vrije tekst" style="margin-top:6px;display:none" value="${esc(['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'].includes(race?.dist||'')?'':race?.dist||'')}">
     </div>
     <div class="settings-field">
       <label class="settings-label">${T('race_type')}</label>
       <select class="settings-input" id="raceTypeSelect">
-        <option value="">— Kies type —</option>
-        ${typeOpts}
-        <option value="__custom">Vrije tekst…</option>
+        <option value="">—</option>${typeOpts}<option value="__custom">Vrije tekst…</option>
       </select>
-      <input type="text" class="settings-input" id="raceTypeCustom" placeholder="Vrije tekst" style="margin-top:6px;display:${['Weg','Baan','Trail','Ultra','Virtueel'].includes(race?.raceType||'')?'none':'block'}" value="${esc(['Weg','Baan','Trail','Ultra','Virtueel'].includes(race?.raceType||'')?'':race?.raceType||'')}">
+      <input type="text" class="settings-input" id="raceTypeCustom" placeholder="Vrije tekst" style="margin-top:6px;display:none" value="${esc(['Weg','Baan','Trail','Ultra','Virtueel'].includes(race?.raceType||'')?'':race?.raceType||'')}">
     </div>
     <div class="settings-field" style="display:flex;align-items:center;gap:10px">
       <input type="checkbox" id="raceMainInput" ${race?.mainGoal?'checked':''} style="width:18px;height:18px;accent-color:var(--accent)">
@@ -1227,36 +1368,22 @@ function openRaceModal(raceId,prefillDate){
     <button class="btn-primary" style="margin-top:8px" onclick="saveRace()">${T('race_save')}</button>
     ${race?`<button class="btn-secondary" onclick="deleteRace('${race.id}')">🗑 ${T('race_delete')}</button>`:''}`;
 
-  // Wire up custom text toggles
   document.getElementById('raceModal').classList.add('open');
-  document.getElementById('raceDistSelect')?.addEventListener('change',e=>{
-    document.getElementById('raceDistCustom').style.display=e.target.value==='__custom'?'block':'none';
-  });
-  document.getElementById('raceTypeSelect')?.addEventListener('change',e=>{
-    document.getElementById('raceTypeCustom').style.display=e.target.value==='__custom'?'block':'none';
-  });
-  // Pre-select if existing value matches
-  if(race?.dist){
-    const sel=document.getElementById('raceDistSelect');
-    if([...(sel?.options||[])].some(o=>o.value===race.dist))sel.value=race.dist;
-    else{sel.value='__custom';document.getElementById('raceDistCustom').style.display='block';}
-  }
-  if(race?.raceType){
-    const sel=document.getElementById('raceTypeSelect');
-    if([...(sel?.options||[])].some(o=>o.value===race.raceType))sel.value=race.raceType;
-    else{sel.value='__custom';document.getElementById('raceTypeCustom').style.display='block';}
-  }
+  document.getElementById('raceDistSelect')?.addEventListener('change',e=>{document.getElementById('raceDistCustom').style.display=e.target.value==='__custom'?'block':'none';});
+  document.getElementById('raceTypeSelect')?.addEventListener('change',e=>{document.getElementById('raceTypeCustom').style.display=e.target.value==='__custom'?'block':'none';});
+  if(race?.dist){const s=document.getElementById('raceDistSelect');if([...s.options].some(o=>o.value===race.dist))s.value=race.dist;else{s.value='__custom';document.getElementById('raceDistCustom').style.display='block';}}
+  if(race?.raceType){const s=document.getElementById('raceTypeSelect');if([...s.options].some(o=>o.value===race.raceType))s.value=race.raceType;else{s.value='__custom';document.getElementById('raceTypeCustom').style.display='block';}}
 }
 
 function saveRace(){
   const name=document.getElementById('raceNameInput')?.value.trim();
   const date=document.getElementById('raceDateInput')?.value;
+  if(!name||!date){showToast(T('race_required'));return;}
   const distSel=document.getElementById('raceDistSelect')?.value;
   const dist=distSel==='__custom'?document.getElementById('raceDistCustom')?.value.trim():distSel;
   const typeSel=document.getElementById('raceTypeSelect')?.value;
   const raceType=typeSel==='__custom'?document.getElementById('raceTypeCustom')?.value.trim():typeSel;
   const mainGoal=document.getElementById('raceMainInput')?.checked;
-  if(!name||!date){showToast('Naam en datum zijn verplicht');return;}
   const races=loadRaces();
   if(state.editingRaceId){
     const idx=races.findIndex(r=>r.id===state.editingRaceId);
@@ -1265,22 +1392,18 @@ function saveRace(){
     races.push({id:Date.now().toString(),name,date,dist,raceType,mainGoal});
   }
   persistRaces(races);
-  // Jump to saved date in calendar
-  const savedDate=parseDate(date);
-  state.calYear=savedDate.getFullYear();state.calMonth=savedDate.getMonth();state.calSelectedDate=date;
-  closeRaceModal();
-  renderHeader();renderCountdownStrip();
-  if(state.currentTab==='calendar')renderCalendar();
-  else switchTab('calendar');
-  showToast('✓ Race opgeslagen');
+  const saved=parseDate(date);
+  state.calYear=saved.getFullYear();state.calMonth=saved.getMonth();state.calSelectedDate=date;
+  closeRaceModal();renderHeader();
+  if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
+  showToast(T('race_saved'));
 }
 
 function deleteRace(id){
-  const races=loadRaces().filter(r=>r.id!==id);
-  persistRaces(races);closeRaceModal();
+  persistRaces(loadRaces().filter(r=>r.id!==id));
+  closeRaceModal();renderHeader();
   if(state.currentTab==='calendar')renderCalendar();
-  renderHeader();renderCountdownStrip();
-  showToast('Race verwijderd');
+  showToast(T('race_deleted'));
 }
 
 function closeRaceModal(e){
@@ -1289,23 +1412,14 @@ function closeRaceModal(e){
   state.editingRaceId=null;
 }
 
-// Separate countdown strip (no longer in topbar — removed in favour of race chips)
-function renderCountdownStrip(){
-  // No separate strip now; header chips handle countdown
-}
-
 // ── STATS ─────────────────────────────────────────────────────────────────────
 function renderStats(){
   const el=document.getElementById('statsContent');
-  if(!state.data){
-    el.innerHTML=`<div class="no-connection-hint" onclick="switchTab('settings')">
-      <div class="nch-icon">📋</div><div><div class="nch-text">${T('no_schema')}</div></div>
-    </div>`;return;
-  }
   const t=todayStr();
-  const past=state.data.filter(r=>r.datum<=t);
+  const past=state.data?state.data.filter(r=>r.datum<=t):[];
   const totalKm=past.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
-  const runCount=past.filter(r=>['run','duur','interval','tempo','race'].some(k=>(r.type||'').toLowerCase().includes(k))).length;
+  // C24: count by type 'run'
+  const runCount=past.filter(r=>hasType(r.type,'run')).length;
   const fbRows=past.filter(r=>r.feedback);
   const ratingRows=fbRows.filter(r=>/^\d/.test(r.feedback));
   const avgRating=ratingRows.length?ratingRows.reduce((s,r)=>s+parseInt(r.feedback[0]),0)/ratingRows.length:0;
@@ -1314,7 +1428,7 @@ function renderStats(){
   const daysLeft=mainRace?daysUntil(mainRace.date):0;
   const raceName=mainRace?.name||'—';
   const mondayStr=getMondayStr();
-  const weekKm=state.data.filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+  const weekKm=(state.data||[]).filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
   const months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
 
   let h=`<div class="stats-grid">
@@ -1325,6 +1439,8 @@ function renderStats(){
     ${avgRating>0?`<div class="stat-card"><div class="stat-label">${T('stats_feel')}</div><div class="stat-val" style="font-size:28px">${['😵','😓','😐','💪','🔥'][Math.round(avgRating)-1]}</div><div class="stat-sub">${avgRating.toFixed(1)}/5 · ${ratingRows.length} ${T('stats_fb_sub')}</div></div>`:''}
     <div class="stat-card"><div class="stat-label">${T('stats_feedback')}</div><div class="stat-val">${fbRows.length}</div><div class="stat-sub">${T('stats_fb_sub')}</div></div>
   </div>`;
+
+  if(!state.data)h+=noSchemaHint();
 
   const recent=fbRows.slice(-8).reverse();
   if(recent.length){
@@ -1343,6 +1459,58 @@ function renderStats(){
 }
 
 // ── SETTINGS ──────────────────────────────────────────────────────────────────
+// B3a: Login UI
+function renderAccountSection(){
+  const el=document.getElementById('accountSection');if(!el)return;
+  const email=localStorage.getItem('userEmail')||'';
+  if(email){
+    el.innerHTML=`<div class="account-row">
+      <div class="account-avatar">👤</div>
+      <div class="account-info">
+        <div class="account-email">${esc(email)}</div>
+        <div class="account-status">${T('logged_in_as')}</div>
+      </div>
+      <button class="account-logout" onclick="logoutAccount()">${T('logout_btn')}</button>
+    </div>`;
+  }else{
+    el.innerHTML=`<div style="font-size:12px;color:var(--muted);margin-bottom:12px">${T('account_hint')}</div>
+    <div class="login-form">
+      <input type="email" class="settings-input" id="loginEmail" placeholder="${T('email_placeholder')}">
+      <button class="btn-primary" onclick="loginAccount()">${T('login_btn')}</button>
+    </div>`;
+  }
+}
+
+function loginAccount(){
+  const email=document.getElementById('loginEmail')?.value.trim();
+  if(!email)return;
+  localStorage.setItem('userEmail',email);
+  renderAccountSection();
+  showToast(T('saved'));
+}
+
+function logoutAccount(){
+  localStorage.removeItem('userEmail');
+  renderAccountSection();
+  showToast(T('saved'));
+}
+
+// Telegram verify
+function verifyTelegram(){
+  const user=document.getElementById('telegramUser')?.value.trim();
+  if(!user){showToast(T('notif_telegram'));return;}
+  showToast(T('tg_verifying'));
+  // Show hint to user
+  setTimeout(()=>showToast(T('tg_verify_hint')),2600);
+}
+
+function updateTelegramStatus(){
+  const dot=document.getElementById('tgDot'),txt=document.getElementById('tgStatusText');
+  const linked=!!localStorage.getItem('telegramLinked');
+  if(dot)dot.className='tg-dot'+(linked?' linked':'');
+  if(txt)txt.textContent=linked?T('tg_linked'):T('tg_not_linked');
+}
+
 function addPrField(){
   const sel=document.getElementById('prDistSelect'),dist=sel.value;
   if(!dist)return;sel.value='';
@@ -1356,26 +1524,26 @@ function renderPrFields(){
   const c=document.getElementById('prFields');if(!c)return;
   const prs=loadPRs(),active=PR_ORDER.filter(d=>d in prs);
   if(!active.length){c.innerHTML=`<div style="font-size:11px;color:var(--faint);padding:4px 0">${T('pr_none')}</div>`;return;}
-  const ph=state.lang==='en'?'e.g. 37:56':'bijv. 37:56';
   c.innerHTML=active.map(d=>`
     <div class="pr-row">
       <label class="pr-dist-lbl">${d}</label>
-      <input type="text" class="settings-input" style="flex:1" placeholder="${ph}" value="${esc(prs[d]||'')}" oninput="updatePR('${d}',this.value)">
+      <input type="text" class="settings-input" style="flex:1" placeholder="${T('pr_placeholder')}" value="${esc(prs[d]||'')}" oninput="updatePR('${d}',this.value)">
       <button onclick="removePrField('${d}')" style="background:none;border:none;color:var(--faint);cursor:pointer;font-size:18px;padding:0 4px;line-height:1">×</button>
     </div>`).join('');
 }
 
 function renderSettingsFields(){
   const urlEl=document.getElementById('scriptUrl');if(urlEl)urlEl.value=state.scriptUrl;
+  const snEl=document.getElementById('sheetNameInput');if(snEl)snEl.value=state.sheetName;
+  if(state.sheetName||true)document.getElementById('sheetNameField').style.display='block';
   const tgEl=document.getElementById('telegramUser');if(tgEl)tgEl.value=localStorage.getItem('telegramUser')||'';
   const nameEl=document.getElementById('settingsName');if(nameEl)nameEl.value=localStorage.getItem('userName')||'';
-  renderPrFields();applyI18n();
+  renderPrFields();renderAccountSection();updateTelegramStatus();applyI18n();
 }
 
 function saveSettingsName(){
-  const val=document.getElementById('settingsName')?.value||'';
-  localStorage.setItem('userName',val);
-  renderHeader();showToast('✓ Opgeslagen');
+  localStorage.setItem('userName',document.getElementById('settingsName')?.value||'');
+  renderHeader();showToast(T('saved'));
 }
 
 function saveSettings(){
@@ -1385,10 +1553,14 @@ function saveSettings(){
   showToast(T('connecting'));fetchData();
 }
 
+function saveSheetName(){
+  state.sheetName=document.getElementById('sheetNameInput')?.value||'';
+  localStorage.setItem('sheetName',state.sheetName);
+}
+
 function saveTelegram(){
-  const val=document.getElementById('telegramUser')?.value||'';
-  localStorage.setItem('telegramUser',val);
-  showToast('✓ Opgeslagen');
+  localStorage.setItem('telegramUser',document.getElementById('telegramUser')?.value||'');
+  updateTelegramStatus();showToast(T('saved'));
 }
 
 // ── I18N ──────────────────────────────────────────────────────────────────────
@@ -1400,12 +1572,18 @@ function applyI18n(){
   document.getElementById('langBtnNl')?.classList.toggle('active',state.lang==='nl');
   document.getElementById('langBtnEn')?.classList.toggle('active',state.lang==='en');
   document.documentElement.lang=state.lang;
+  // Update banner text if visible
+  const b=document.getElementById('updateBanner');
+  if(b&&b.style.display!=='none'){
+    document.getElementById('updateBannerText').textContent=T('update_available');
+    b.querySelector('button').textContent=T('update_apply');
+  }
 }
 
 function setLang(lang){
   state.lang=lang;localStorage.setItem('lang',lang);
   applyI18n();renderHeader();renderActiveView();
-  showToast('✓ Opgeslagen');
+  showToast(T('saved')); // X14: toast after lang switch, already in new language
 }
 
 // ── UI ────────────────────────────────────────────────────────────────────────
@@ -1432,28 +1610,31 @@ function updateConnectionStatus(ok,err){
   const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText');
   if(!dot||!txt)return;
   dot.className='status-dot '+(ok?'ok':'err');
-  txt.textContent=ok?'Verbonden ✓':`Fout: ${err||'verbinding mislukt'}`;
+  txt.textContent=ok?T('connected'):`${T('conn_err')}: ${err||'?'}`;
 }
 
 // ── ONBOARDING ────────────────────────────────────────────────────────────────
+// U1: click outside sheet dismisses (wegklikbaar)
+function onboardingOverlayClick(e){
+  if(e.target===document.getElementById('onboarding'))onboardingFinish();
+}
+
 function shouldShowOnboarding(){
   return loadRaces().length===0&&!localStorage.getItem('userName');
 }
-function showOnboarding(){document.getElementById('onboarding').style.display='flex';}
 
 function onboardingNext(){
-  const name=document.getElementById('obName')?.value.trim();
+  // B7: name removed from onboarding
   const raceName=document.getElementById('obRace')?.value.trim();
   const raceDate=document.getElementById('obDate')?.value;
   const dist=document.getElementById('obDist')?.value;
   const time=document.getElementById('obTime')?.value.trim();
-  if(name)localStorage.setItem('userName',name);
   if(raceName&&raceDate){
     const races=loadRaces();
     races.push({id:Date.now().toString(),name:raceName,date:raceDate,dist:dist||'',mainGoal:true});
     persistRaces(races);
   }
-  localStorage.setItem('goal',JSON.stringify({name,dist,time,race:raceName,date:raceDate}));
+  // X12: removed legacy goal object write
   document.getElementById('onboardingStep1').style.display='none';
   document.getElementById('onboardingStep2').style.display='block';
 }
@@ -1464,11 +1645,10 @@ function addObPrField(){
   const prs=loadPRs();if(dist in prs)return;
   prs[dist]='';persistPRs(prs);
   const c=document.getElementById('obPrFields');
-  const active=PR_ORDER.filter(d=>d in prs);
-  c.innerHTML=active.map(d=>`
+  c.innerHTML=PR_ORDER.filter(d=>d in prs).map(d=>`
     <div class="pr-row" style="margin-bottom:8px">
       <label class="pr-dist-lbl">${d}</label>
-      <input type="text" class="settings-input" style="flex:1" placeholder="bijv. 37:56" value="${esc(prs[d]||'')}" oninput="updatePR('${d}',this.value)">
+      <input type="text" class="settings-input" style="flex:1" placeholder="${T('pr_placeholder')}" value="${esc(prs[d]||'')}" oninput="updatePR('${d}',this.value)">
     </div>`).join('');
 }
 
@@ -1477,34 +1657,23 @@ function onboardingFinish(){
   renderHeader();renderActiveView();
 }
 
-// ── APPS SCRIPT: update to support 'fase' column ─────────────────────────────
-// Note: update your Apps Script to include 'fase' column (see apps-script.js)
-
 // ── INIT ──────────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded',()=>{
-  // Service worker
-  if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('./sw.js').then(reg=>{
-      reg.addEventListener('updatefound',()=>{
-        const nw=reg.installing;
-        nw.addEventListener('statechange',()=>{
-          if(nw.state==='installed'&&navigator.serviceWorker.controller)
-            showToast('🔄 Update beschikbaar — herlaad de app');
-        });
-      });
-    });
-  }
+  initServiceWorker();
 
-  // Nav delegation
   document.getElementById('bottomNav').addEventListener('click',e=>{
     const tab=e.target.closest('.bn-item')?.dataset.tab;if(tab)switchTab(tab);
   });
 
-  applyI18n();
-  renderHeader();
+  // Check URL params for sheet config (X2/X3)
+  const urlParams=new URLSearchParams(window.location.search);
+  if(urlParams.get('sheet'))state.scriptUrl=urlParams.get('sheet');
+  if(urlParams.get('tab'))state.sheetName=urlParams.get('tab');
+
+  applyI18n();renderHeader();
 
   if(shouldShowOnboarding()){
-    hideLoading();showOnboarding();
+    hideLoading();document.getElementById('onboarding').style.display='flex';
   }else if(state.scriptUrl){
     fetchData();
   }else{
