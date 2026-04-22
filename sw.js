@@ -1,4 +1,4 @@
-const VERSION = 'rx-v1.2.0';
+const VERSION = 'rx-v1.3.0';
 const CACHE = VERSION;
 const ASSETS = ['./', './index.html'];
 
@@ -15,7 +15,6 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
-  // Network-first for API calls, cache-first for assets
   const url = new URL(e.request.url);
   if (url.hostname.includes('script.google.com')) {
     e.respondWith(fetch(e.request).catch(() => new Response('{"status":"error","message":"offline"}', {headers:{'Content-Type':'application/json'}})));
