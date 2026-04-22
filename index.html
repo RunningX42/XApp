@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RunningX">
@@ -12,226 +12,251 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg:        #0d0d0d;
-  --surface:   #181818;
-  --border:    #2e2e2e;
-  --accent:    #d4f542;
-  --accent2:   #ff6b35;
-  --accent3:   #42d4f5;
-  --text:      #ededed;
-  --muted:     #999;
-  --faint:     #555;
-  --run-bg:    rgba(212,245,66,0.13);  --run-text:  #d4f542;
-  --str-bg:    rgba(255,107,53,0.13);  --str-text:  #ff8c5e;
-  --mob-bg:    rgba(66,212,245,0.13);  --mob-text:  #42d4f5;
-  --rest-bg:   rgba(255,255,255,0.05); --rest-text: #666;
-  --race-bg:   rgba(255,51,102,0.15);  --race-text: #ff3366;
-  --work-bg:   rgba(255,180,0,0.12);   --work-text: #ffb400;
-  --st: env(safe-area-inset-top, 0px);
-  --sb: env(safe-area-inset-bottom, 0px);
+  --bg:#0d0d0d; --surface:#181818; --border:#2e2e2e;
+  --accent:#d4f542; --accent2:#ff6b35; --accent3:#42d4f5;
+  --text:#ededed; --muted:#999; --faint:#555;
+  --run-bg:rgba(212,245,66,0.13);  --run-text:#d4f542;
+  --str-bg:rgba(255,107,53,0.13);  --str-text:#ff8c5e;
+  --mob-bg:rgba(66,212,245,0.13);  --mob-text:#42d4f5;
+  --rest-bg:rgba(255,255,255,0.05);--rest-text:#666;
+  --race-bg:rgba(255,51,102,0.15); --race-text:#ff3366;
+  --work-bg:rgba(255,180,0,0.12);  --work-text:#ffb400;
+  --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 14px; line-height: 1.5; height: 100%; overscroll-behavior: none; }
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;height:100%;overscroll-behavior:none}
 
 /* SHELL */
-.app { display: flex; flex-direction: column; height: 100dvh; max-width: 480px; margin: 0 auto; }
+.app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto}
 
 /* TOPBAR */
-.topbar { display: flex; align-items: center; justify-content: space-between; padding: calc(var(--st) + 14px) 18px 14px; background: var(--bg); border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 10; }
-.topbar-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1.5px; line-height: 1; }
-.topbar-logo span { color: var(--accent); }
-.topbar-sub { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); letter-spacing: 1px; margin-top: 1px; }
-.topbar-right { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); text-align: right; line-height: 1.5; flex: 1; margin: 0 10px; }
-.topbar-right strong { color: var(--accent); }
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--st) + 14px) 18px 14px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10}
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1.5px;line-height:1}
+.topbar-logo span{color:var(--accent)}
+.topbar-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:1px;margin-top:1px}
+.topbar-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;line-height:1.5;flex:1;margin:0 10px}
+.topbar-right strong{color:var(--accent)}
+.topbar-gear{background:none;border:none;cursor:pointer;color:var(--faint);font-size:20px;padding:0;flex-shrink:0;line-height:1;transition:color 0.15s}
+.topbar-gear:hover{color:var(--muted)}
 
 /* COUNTDOWN */
-.countdown-strip { display: flex; background: linear-gradient(90deg,rgba(212,245,66,0.06) 0%,transparent 60%); border-bottom: 1px solid var(--border); padding: 10px 18px; gap: 16px; flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
-.countdown-strip::-webkit-scrollbar { display: none; }
-.cd-item { flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; }
-.cd-race { font-size: 11px; font-weight: 600; }
-.cd-race.hi, .cd-item.hi .cd-days { color: var(--accent); }
-.cd-days { font-family: 'Bebas Neue', sans-serif; font-size: 24px; line-height: 1; color: var(--muted); }
-.cd-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; }
-.cd-sep { width: 1px; background: var(--border); flex-shrink: 0; margin: 2px 0; }
-
-/* TABS */
-.tabs { display: flex; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; overflow-x: auto; scrollbar-width: none; }
-.tabs::-webkit-scrollbar { display: none; }
-.tab { flex-shrink: 0; padding: 12px 16px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); cursor: pointer; border: none; border-bottom: 2px solid transparent; background: none; white-space: nowrap; transition: color 0.15s, border-color 0.15s; }
-.tab:hover { color: var(--text); }
-.tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.countdown-strip{display:flex;background:linear-gradient(90deg,rgba(212,245,66,0.06) 0%,transparent 60%);border-bottom:1px solid var(--border);padding:10px 18px;gap:16px;flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.countdown-strip::-webkit-scrollbar{display:none}
+.cd-item{flex-shrink:0;display:flex;flex-direction:column;gap:2px}
+.cd-race{font-size:11px;font-weight:600}
+.cd-race.hi,.cd-item.hi .cd-days{color:var(--accent)}
+.cd-days{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;color:var(--muted)}
+.cd-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px}
+.cd-sep{width:1px;background:var(--border);flex-shrink:0;margin:2px 0}
 
 /* SCROLL */
-.scroll-area { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding-bottom: calc(var(--sb) + 80px); -webkit-overflow-scrolling: touch; }
-.view { display: none; padding: 16px; }
-.view.active { display: block; }
+.scroll-area{flex:1;overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--sb) + 80px);-webkit-overflow-scrolling:touch}
+.view{display:none;padding:16px}
+.view.active{display:block}
 
 /* SHARED CARD */
-.card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; margin-bottom: 10px; }
-.card.faded { opacity: 0.7; }
-.card.work-border { border-color: rgba(255,180,0,0.3); }
-.card.race-border { border-color: rgba(255,51,102,0.4); }
-.card.accent-border { border-color: rgba(212,245,66,0.3); }
-.card-pad { padding: 14px 16px; }
-
-/* BADGE */
-.badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 2px; display: inline-block; }
+.card{background:var(--surface);border:1px solid var(--border);border-radius:4px;margin-bottom:10px}
+.card.faded{opacity:0.7}
+.card.work-border{border-color:rgba(255,180,0,0.3)}
+.card.race-border{border-color:rgba(255,51,102,0.4)}
+.card.accent-border{border-color:rgba(212,245,66,0.3)}
+.card-pad{padding:14px 16px}
+.badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
 
 /* TODAY */
-.today-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 12px; }
-.today-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); letter-spacing: 1px; text-transform: uppercase; }
-.today-phase { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--accent); }
-.tc-top { display: flex; align-items: center; gap: 10px; padding: 14px 16px 10px; }
-.tc-emoji { font-size: 28px; flex-shrink: 0; }
-.tc-main { flex: 1; min-width: 0; }
-.tc-type { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
-.tc-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; letter-spacing: 0.5px; }
-.tc-metric { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--accent); margin-top: 4px; }
-.tc-detail { padding: 10px 16px 14px; font-size: 12px; color: var(--muted); line-height: 1.55; border-top: 1px solid var(--border); }
-.mob-reminder { background: rgba(66,212,245,0.05); border: 1px solid rgba(66,212,245,0.15); border-radius: 4px; padding: 12px 14px; margin-top: 4px; }
-.mob-title { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; color: var(--accent3); text-transform: uppercase; margin-bottom: 4px; }
-.mob-text { font-size: 12px; color: var(--muted); }
-.tmr-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--faint); margin-bottom: 8px; }
-.tmr-title { font-size: 15px; font-weight: 600; margin-bottom: 3px; }
-.tmr-metric { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); }
+.today-header{margin-bottom:16px}
+.today-date-big{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:1px;line-height:1;color:var(--text)}
+.today-phase-line{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);letter-spacing:0.5px;margin-top:3px}
+.tc-top{display:flex;align-items:center;gap:10px;padding:14px 16px 10px}
+.tc-emoji{font-size:28px;flex-shrink:0}
+.tc-main{flex:1;min-width:0}
+.tc-type{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.tc-title{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1;letter-spacing:0.5px}
+.tc-metric{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);margin-top:4px}
+.tc-detail{padding:10px 16px 14px;font-size:12px;color:var(--muted);line-height:1.55;border-top:1px solid var(--border)}
+.mob-reminder{background:rgba(66,212,245,0.05);border:1px solid rgba(66,212,245,0.15);border-radius:4px;padding:12px 14px;margin-top:4px}
+.mob-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--accent3);text-transform:uppercase;margin-bottom:4px}
+.mob-text{font-size:12px;color:var(--muted)}
+.tmr-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.tmr-title{font-size:15px;font-weight:600;margin-bottom:3px}
+.tmr-metric{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
 
 /* FEEDBACK */
-.feedback-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px 16px; margin-bottom: 10px; }
-.feedback-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
-.feedback-stars { display: flex; gap: 8px; margin-bottom: 12px; }
-.star-btn { width: 40px; height: 40px; border: 1px solid var(--border); background: var(--bg); border-radius: 4px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.12s, background 0.12s, border-color 0.12s; }
-.star-btn.active { background: rgba(212,245,66,0.15); border-color: var(--accent); transform: scale(1.08); }
-.star-btn:active { transform: scale(0.95); }
-.feedback-textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 10px 12px; resize: none; height: 72px; margin-bottom: 10px; outline: none; transition: border-color 0.15s; }
-.feedback-textarea:focus { border-color: var(--accent); }
-.feedback-textarea::placeholder { color: var(--faint); }
-.prev-feedback { background: rgba(212,245,66,0.04); border: 1px solid rgba(212,245,66,0.15); border-radius: 4px; padding: 10px 14px; margin-bottom: 10px; }
-.prev-feedback-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-.prev-feedback-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); opacity: 0.7; }
-.prev-feedback-text { font-size: 12px; color: var(--muted); line-height: 1.5; }
-.edit-link { background: none; border: none; color: var(--accent); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; }
-.btn-primary { width: 100%; background: var(--accent); color: #000; border: none; border-radius: 4px; padding: 12px; font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 600; cursor: pointer; transition: background 0.12s, transform 0.12s; }
-.btn-primary:hover { background: #c8ec30; }
-.btn-primary:active { transform: scale(0.98); }
-.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
-.btn-secondary { width: 100%; margin-top: 8px; background: none; border: 1px solid var(--border); border-radius: 4px; padding: 10px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; cursor: pointer; }
+.feedback-section{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px 16px;margin-bottom:10px}
+.feedback-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.feedback-stars{display:flex;gap:8px;margin-bottom:12px}
+.star-btn{width:40px;height:40px;border:1px solid var(--border);background:var(--bg);border-radius:4px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.12s,background 0.12s,border-color 0.12s}
+.star-btn.active{background:rgba(212,245,66,0.15);border-color:var(--accent);transform:scale(1.08)}
+.star-btn:active{transform:scale(0.95)}
+.feedback-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;resize:none;height:72px;margin-bottom:10px;outline:none;transition:border-color 0.15s}
+.feedback-textarea:focus{border-color:var(--accent)}
+.feedback-textarea::placeholder{color:var(--faint)}
+.prev-feedback{background:rgba(212,245,66,0.04);border:1px solid rgba(212,245,66,0.15);border-radius:4px;padding:10px 14px;margin-bottom:10px}
+.prev-feedback-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.prev-feedback-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);opacity:0.7}
+.prev-feedback-text{font-size:12px;color:var(--muted);line-height:1.5}
+.edit-link{background:none;border:none;color:var(--accent);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.btn-primary{width:100%;background:var(--accent);color:#000;border:none;border-radius:4px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;cursor:pointer;transition:background 0.12s,transform 0.12s}
+.btn-primary:hover{background:#c8ec30}
+.btn-primary:active{transform:scale(0.98)}
+.btn-primary:disabled{opacity:0.5;cursor:not-allowed}
+.btn-secondary{width:100%;margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer}
 
 /* WEEK */
-.week-stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-.week-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 12px 10px; text-align: center; }
-.week-stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 28px; line-height: 1; }
-.week-stat-lbl { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; margin-top: 2px; }
-.progress-bar-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 12px 14px; margin-bottom: 10px; }
-.progress-bar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.progress-bar-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1px; text-transform: uppercase; }
-.progress-bar-val { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); }
-.progress-bar-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s ease; }
-.progress-bar-footer { display: flex; justify-content: space-between; margin-top: 6px; font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); }
-.day-tiles { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; margin-bottom: 10px; }
-.day-tile { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 8px 4px; text-align: center; }
-.day-tile.is-today { border-color: rgba(212,245,66,0.5); background: rgba(212,245,66,0.05); }
-.day-tile.is-past { opacity: 0.45; }
-.day-tile-day { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--faint); letter-spacing: 0.5px; }
-.day-tile.is-today .day-tile-day { color: var(--accent); }
-.day-tile-num { font-family: 'Bebas Neue', sans-serif; font-size: 18px; color: var(--text); line-height: 1.1; }
-.day-tile.is-today .day-tile-num { color: var(--accent); }
-.day-tile-dot { width: 6px; height: 6px; border-radius: 50%; background: transparent; margin: 4px auto 0; }
-.day-tile-check { font-size: 8px; color: var(--accent); margin-top: 2px; height: 12px; }
-.day-tile-km { font-family: 'DM Mono', monospace; font-size: 8px; color: var(--muted); margin-top: 1px; }
-.section-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--faint); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
-.upcoming-row { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 11px 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 12px; }
-.upcoming-row.is-today { border-color: rgba(212,245,66,0.3); background: rgba(212,245,66,0.03); }
-.upcoming-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); flex-shrink: 0; text-align: center; width: 28px; }
-.upcoming-date.is-today { color: var(--accent); }
-.upcoming-date-day { font-size: 8px; text-transform: uppercase; }
-.upcoming-date-num { font-size: 16px; font-weight: 500; line-height: 1.1; }
-.upcoming-body { flex: 1; min-width: 0; }
-.upcoming-title { font-size: 13px; font-weight: 600; }
-.upcoming-metric { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); margin-top: 2px; }
-.upcoming-emoji { font-size: 20px; flex-shrink: 0; }
+.week-stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
+.week-stat{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 10px;text-align:center}
+.week-stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1}
+.week-stat-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px}
+.progress-bar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:12px 14px;margin-bottom:10px}
+.progress-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.progress-bar-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase}
+.progress-bar-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
+.progress-bar-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.progress-bar-fill{height:100%;background:var(--accent);border-radius:3px;transition:width 0.4s ease}
+.progress-bar-footer{display:flex;justify-content:space-between;margin-top:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--faint)}
+.day-tiles{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
+.day-tile{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:8px 4px;text-align:center}
+.day-tile.is-today{border-color:rgba(212,245,66,0.5);background:rgba(212,245,66,0.05)}
+.day-tile.is-past{opacity:0.45}
+.day-tile-day{font-family:'DM Mono',monospace;font-size:8px;color:var(--faint);letter-spacing:0.5px}
+.day-tile.is-today .day-tile-day{color:var(--accent)}
+.day-tile-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text);line-height:1.1}
+.day-tile.is-today .day-tile-num{color:var(--accent)}
+.day-tile-dot{width:6px;height:6px;border-radius:50%;background:transparent;margin:4px auto 0}
+.day-tile-check{font-size:8px;color:var(--accent);margin-top:2px;height:12px}
+.day-tile-km{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:1px}
+.section-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.upcoming-row{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.12s}
+.upcoming-row:hover,.upcoming-row.is-today{border-color:rgba(212,245,66,0.3);background:rgba(212,245,66,0.03)}
+.upcoming-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);flex-shrink:0;text-align:center;width:28px}
+.upcoming-date.is-today{color:var(--accent)}
+.upcoming-date-day{font-size:8px;text-transform:uppercase}
+.upcoming-date-num{font-size:16px;font-weight:500;line-height:1.1}
+.upcoming-body{flex:1;min-width:0}
+.upcoming-title{font-size:13px;font-weight:600}
+.upcoming-metric{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-top:2px}
+.upcoming-emoji{font-size:20px;flex-shrink:0}
 
 /* PLAN */
-.phase-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
-.phase-tab { padding: 6px 12px; border: 1px solid var(--border); background: transparent; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer; border-radius: 2px; transition: color 0.12s, border-color 0.12s, background 0.12s; }
-.phase-tab:hover { color: var(--accent); border-color: var(--accent); }
-.phase-tab.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 700; }
-.phase-banner { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 4px; padding: 12px 14px; margin-bottom: 12px; display: flex; gap: 10px; align-items: center; }
-.phase-num { font-family: 'Bebas Neue', sans-serif; font-size: 40px; line-height: 1; color: var(--accent); opacity: 0.2; }
-.phase-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.5px; }
-.phase-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.plan-table { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
-.plan-row { display: grid; grid-template-columns: 76px 1fr auto; gap: 10px; padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,0.04); align-items: start; }
-.plan-row:last-child { border-bottom: none; }
-.plan-row.is-today { background: rgba(212,245,66,0.04); }
-.plan-row.is-past { opacity: 0.4; }
-.plan-row.is-work { background: rgba(255,180,0,0.03); }
-.plan-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); line-height: 1.5; }
-.plan-date strong { color: var(--muted); display: block; }
-.plan-row.is-today .plan-date strong { color: var(--accent); }
-.plan-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-.plan-detail { font-size: 11px; color: var(--muted); line-height: 1.4; }
-.plan-feedback { font-family: 'DM Mono', monospace; font-size: 9px; background: rgba(212,245,66,0.1); color: var(--accent); padding: 2px 6px; border-radius: 2px; margin-top: 4px; display: inline-block; }
-.plan-km { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); white-space: nowrap; }
-.plan-loading { text-align: center; padding: 40px 20px; color: var(--muted); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 1px; }
-.plan-loading::after { content: ''; display: block; width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; margin: 16px auto 0; animation: spin 0.8s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
+.phase-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.phase-tab{padding:6px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:color 0.12s,border-color 0.12s,background 0.12s}
+.phase-tab:hover{color:var(--accent);border-color:var(--accent)}
+.phase-tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
+.phase-banner{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:4px;padding:12px 14px;margin-bottom:12px;display:flex;gap:10px;align-items:center}
+.phase-num{font-family:'Bebas Neue',sans-serif;font-size:40px;line-height:1;color:var(--accent);opacity:0.2}
+.phase-name{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:0.5px}
+.phase-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.plan-table{background:var(--surface);border:1px solid var(--border);border-radius:4px;overflow:hidden}
+.plan-row{display:grid;grid-template-columns:76px 1fr auto;gap:10px;padding:11px 14px;border-bottom:1px solid rgba(255,255,255,0.04);align-items:start;cursor:pointer;transition:background 0.12s}
+.plan-row:hover{background:rgba(255,255,255,0.02)}
+.plan-row:last-child{border-bottom:none}
+.plan-row.is-today{background:rgba(212,245,66,0.04)}
+.plan-row.is-past{opacity:0.4}
+.plan-row.is-work{background:rgba(255,180,0,0.03)}
+.plan-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);line-height:1.5}
+.plan-date strong{color:var(--muted);display:block}
+.plan-row.is-today .plan-date strong{color:var(--accent)}
+.plan-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.plan-detail{font-size:11px;color:var(--muted);line-height:1.4}
+.plan-feedback{font-family:'DM Mono',monospace;font-size:9px;background:rgba(212,245,66,0.1);color:var(--accent);padding:2px 6px;border-radius:2px;margin-top:4px;display:inline-block}
+.plan-km{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);white-space:nowrap}
+.plan-loading{text-align:center;padding:40px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px}
+.plan-loading::after{content:'';display:block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:16px auto 0;animation:spin 0.8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* CALENDAR */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-nav-btn{background:none;border:1px solid var(--border);color:var(--muted);width:32px;height:32px;border-radius:4px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:border-color 0.12s,color 0.12s}
+.cal-nav-btn:hover{border-color:var(--accent);color:var(--accent)}
+.cal-month{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:14px}
+.cal-dow{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);text-align:center;padding:4px 0;letter-spacing:0.5px}
+.cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:4px;cursor:pointer;position:relative;font-size:13px;transition:background 0.1s}
+.cal-cell:hover{background:rgba(255,255,255,0.05)}
+.cal-cell.other-month{opacity:0.25}
+.cal-cell.is-today{background:rgba(212,245,66,0.12);font-weight:600;color:var(--accent)}
+.cal-cell.has-race::after{content:'';width:5px;height:5px;border-radius:50%;background:var(--race-text);position:absolute;bottom:3px}
+.cal-cell.has-race.main-goal::after{background:var(--accent)}
+.cal-add-btn{position:fixed;bottom:calc(var(--sb) + 80px);right:calc((100vw - 480px)/2 + 18px);width:48px;height:48px;border-radius:50%;background:var(--accent);color:#000;border:none;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(0,0,0,0.4);z-index:50;transition:transform 0.12s}
+.cal-add-btn:active{transform:scale(0.93)}
+@media(max-width:480px){.cal-add-btn{right:18px}}
 
 /* STATS */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 14px; }
-.stat-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--faint); margin-bottom: 6px; }
-.stat-val { font-family: 'Bebas Neue', sans-serif; font-size: 36px; line-height: 1; color: var(--accent); }
-.stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-.feedback-history { display: flex; flex-direction: column; gap: 6px; }
-.fh-row { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 11px 14px; display: flex; gap: 12px; align-items: flex-start; }
-.fh-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--faint); flex-shrink: 0; width: 36px; }
-.fh-body { flex: 1; }
-.fh-title { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
-.fh-text { font-size: 11px; color: var(--muted); line-height: 1.45; }
-.fh-km { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--accent); flex-shrink: 0; }
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:14px}
+.stat-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:var(--accent)}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.feedback-history{display:flex;flex-direction:column;gap:6px}
+.fh-row{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:11px 14px;display:flex;gap:12px;align-items:flex-start}
+.fh-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);flex-shrink:0;width:36px}
+.fh-body{flex:1}
+.fh-title{font-size:12px;font-weight:600;margin-bottom:2px}
+.fh-text{font-size:11px;color:var(--muted);line-height:1.45}
+.fh-km{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);flex-shrink:0}
 
 /* SETTINGS */
-.settings-section { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 10px; }
-.settings-title { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
-.settings-field { margin-bottom: 12px; }
-.settings-label { font-size: 11px; color: var(--muted); margin-bottom: 5px; display: block; }
-.settings-input { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); font-family: 'DM Mono', monospace; font-size: 11px; padding: 9px 12px; outline: none; transition: border-color 0.15s; }
-.settings-input:focus { border-color: var(--accent); }
-.settings-hint { font-size: 11px; color: var(--faint); margin-top: 4px; line-height: 1.45; }
-.btn-save { background: var(--accent); color: #000; border: none; border-radius: 4px; padding: 10px 20px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 1px; font-weight: 700; cursor: pointer; }
-.btn-save:active { opacity: 0.85; }
-.connection-status { display: flex; align-items: center; gap: 6px; font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); margin-top: 10px; }
-.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--faint); }
-.status-dot.ok { background: var(--accent); }
-.status-dot.err { background: var(--race-text); }
-.pr-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-.pr-dist-lbl { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); width: 72px; flex-shrink: 0; }
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:16px;margin-bottom:10px}
+.settings-title{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+.settings-field{margin-bottom:12px}
+.settings-label{font-size:11px;color:var(--muted);margin-bottom:5px;display:block}
+.settings-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:9px 12px;outline:none;transition:border-color 0.15s}
+.settings-input:focus{border-color:var(--accent)}
+.settings-hint{font-size:11px;color:var(--faint);margin-top:4px;line-height:1.45}
+.btn-save{background:var(--accent);color:#000;border:none;border-radius:4px;padding:10px 20px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;font-weight:700;cursor:pointer}
+.btn-save:active{opacity:0.85}
+.connection-status{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:10px}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--faint)}
+.status-dot.ok{background:var(--accent)}
+.status-dot.err{background:var(--race-text)}
+.pr-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.pr-dist-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:72px;flex-shrink:0}
+.lang-toggle-row{display:flex;gap:8px}
+.lang-btn{flex:1;padding:9px 12px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;border-radius:4px;cursor:pointer;transition:all 0.12s;text-align:center}
+.lang-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(212,245,66,0.06)}
 
 /* BOTTOM NAV */
-.bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: rgba(13,13,13,0.95); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; padding-bottom: var(--sb); z-index: 100; }
-.bn-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; padding: 10px 8px; cursor: pointer; background: none; border: none; color: var(--faint); transition: color 0.15s; }
-.bn-item:hover { color: var(--muted); }
-.bn-item.active { color: var(--accent); }
-.bn-icon { font-size: 20px; line-height: 1; }
-.bn-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.5px; text-transform: uppercase; }
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sb);z-index:100}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;cursor:pointer;background:none;border:none;color:var(--faint);transition:color 0.15s}
+.bn-item:hover{color:var(--muted)}
+.bn-item.active{color:var(--accent)}
+.bn-icon{font-size:20px;line-height:1}
+.bn-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.5px;text-transform:uppercase}
 
 /* LOADING */
-.loading-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 999; transition: opacity 0.3s; }
-.loading-overlay.hidden { opacity: 0; pointer-events: none; }
-.loading-logo { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 3px; color: var(--text); margin-bottom: 6px; }
-.loading-logo span { color: var(--accent); }
-.loading-sub { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--faint); text-transform: uppercase; margin-bottom: 28px; }
-.loading-bar { width: 120px; height: 2px; background: var(--border); border-radius: 1px; overflow: hidden; }
-.loading-bar-fill { height: 100%; background: var(--accent); border-radius: 1px; animation: loadbar 1.8s ease-in-out infinite; }
-@keyframes loadbar { 0%{width:0;transform:translateX(0)} 50%{width:80px} 100%{width:0;transform:translateX(120px)} }
+.loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 0.3s}
+.loading-overlay.hidden{opacity:0;pointer-events:none}
+.loading-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;color:var(--text);margin-bottom:6px}
+.loading-logo span{color:var(--accent)}
+.loading-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:28px}
+.loading-bar{width:120px;height:2px;background:var(--border);border-radius:1px;overflow:hidden}
+.loading-bar-fill{height:100%;background:var(--accent);border-radius:1px;animation:loadbar 1.8s ease-in-out infinite}
+@keyframes loadbar{0%{width:0;transform:translateX(0)}50%{width:80px}100%{width:0;transform:translateX(120px)}}
+
+/* MODAL / POPUP */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.modal-backdrop.open{opacity:1;pointer-events:all}
+.modal-sheet{background:var(--surface);border:1px solid var(--border);border-radius:12px 12px 0 0;width:100%;max-width:480px;max-height:85dvh;overflow-y:auto;padding:20px 18px calc(var(--sb) + 20px);transform:translateY(100%);transition:transform 0.25s cubic-bezier(0.4,0,0.2,1)}
+.modal-backdrop.open .modal-sheet{transform:translateY(0)}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.5px;margin-bottom:14px}
+.modal-close{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+
+/* ONBOARDING */
+.onboarding-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:300;display:flex;align-items:center;justify-content:center;padding:24px}
+.onboarding-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:100%;max-width:420px;max-height:85dvh;overflow-y:auto;padding:24px 20px}
+.onboarding-logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:4px}
+.onboarding-logo span{color:var(--accent)}
+.onboarding-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:1px;margin-bottom:20px}
+.onboarding-step{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.onboarding-h{font-size:16px;font-weight:600;margin-bottom:12px}
 
 /* MISC */
-.no-data { text-align: center; padding: 32px; color: var(--faint); font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.5px; }
-.toast { position: fixed; bottom: calc(var(--sb) + 72px); left: 50%; transform: translateX(-50%) translateY(20px); background: var(--accent); color: #000; font-family: 'DM Mono', monospace; font-size: 11px; padding: 10px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.25s, transform 0.25s; pointer-events: none; z-index: 200; white-space: nowrap; }
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.no-data{text-align:center;padding:32px;color:var(--faint);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px}
+.toast{position:fixed;bottom:calc(var(--sb) + 72px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#000;font-family:'DM Mono',monospace;font-size:11px;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity 0.25s,transform 0.25s;pointer-events:none;z-index:200;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-@media (min-width: 480px) { .bottom-nav { left: 0; right: 0; transform: none; } }
+@media(min-width:480px){.bottom-nav{left:0;right:0;transform:none}.cal-add-btn{right:18px}}
 </style>
 </head>
 <body>
@@ -244,6 +269,80 @@ html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', 
 
 <div class="toast" id="toast"></div>
 
+<!-- DAY DETAIL MODAL -->
+<div class="modal-backdrop" id="dayModal" onclick="closeDayModal(event)">
+  <div class="modal-sheet" id="dayModalSheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeDayModal()">×</button>
+    <div id="dayModalContent"></div>
+  </div>
+</div>
+
+<!-- RACE ADD/EDIT MODAL -->
+<div class="modal-backdrop" id="raceModal" onclick="closeRaceModal(event)">
+  <div class="modal-sheet" id="raceModalSheet">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeRaceModal()">×</button>
+    <div id="raceModalContent"></div>
+  </div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="onboarding-overlay" id="onboarding" style="display:none">
+  <div class="onboarding-card">
+    <div class="onboarding-logo">RUNNING<span>X</span></div>
+    <div class="onboarding-sub" id="obSub">WELKOM · STEL JE DOEL IN</div>
+    <div id="onboardingStep1">
+      <div class="onboarding-step">Stap 1 van 2 — Jouw doel</div>
+      <div class="onboarding-h">Wat is je naam en doeltijd?</div>
+      <div class="settings-field">
+        <label class="settings-label" data-i18n="goal_name"></label>
+        <input type="text" class="settings-input" id="obName" placeholder="Bijv. Luuk">
+      </div>
+      <div class="settings-field">
+        <label class="settings-label" data-i18n="goal_dist"></label>
+        <select class="settings-input" id="obDist">
+          <option value="">—</option>
+          <option value="800m">800m</option><option value="1500m">1500m</option>
+          <option value="1mile">1 mile</option><option value="5km">5 km</option>
+          <option value="10km" selected>10 km</option><option value="10mile">10 mile</option>
+          <option value="HM">Halve marathon</option><option value="M">Marathon</option>
+        </select>
+      </div>
+      <div class="settings-field">
+        <label class="settings-label" data-i18n="goal_time"></label>
+        <input type="text" class="settings-input" id="obTime" placeholder="37:30">
+      </div>
+      <div class="settings-field">
+        <label class="settings-label" data-i18n="goal_race"></label>
+        <input type="text" class="settings-input" id="obRace" placeholder="Bijv. Big10 Rotterdam">
+      </div>
+      <div class="settings-field">
+        <label class="settings-label" data-i18n="goal_date"></label>
+        <input type="date" class="settings-input" id="obDate">
+      </div>
+      <button class="btn-primary" onclick="onboardingNext()">Volgende →</button>
+    </div>
+    <div id="onboardingStep2" style="display:none">
+      <div class="onboarding-step">Stap 2 van 2 — Persoonlijke Records</div>
+      <div class="onboarding-h">Voeg je PR's toe (optioneel)</div>
+      <div class="settings-field">
+        <label class="settings-label" data-i18n="pr_add"></label>
+        <select class="settings-input" id="obPrDist" onchange="addObPrField()">
+          <option value="">—</option>
+          <option value="800m">800m</option><option value="1500m">1500m</option>
+          <option value="1mile">1 mile</option><option value="5km">5 km</option>
+          <option value="10km">10 km</option><option value="10mile">10 mile</option>
+          <option value="HM">Halve marathon</option><option value="M">Marathon</option>
+        </select>
+      </div>
+      <div id="obPrFields"></div>
+      <button class="btn-primary" onclick="onboardingFinish()" style="margin-top:8px">Aan de slag 🏃</button>
+      <button class="btn-secondary" onclick="onboardingFinish()">Overslaan</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
   <div class="topbar">
     <div>
@@ -254,24 +353,14 @@ html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', 
       <div id="topbarGoal"></div>
       <div id="topbarPR"></div>
     </div>
-    <button id="langToggle" onclick="toggleLang()" style="background:none;border:none;cursor:pointer;font-size:20px;padding:0;flex-shrink:0;">🇳🇱</button>
+    <button class="topbar-gear" onclick="switchTab('settings')" title="Instellingen">⚙</button>
   </div>
 
   <div class="countdown-strip" id="countdownStrip"></div>
 
-  <div class="tabs" id="tabsEl">
-    <button class="tab active" data-tab="today"></button>
-    <button class="tab" data-tab="week"></button>
-    <button class="tab" data-tab="plan"></button>
-    <button class="tab" data-tab="stats"></button>
-    <button class="tab" data-tab="settings"></button>
-  </div>
-
   <div class="scroll-area" id="scrollArea">
-
     <div class="view active" id="view-today"><div id="todayContent"><div class="no-data">…</div></div></div>
     <div class="view" id="view-week"><div id="weekContent"><div class="no-data">…</div></div></div>
-
     <div class="view" id="view-plan">
       <div class="phase-tabs" id="phaseTabs">
         <button class="phase-tab active" data-phase="1"></button>
@@ -281,40 +370,9 @@ html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', 
       </div>
       <div id="planContent"><div class="plan-loading">…</div></div>
     </div>
-
+    <div class="view" id="view-calendar"><div id="calContent"></div></div>
     <div class="view" id="view-stats"><div id="statsContent"><div class="no-data">…</div></div></div>
-
     <div class="view" id="view-settings">
-      <div class="settings-section">
-        <div class="settings-title" data-i18n="goal_title"></div>
-        <div class="settings-field">
-          <label class="settings-label" data-i18n="goal_name"></label>
-          <input type="text" class="settings-input" id="goalName" oninput="saveGoal()">
-        </div>
-        <div class="settings-field">
-          <label class="settings-label" data-i18n="goal_dist"></label>
-          <select class="settings-input" id="goalDist" onchange="saveGoal()">
-            <option value="">—</option>
-            <option value="800m">800m</option><option value="1500m">1500m</option>
-            <option value="1mile">1 mile</option><option value="5km">5 km</option>
-            <option value="10km">10 km</option><option value="10mile">10 mile</option>
-            <option value="HM" data-i18n-opt="hm"></option>
-            <option value="M" data-i18n-opt="marathon"></option>
-          </select>
-        </div>
-        <div class="settings-field">
-          <label class="settings-label" data-i18n="goal_time"></label>
-          <input type="text" class="settings-input" id="goalTime" placeholder="37:30" oninput="saveGoal()">
-        </div>
-        <div class="settings-field">
-          <label class="settings-label" data-i18n="goal_race"></label>
-          <input type="text" class="settings-input" id="goalRace" oninput="saveGoal()">
-        </div>
-        <div class="settings-field">
-          <label class="settings-label" data-i18n="goal_date"></label>
-          <input type="date" class="settings-input" id="goalDate" oninput="saveGoal()">
-        </div>
-      </div>
 
       <div class="settings-section">
         <div class="settings-title" data-i18n="pr_title"></div>
@@ -333,6 +391,23 @@ html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', 
       </div>
 
       <div class="settings-section">
+        <div class="settings-title" data-i18n="lang_title"></div>
+        <div class="lang-toggle-row">
+          <button class="lang-btn" id="langBtnNl" onclick="setLang('nl')">🇳🇱 Nederlands</button>
+          <button class="lang-btn" id="langBtnEn" onclick="setLang('en')">🇬🇧 English</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title" data-i18n="notif_title"></div>
+        <div class="settings-field">
+          <label class="settings-label" data-i18n="notif_telegram"></label>
+          <input type="text" class="settings-input" id="telegramUser" placeholder="@gebruikersnaam" oninput="saveTelegram()">
+          <div class="settings-hint" data-i18n="notif_hint"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
         <div class="settings-title">API</div>
         <div class="settings-field">
           <label class="settings-label">Apps Script URL</label>
@@ -348,255 +423,262 @@ html, body { background: var(--bg); color: var(--text); font-family: 'DM Sans', 
 
       <div class="settings-section">
         <div class="settings-title" data-i18n="appinfo_title"></div>
-        <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.0.0<br><span style="color:var(--accent)">🏃</span></div>
+        <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.2.0<br><span style="color:var(--accent)">🏃</span></div>
       </div>
     </div>
-
   </div>
 
   <div class="bottom-nav" id="bottomNav">
     <button class="bn-item active" data-tab="today"><span class="bn-icon">📍</span><span class="bn-label"></span></button>
     <button class="bn-item" data-tab="week"><span class="bn-icon">📅</span><span class="bn-label"></span></button>
     <button class="bn-item" data-tab="plan"><span class="bn-icon">🗓</span><span class="bn-label"></span></button>
+    <button class="bn-item" data-tab="calendar"><span class="bn-icon">📆</span><span class="bn-label"></span></button>
     <button class="bn-item" data-tab="stats"><span class="bn-icon">📊</span><span class="bn-label"></span></button>
-    <button class="bn-item" data-tab="settings"><span class="bn-icon">⚙️</span><span class="bn-label"></span></button>
   </div>
 </div>
 
+<!-- Calendar add button, only visible on calendar tab -->
+<button class="cal-add-btn" id="calAddBtn" style="display:none" onclick="openRaceModal()">+</button>
+
 <script>
 // ── CONSTANTS ──────────────────────────────────────────────────────────────
-const RACES = [
-  { name:'Koning v. Spanje', date:'2026-05-09', dist:'~20km trail' },
-  { name:'Bijlmerrun',       date:'2026-05-16', dist:'10km' },
-  { name:'Big5 ⚡',          date:'2026-06-13', dist:'5km Utrecht', hi:true },
-  { name:'Big10 🎯',         date:'2026-09-05', dist:'10km Rotterdam', hi:true },
+const PHASES=[
+  {num:1,key:'phase_1',start:'2026-04-20',end:'2026-05-18'},
+  {num:2,key:'phase_2',start:'2026-05-19',end:'2026-06-13'},
+  {num:3,key:'phase_3',start:'2026-06-14',end:'2026-08-17'},
+  {num:4,key:'phase_4',start:'2026-08-18',end:'2026-09-05'},
 ];
-
-const PHASES = [
-  { num:1, key:'phase_1', start:'2026-04-20', end:'2026-05-18' },
-  { num:2, key:'phase_2', start:'2026-05-19', end:'2026-06-13' },
-  { num:3, key:'phase_3', start:'2026-06-14', end:'2026-08-17' },
-  { num:4, key:'phase_4', start:'2026-08-18', end:'2026-09-05' },
+const TYPE_MAP=[
+  {keys:['interval','tempo','duur','run'],bg:'var(--run-bg)',text:'var(--run-text)',i18n:'type_run'},
+  {keys:['kracht','strength'],            bg:'var(--str-bg)',text:'var(--str-text)',i18n:'type_str'},
+  {keys:['mob'],                          bg:'var(--mob-bg)',text:'var(--mob-text)',i18n:'type_mob'},
+  {keys:['race'],                         bg:'var(--race-bg)',text:'var(--race-text)',i18n:'type_race'},
+  {keys:['colorado','work'],              bg:'var(--work-bg)',text:'var(--work-text)',i18n:'type_work'},
 ];
+const TYPE_REST={bg:'var(--rest-bg)',text:'var(--rest-text)',i18n:'type_rest'};
+const PR_ORDER=['800m','1500m','1mile','5km','10km','10mile','HM','M'];
+const DAYS_NL=['Zo','Ma','Di','Wo','Do','Vr','Za'];
+const DAYS_EN=['Su','Mo','Tu','We','Th','Fr','Sa'];
+const MONTHS_FULL_NL=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const MONTHS_FULL_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTHS_NL=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const MONTHS_EN=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
 
-const TYPE_MAP = [
-  { keys:['interval','tempo','duur','run'], bg:'var(--run-bg)', text:'var(--run-text)', i18n:'type_run' },
-  { keys:['kracht','strength'],             bg:'var(--str-bg)', text:'var(--str-text)', i18n:'type_str' },
-  { keys:['mob'],                           bg:'var(--mob-bg)', text:'var(--mob-text)', i18n:'type_mob' },
-  { keys:['race'],                          bg:'var(--race-bg)',text:'var(--race-text)',i18n:'type_race' },
-  { keys:['colorado','work'],               bg:'var(--work-bg)',text:'var(--work-text)',i18n:'type_work' },
-];
-const TYPE_REST = { bg:'var(--rest-bg)', text:'var(--rest-text)', i18n:'type_rest' };
-
-const PR_ORDER = ['800m','1500m','1mile','5km','10km','10mile','HM','M'];
-
-const DAYS_NL = ['Zo','Ma','Di','Wo','Do','Vr','Za'];
-const DAYS_EN = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-const MONTHS_NL = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
-const MONTHS_EN = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
-
-// ── I18N ──────────────────────────────────────────────────────────────────
-const STRINGS = {
+// ── I18N ───────────────────────────────────────────────────────────────────
+const STRINGS={
   nl:{
-    today:'Vandaag',week:'Week',plan:'Plan',stats:'Stats',settings:'Instellingen',
-    goal_title:'Doel',goal_name:'Naam',goal_dist:'Doelafstand',goal_time:'Doeltijd',goal_race:'Race naam',goal_date:'Racedatum',
+    today:'Vandaag',week:'Week',plan:'Plan',calendar:'Kalender',stats:'Stats',settings:'Instellingen',
     pr_title:'Persoonlijke Records',pr_add:'Afstand toevoegen',
+    lang_title:'Taal',
+    notif_title:'Notificaties',notif_telegram:'Telegram gebruikersnaam',notif_hint:'Koppeling met Telegram bot (binnenkort beschikbaar).',
     api_hint:'URL van je gepubliceerde Google Apps Script Web App.',
     api_save:'Opslaan & verbinden',not_connected:'Niet verbonden',appinfo_title:'App info',
     enter_url:'Voer een URL in',connecting:'Verbinding testen…',
-    goal_lbl:'Doel',pr_lbl:'PR',
+    goal_lbl:'Doel',pr_lbl:'PR',goal_name:'Naam',goal_dist:'Doelafstand',goal_time:'Doeltijd',goal_race:'Race naam',goal_date:'Racedatum',
     rest_day:'Rustdag',mob_reminder:'Dagelijkse routine',mob_text:'💪 Kuit mobiliteit · 🦵 Heup mobiliteit · Elke dag!',
     tomorrow:'Morgen →',setup_title:'Setup vereist',setup_body:'Ga naar Instellingen en voer je Apps Script URL in.',
-    feedback_q:'Hoe ging de training?',feedback_save:'Feedback opslaan',
+    feedback_q:'Hoe ging de training?',feedback_save:'Feedback opslaan',notes_q:'Notities voor deze dag',notes_save:'Notitie opslaan',
     feedback_logged:'✓ Feedback gelogd',feedback_edit:'Aanpassen',feedback_update:'Bijwerken',feedback_cancel:'Annuleren',
     select_score:'Selecteer eerst een score',
     week_planned:'km gepland',week_sessions:'trainingen',week_work:'colorado',
     week_progress:'Weekvoortgang',week_done:'gedaan',week_feedback:'feedback',week_todo:'Nog te doen',
     phase_1:'Herstel',phase_2:'Opbouw',phase_3:'Intensiteit',phase_4:'Tapering',fase:'Fase',
     type_run:'Hardlopen',type_str:'Kracht',type_mob:'Mobiliteit',type_race:'Race',type_work:'Colorado',type_rest:'Rust',
-    days_ago:'geweest',days_today:'VANDAAG!',days_label:'dagen',hm:'Halve marathon',marathon:'Marathon',
+    days_ago:'geweest',days_today:'VANDAAG!',days_label:'dagen',weeks_label:'wkn',months_label:'mnd',
+    hm:'Halve marathon',marathon:'Marathon',
     pr_none:'Nog geen afstanden toegevoegd.',
     stats_total:'Totaal km',stats_done:'km in plan',stats_days:'Dagen tot race',
     stats_runs:'Runs gelogd',stats_sessions:'trainingen gedaan',stats_week:'Deze week',stats_week_sub:'km tot nu toe',
     stats_feel:'Gem. gevoel',stats_feedback:'Feedback',stats_fb_sub:'sessies gelogd',stats_recent:'Recente feedback',
     phase_km:'km gepland',no_data:'Geen data',
+    race_add:'Race toevoegen',race_name:'Race naam',race_date:'Datum',race_dist:'Afstand',race_main:'Hoofddoel',race_save:'Opslaan',race_delete:'Verwijderen',
   },
   en:{
-    today:'Today',week:'Week',plan:'Plan',stats:'Stats',settings:'Settings',
-    goal_title:'Goal',goal_name:'Name',goal_dist:'Target distance',goal_time:'Target time',goal_race:'Race name',goal_date:'Race date',
+    today:'Today',week:'Week',plan:'Plan',calendar:'Calendar',stats:'Stats',settings:'Settings',
     pr_title:'Personal Records',pr_add:'Add distance',
+    lang_title:'Language',
+    notif_title:'Notifications',notif_telegram:'Telegram username',notif_hint:'Telegram bot connection (coming soon).',
     api_hint:'URL of your published Google Apps Script Web App.',
     api_save:'Save & connect',not_connected:'Not connected',appinfo_title:'App info',
     enter_url:'Enter a URL',connecting:'Testing connection…',
-    goal_lbl:'Goal',pr_lbl:'PR',
+    goal_lbl:'Goal',pr_lbl:'PR',goal_name:'Name',goal_dist:'Target distance',goal_time:'Target time',goal_race:'Race name',goal_date:'Race date',
     rest_day:'Rest day',mob_reminder:'Daily routine',mob_text:'💪 Calf mobility · 🦵 Hip mobility · Every day!',
     tomorrow:'Tomorrow →',setup_title:'Setup required',setup_body:'Go to Settings and enter your Apps Script URL.',
-    feedback_q:'How did the session go?',feedback_save:'Save feedback',
+    feedback_q:'How did the session go?',feedback_save:'Save feedback',notes_q:'Notes for this day',notes_save:'Save note',
     feedback_logged:'✓ Feedback logged',feedback_edit:'Edit',feedback_update:'Update',feedback_cancel:'Cancel',
     select_score:'Select a score first',
     week_planned:'km planned',week_sessions:'sessions',week_work:'work days',
     week_progress:'Week progress',week_done:'done',week_feedback:'feedback',week_todo:'Still to do',
     phase_1:'Recovery',phase_2:'Base build',phase_3:'Intensity',phase_4:'Tapering',fase:'Phase',
     type_run:'Running',type_str:'Strength',type_mob:'Mobility',type_race:'Race',type_work:'Work',type_rest:'Rest',
-    days_ago:'past',days_today:'TODAY!',days_label:'days',hm:'Half marathon',marathon:'Marathon',
+    days_ago:'past',days_today:'TODAY!',days_label:'days',weeks_label:'wks',months_label:'mo',
+    hm:'Half marathon',marathon:'Marathon',
     pr_none:'No distances added yet.',
     stats_total:'Total km',stats_done:'km in plan',stats_days:'Days to race',
     stats_runs:'Runs logged',stats_sessions:'sessions done',stats_week:'This week',stats_week_sub:'km so far',
     stats_feel:'Avg feeling',stats_feedback:'Feedback',stats_fb_sub:'sessions logged',stats_recent:'Recent feedback',
     phase_km:'km planned',no_data:'No data',
+    race_add:'Add race',race_name:'Race name',race_date:'Date',race_dist:'Distance',race_main:'Main goal',race_save:'Save',race_delete:'Delete',
   }
 };
 
-// ── STATE ─────────────────────────────────────────────────────────────────
-const state = {
-  scriptUrl:       localStorage.getItem('scriptUrl') || '',
-  lang:            localStorage.getItem('lang') || 'nl',
-  data:            null,
-  currentTab:      'today',
-  currentPhase:    1,
-  selectedRating:  0,
-  editingFeedback: false,
-  _goal: null, _prs: null,  // localStorage cache
+// ── STATE ──────────────────────────────────────────────────────────────────
+const state={
+  scriptUrl:localStorage.getItem('scriptUrl')||'',
+  lang:localStorage.getItem('lang')||'nl',
+  data:null,
+  currentTab:'today',
+  currentPhase:1,
+  selectedRating:0,
+  editingFeedback:false,
+  calYear:new Date().getFullYear(),
+  calMonth:new Date().getMonth(),
+  editingRaceId:null,
+  _goal:null,_prs:null,_races:null,
 };
 
-// ── HELPERS ───────────────────────────────────────────────────────────────
-const T = k => STRINGS[state.lang]?.[k] ?? STRINGS.nl[k] ?? k;
-const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const todayStr = () => new Date().toISOString().split('T')[0];
-const parseDate = s => new Date(s + 'T00:00:00');
-const daysUntil = s => { const n=new Date(); n.setHours(0,0,0,0); return Math.round((parseDate(s)-n)/86400000); };
+// ── HELPERS ────────────────────────────────────────────────────────────────
+const T=k=>STRINGS[state.lang]?.[k]??STRINGS.nl[k]??k;
+const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const todayStr=()=>new Date().toISOString().split('T')[0];
+const parseDate=s=>new Date(s+'T00:00:00');
+const daysUntil=s=>{const n=new Date();n.setHours(0,0,0,0);return Math.round((parseDate(s)-n)/86400000);};
 
-function fmtDate(s) {
-  const d = parseDate(s), days = state.lang==='en'?DAYS_EN:DAYS_NL, months = state.lang==='en'?MONTHS_EN:MONTHS_NL;
+function fmtDate(s){
+  const d=parseDate(s),days=state.lang==='en'?DAYS_EN:DAYS_NL,months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
   return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
 }
+function fmtDateFull(s){
+  const d=parseDate(s),days=state.lang==='en'?DAYS_EN:DAYS_NL,mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
+  return `${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]} ${d.getFullYear()}`;
+}
 
-function getMondayStr() {
-  const n = new Date(); n.setHours(0,0,0,0);
-  n.setDate(n.getDate() - (n.getDay()===0 ? 6 : n.getDay()-1));
+// Always Monday-based week
+function getMondayStr(baseDate){
+  const n=baseDate?new Date(baseDate):new Date();n.setHours(0,0,0,0);
+  const dow=n.getDay();
+  n.setDate(n.getDate()-(dow===0?6:dow-1));
   return n.toISOString().split('T')[0];
 }
-
-function getWeekDates() {
-  const m = parseDate(getMondayStr());
-  return Array.from({length:7}, (_,i) => { const d=new Date(m); d.setDate(m.getDate()+i); return d.toISOString().split('T')[0]; });
+function getWeekDates(baseDate){
+  const m=parseDate(getMondayStr(baseDate));
+  return Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return d.toISOString().split('T')[0];});
 }
 
-function typeOf(type) {
-  if (!type) return TYPE_REST;
-  const t = type.toLowerCase();
-  return TYPE_MAP.find(m => m.keys.some(k => t.includes(k))) ?? TYPE_REST;
+function typeOf(type){
+  if(!type)return TYPE_REST;
+  const t=type.toLowerCase();
+  return TYPE_MAP.find(m=>m.keys.some(k=>t.includes(k)))??TYPE_REST;
+}
+const isWork=t=>['colorado','work'].some(k=>(t||'').toLowerCase().includes(k));
+const isRace=t=>(t||'').toLowerCase().includes('race');
+
+// Smart countdown display
+function countdownDisplay(days){
+  if(days<0)return{val:'✓',unit:T('days_ago')};
+  if(days===0)return{val:'!',unit:T('days_today')};
+  if(days<=30)return{val:days,unit:T('days_label')};
+  if(days<=90)return{val:Math.round(days/7),unit:T('weeks_label')};
+  return{val:Math.round(days/30),unit:T('months_label')};
 }
 
-const isWork = t => ['colorado','work'].some(k => (t||'').toLowerCase().includes(k));
-const isRace = t => (t||'').toLowerCase().includes('race');
+// ── LOCALSTORAGE ───────────────────────────────────────────────────────────
+function loadGoal(){if(!state._goal){try{state._goal=JSON.parse(localStorage.getItem('goal')||'{}')}catch{state._goal={}}}return state._goal;}
+function loadPRs(){if(!state._prs){try{state._prs=JSON.parse(localStorage.getItem('prs')||'{}')}catch{state._prs={}}}return state._prs;}
+function loadRaces(){if(!state._races){try{state._races=JSON.parse(localStorage.getItem('userRaces')||'[]')}catch{state._races=[]}}return state._races;}
+function persistGoal(g){state._goal=g;localStorage.setItem('goal',JSON.stringify(g));}
+function persistPRs(p){state._prs=p;localStorage.setItem('prs',JSON.stringify(p));}
+function persistRaces(r){state._races=r;localStorage.setItem('userRaces',JSON.stringify(r));}
 
-// ── LOCALSTORAGE CACHE ────────────────────────────────────────────────────
-function loadGoal() {
-  if (!state._goal) { try { state._goal = JSON.parse(localStorage.getItem('goal')||'{}'); } catch { state._goal={}; } }
-  return state._goal;
-}
-function loadPRs() {
-  if (!state._prs) { try { state._prs = JSON.parse(localStorage.getItem('prs')||'{}'); } catch { state._prs={}; } }
-  return state._prs;
-}
-function persistGoal(g) { state._goal=g; localStorage.setItem('goal',JSON.stringify(g)); }
-function persistPRs(p)  { state._prs=p;  localStorage.setItem('prs', JSON.stringify(p)); }
-
-// ── DATA ──────────────────────────────────────────────────────────────────
-async function fetchData() {
-  if (!state.scriptUrl) { hideLoading(); renderActiveView(); renderCountdown(); return; }
-  try {
-    const res = await fetch(state.scriptUrl + '?action=getAll');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const json = await res.json();
-    if (json.status !== 'ok') throw new Error(json.message || 'Error');
-    state.data = json.rows;
+// ── DATA ───────────────────────────────────────────────────────────────────
+async function fetchData(){
+  if(!state.scriptUrl){hideLoading();renderActiveView();renderCountdown();return;}
+  try{
+    const res=await fetch(state.scriptUrl+'?action=getAll');
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const json=await res.json();
+    if(json.status!=='ok')throw new Error(json.message||'Error');
+    state.data=json.rows;
     updateConnectionStatus(true);
-  } catch(e) {
-    updateConnectionStatus(false, e.message);
-  }
-  hideLoading();
-  renderActiveView();
-  renderCountdown();
-  updateHeader();
+  }catch(e){updateConnectionStatus(false,e.message);}
+  hideLoading();renderActiveView();renderCountdown();updateHeader();
 }
 
-async function submitFeedback(datum, rating, tekst) {
-  if (!state.scriptUrl) { showToast('❌ ' + T('enter_url')); return false; }
-  try {
-    const params = new URLSearchParams({ action:'setFeedback', datum, rating, tekst:tekst||'' });
-    const json = await (await fetch(state.scriptUrl + '?' + params)).json();
-    if (json.status !== 'ok') throw new Error(json.message);
-    if (state.data) {
-      const row = state.data.find(r => r.datum === datum);
-      if (row) {
-        const emojis = ['😵','😓','😐','💪','🔥'];
-        row.feedback = `${rating}/5 ${emojis[rating-1]}${tekst?' – '+tekst:''}`;
-      }
+async function submitFeedback(datum,rating,tekst){
+  if(!state.scriptUrl){showToast('❌ '+T('enter_url'));return false;}
+  try{
+    const params=new URLSearchParams({action:'setFeedback',datum,rating,tekst:tekst||''});
+    const json=await(await fetch(state.scriptUrl+'?'+params)).json();
+    if(json.status!=='ok')throw new Error(json.message);
+    if(state.data){
+      const row=state.data.find(r=>r.datum===datum);
+      if(row){const e=['😵','😓','😐','💪','🔥'];row.feedback=`${rating}/5 ${e[rating-1]}${tekst?' – '+tekst:''}`;}
     }
-    showToast('✓ ' + T('feedback_logged'));
-    return true;
-  } catch(e) { showToast('❌ ' + e.message); return false; }
+    showToast('✓ '+T('feedback_logged'));return true;
+  }catch(e){showToast('❌ '+e.message);return false;}
 }
 
-// ── RENDER DISPATCH ───────────────────────────────────────────────────────
-function renderActiveView() {
-  switch(state.currentTab) {
-    case 'today':    renderToday();          break;
-    case 'week':     renderWeek();           break;
-    case 'plan':     renderPlan();           break;
-    case 'stats':    renderStats();          break;
-    case 'settings': renderSettingsFields(); break;
+// ── RENDER DISPATCH ────────────────────────────────────────────────────────
+function renderActiveView(){
+  switch(state.currentTab){
+    case 'today':    renderToday();break;
+    case 'week':     renderWeek();break;
+    case 'plan':     renderPlan();break;
+    case 'calendar': renderCalendar();break;
+    case 'stats':    renderStats();break;
+    case 'settings': renderSettingsFields();break;
   }
 }
 
-// ── COUNTDOWN ─────────────────────────────────────────────────────────────
-function renderCountdown() {
-  const visible = RACES.filter(r => daysUntil(r.date) >= -1);
-  document.getElementById('countdownStrip').innerHTML = visible.map((r,i) => {
-    const d = daysUntil(r.date);
+// ── COUNTDOWN ──────────────────────────────────────────────────────────────
+function renderCountdown(){
+  // Combine static phases + user races for countdown
+  const userRaces=loadRaces();
+  const allRaces=[
+    ...userRaces.filter(r=>r.date).map(r=>({name:r.name,date:r.date,dist:r.dist||'',hi:r.mainGoal}))
+  ];
+  // fallback: if no user races, show nothing special
+  const visible=allRaces.filter(r=>daysUntil(r.date)>=-1).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,5);
+  if(!visible.length){document.getElementById('countdownStrip').innerHTML='';document.getElementById('countdownStrip').style.display='none';return;}
+  document.getElementById('countdownStrip').style.display='';
+  document.getElementById('countdownStrip').innerHTML=visible.map((r,i)=>{
+    const d=daysUntil(r.date),cd=countdownDisplay(d);
     return `${i>0?'<div class="cd-sep"></div>':''}
     <div class="cd-item${r.hi?' hi':''}">
       <div class="cd-race${r.hi?' hi':''}">${esc(r.name)}</div>
-      <div class="cd-days">${d<0?'✓':d}</div>
-      <div class="cd-label">${d<0?T('days_ago'):d===0?T('days_today'):T('days_label')}</div>
-      <div class="cd-label">${r.dist}</div>
+      <div class="cd-days">${cd.val}</div>
+      <div class="cd-label">${cd.unit}</div>
+      <div class="cd-label">${esc(r.dist)}</div>
     </div>`;
   }).join('');
 }
 
-// ── TODAY ─────────────────────────────────────────────────────────────────
-function getCurrentPhase() {
-  const t = todayStr();
-  return PHASES.find(p => t>=p.start && t<=p.end) ?? PHASES[0];
-}
+// ── TODAY ──────────────────────────────────────────────────────────────────
+function getCurrentPhase(){const t=todayStr();return PHASES.find(p=>t>=p.start&&t<=p.end)??PHASES[0];}
 
-function renderToday() {
-  const el = document.getElementById('todayContent');
-  const t = todayStr(), phase = getCurrentPhase();
+function renderToday(){
+  const el=document.getElementById('todayContent');
+  const t=todayStr(),phase=getCurrentPhase();
+  const days=state.lang==='en'?DAYS_EN:DAYS_NL;
+  const mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
+  const d=parseDate(t);
+  const dateStr=`${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}`;
 
-  let h = `<div class="today-header">
-    <div class="today-date">${fmtDate(t)}</div>
-    <div class="today-phase">${T('fase')} ${phase.num} · ${T(phase.key)}</div>
+  let h=`<div class="today-header">
+    <div class="today-date-big">${dateStr}</div>
+    <div class="today-phase-line">${T('fase')} ${phase.num} · ${T(phase.key)}</div>
   </div>`;
 
-  if (!state.scriptUrl) {
-    h += simpleCard('⚙️', T('setup_title'), null, null, T('setup_body'));
-    el.innerHTML = h; return;
-  }
-  if (!state.data) {
-    h += simpleCard('⏳', T('connecting'), null, null, null);
-    el.innerHTML = h; return;
-  }
+  if(!state.scriptUrl){h+=simpleCard('⚙️',T('setup_title'),null,null,T('setup_body'));el.innerHTML=h;return;}
+  if(!state.data){h+=simpleCard('⏳',T('connecting'),null,null,null);el.innerHTML=h;return;}
 
-  const row = state.data.find(r => r.datum === t);
-  if (!row) {
-    h += simpleCard('😴', T('rest_day'), null, null, null, 'faded');
-  } else {
-    const ti = typeOf(row.type);
-    const border = isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
-    h += `<div class="card ${border}">
+  const row=state.data.find(r=>r.datum===t);
+  if(!row){
+    h+=simpleCard('😴',T('rest_day'),null,null,null,'faded');
+  }else{
+    const ti=typeOf(row.type);
+    const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
+    h+=`<div class="card ${border}">
       <div class="tc-top">
         <div class="tc-emoji">${row.emoji||'🏃'}</div>
         <div class="tc-main">
@@ -607,26 +689,24 @@ function renderToday() {
       </div>
       ${row.detail?`<div class="tc-detail">${esc(row.detail)}</div>`:''}
     </div>`;
-    if (!isWork(row.type)) h += feedbackHtml(row.datum, row.feedback);
+    if(!isWork(row.type))h+=feedbackHtml(row.datum,row.feedback);
   }
 
-  // Tomorrow
-  const tmrDate = new Date(); tmrDate.setDate(tmrDate.getDate()+1);
-  const tmr = state.data.find(r => r.datum === tmrDate.toISOString().split('T')[0]);
-  if (tmr) h += `<div class="card card-pad faded">
+  const tmrDate=new Date();tmrDate.setDate(tmrDate.getDate()+1);
+  const tmr=state.data.find(r=>r.datum===tmrDate.toISOString().split('T')[0]);
+  if(tmr)h+=`<div class="card card-pad faded">
     <div class="tmr-label">${T('tomorrow')}</div>
     <div class="tmr-title">${tmr.emoji||''} ${esc(tmr.titel||'')}</div>
     ${tmr.km?`<div class="tmr-metric">${esc(tmr.km)} km</div>`:''}
   </div>`;
 
-  h += `<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
-
-  el.innerHTML = h;
+  h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
+  el.innerHTML=h;
   attachStarListeners();
 }
 
-function simpleCard(emoji, title, km, type, detail, extra='') {
-  const ti = type ? typeOf(type) : null;
+function simpleCard(emoji,title,km,type,detail,extra=''){
+  const ti=type?typeOf(type):null;
   return `<div class="card ${extra}">
     <div class="tc-top">
       <div class="tc-emoji">${emoji}</div>
@@ -640,14 +720,11 @@ function simpleCard(emoji, title, km, type, detail, extra='') {
   </div>`;
 }
 
-function feedbackHtml(datum, existing) {
-  const isEdit = !!existing;
-  let rating=0, text='';
-  if (isEdit) {
-    const m = existing.match(/^(\d)/); if (m) rating=parseInt(m[1]);
-    const mt = existing.match(/–\s*(.+)$/); if (mt) text=mt[1];
-  }
-  if (isEdit && !state.editingFeedback) {
+function feedbackHtml(datum,existing){
+  const isEdit=!!existing;
+  let rating=0,text='';
+  if(isEdit){const m=existing.match(/^(\d)/);if(m)rating=parseInt(m[1]);const mt=existing.match(/–\s*(.+)$/);if(mt)text=mt[1];}
+  if(isEdit&&!state.editingFeedback){
     return `<div class="prev-feedback">
       <div class="prev-feedback-header">
         <span class="prev-feedback-label">${T('feedback_logged')}</span>
@@ -656,7 +733,7 @@ function feedbackHtml(datum, existing) {
       <div class="prev-feedback-text">${esc(existing)}</div>
     </div>`;
   }
-  const stars = ['😵','😓','😐','💪','🔥'].map((e,i) =>
+  const stars=['😵','😓','😐','💪','🔥'].map((e,i)=>
     `<button class="star-btn${rating>0&&(i+1)<=rating?' active':''}" data-val="${i+1}">${e}</button>`
   ).join('');
   return `<div class="feedback-section">
@@ -668,67 +745,58 @@ function feedbackHtml(datum, existing) {
   </div>`;
 }
 
-function attachStarListeners() {
-  if (state.editingFeedback && state.selectedRating) {
-    document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val)<=state.selectedRating));
-  }
-  document.querySelectorAll('.star-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.selectedRating = parseInt(btn.dataset.val);
-      document.querySelectorAll('.star-btn').forEach(b => b.classList.toggle('active', parseInt(b.dataset.val)<=state.selectedRating));
+function attachStarListeners(){
+  if(state.editingFeedback&&state.selectedRating)
+    document.querySelectorAll('.star-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.val)<=state.selectedRating));
+  document.querySelectorAll('.star-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.selectedRating=parseInt(btn.dataset.val);
+      document.querySelectorAll('.star-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.val)<=state.selectedRating));
     });
   });
 }
 
-async function handleFeedbackSubmit(datum) {
-  if (!state.selectedRating) { showToast(T('select_score')); return; }
-  const btn = document.getElementById('submitBtn');
-  const tekst = document.getElementById('feedbackText')?.value || '';
-  btn.disabled = true; btn.textContent = '…';
-  const ok = await submitFeedback(datum, state.selectedRating, tekst);
-  if (ok) { state.editingFeedback=false; state.selectedRating=0; setTimeout(renderToday, 800); }
-  else { btn.disabled=false; btn.textContent=T('feedback_save'); }
+async function handleFeedbackSubmit(datum){
+  if(!state.selectedRating){showToast(T('select_score'));return;}
+  const btn=document.getElementById('submitBtn');
+  const tekst=document.getElementById('feedbackText')?.value||'';
+  btn.disabled=true;btn.textContent='…';
+  const ok=await submitFeedback(datum,state.selectedRating,tekst);
+  if(ok){state.editingFeedback=false;state.selectedRating=0;setTimeout(renderToday,800);}
+  else{btn.disabled=false;btn.textContent=T('feedback_save');}
 }
 
-// ── WEEK ──────────────────────────────────────────────────────────────────
-function renderWeek() {
-  const el = document.getElementById('weekContent');
-  if (!state.data) { el.innerHTML=`<div class="no-data">${T('no_data')}</div>`; return; }
+// ── WEEK ───────────────────────────────────────────────────────────────────
+function renderWeek(){
+  const el=document.getElementById('weekContent');
+  if(!state.data){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;return;}
+  const t=todayStr(),dates=getWeekDates();
+  const days=state.lang==='en'?DAYS_EN:DAYS_NL;
+  const wd=dates.map(d=>({date:d,row:state.data.find(r=>r.datum===d)??null}));
+  const plannedKm=wd.reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
+  const doneKm=wd.filter(({date})=>date<=t).reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
+  const trainDays=wd.filter(({row})=>row&&!isWork(row.type)&&!['rust','herstel','rest'].some(k=>(row.type||'').toLowerCase().includes(k))).length;
+  const workDays=wd.filter(({row})=>row&&isWork(row.type)).length;
+  const fbDone=wd.filter(({row})=>row?.feedback).length;
+  const pct=plannedKm>0?Math.min(100,Math.round(doneKm/plannedKm*100)):0;
 
-  const t = todayStr(), dates = getWeekDates();
-  const days = state.lang==='en'?DAYS_EN:DAYS_NL;
-  const wd = dates.map(d => ({ date:d, row:state.data.find(r=>r.datum===d)??null }));
-
-  const plannedKm = wd.reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
-  const doneKm    = wd.filter(({date})=>date<=t).reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
-  const trainDays = wd.filter(({row})=>row&&!isWork(row.type)&&!['rust','herstel','rest'].some(k=>(row.type||'').toLowerCase().includes(k))).length;
-  const workDays  = wd.filter(({row})=>row&&isWork(row.type)).length;
-  const fbDone    = wd.filter(({row})=>row?.feedback).length;
-  const pct       = plannedKm>0 ? Math.min(100,Math.round(doneKm/plannedKm*100)) : 0;
-
-  let h = `<div class="week-stat-grid">
+  let h=`<div class="week-stat-grid">
     <div class="week-stat"><div class="week-stat-val" style="color:var(--accent)">${plannedKm.toFixed(0)}</div><div class="week-stat-lbl">${T('week_planned')}</div></div>
     <div class="week-stat"><div class="week-stat-val">${trainDays}</div><div class="week-stat-lbl">${T('week_sessions')}</div></div>
     <div class="week-stat"><div class="week-stat-val" style="color:var(--work-text)">${workDays}</div><div class="week-stat-lbl">${T('week_work')}</div></div>
   </div>
   <div class="progress-bar-wrap">
-    <div class="progress-bar-header">
-      <span class="progress-bar-label">${T('week_progress')}</span>
-      <span class="progress-bar-val">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span>
-    </div>
+    <div class="progress-bar-header"><span class="progress-bar-label">${T('week_progress')}</span><span class="progress-bar-val">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span></div>
     <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-    <div class="progress-bar-footer">
-      <span>${pct}% ${T('week_done')}</span>
-      <span style="color:${fbDone?'var(--accent)':'var(--faint)'}">✓ ${fbDone} ${T('week_feedback')}</span>
-    </div>
+    <div class="progress-bar-footer"><span>${pct}% ${T('week_done')}</span><span style="color:${fbDone?'var(--accent)':'var(--faint)'}">✓ ${fbDone} ${T('week_feedback')}</span></div>
   </div>
   <div class="day-tiles">`;
 
-  wd.forEach(({date,row}) => {
-    const isPast=date<t, isTdy=date===t, d=parseDate(date);
-    const ti = row?typeOf(row.type):null;
-    const dot = row ? (isWork(row.type)?'var(--work-text)':isRace(row.type)?'var(--race-text)':ti.text) : 'transparent';
-    h += `<div class="day-tile${isTdy?' is-today':''}${isPast&&!isTdy?' is-past':''}">
+  wd.forEach(({date,row})=>{
+    const isPast=date<t,isTdy=date===t,d=parseDate(date);
+    const ti=row?typeOf(row.type):null;
+    const dot=row?(isWork(row.type)?'var(--work-text)':isRace(row.type)?'var(--race-text)':ti.text):'transparent';
+    h+=`<div class="day-tile${isTdy?' is-today':''}${isPast&&!isTdy?' is-past':''}">
       <div class="day-tile-day">${days[d.getDay()]}</div>
       <div class="day-tile-num">${d.getDate()}</div>
       <div class="day-tile-dot" style="background:${dot}"></div>
@@ -736,14 +804,14 @@ function renderWeek() {
       ${row?.km?`<div class="day-tile-km">${parseFloat(row.km).toFixed(0)}k</div>`:''}
     </div>`;
   });
-  h += '</div>';
+  h+='</div>';
 
-  const upcoming = wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
-  if (upcoming.length) {
-    h += `<div class="section-label">${T('week_todo')}</div>`;
-    upcoming.forEach(({date,row}) => {
-      const isTdy=date===t, ti=typeOf(row.type), d=parseDate(date);
-      h += `<div class="upcoming-row${isTdy?' is-today':''}">
+  const upcoming=wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
+  if(upcoming.length){
+    h+=`<div class="section-label">${T('week_todo')}</div>`;
+    upcoming.forEach(({date,row})=>{
+      const isTdy=date===t,ti=typeOf(row.type),d=parseDate(date);
+      h+=`<div class="upcoming-row${isTdy?' is-today':''}" onclick="openDayModal('${date}')">
         <div class="upcoming-date${isTdy?' is-today':''}">
           <div class="upcoming-date-day">${days[d.getDay()]}</div>
           <div class="upcoming-date-num">${d.getDate()}</div>
@@ -757,32 +825,30 @@ function renderWeek() {
       </div>`;
     });
   }
-  el.innerHTML = h;
+  el.innerHTML=h;
 }
 
-// ── PLAN ──────────────────────────────────────────────────────────────────
-function renderPlan() {
-  const el = document.getElementById('planContent');
-  if (!state.data) { el.innerHTML='<div class="plan-loading">…</div>'; return; }
+// ── PLAN ───────────────────────────────────────────────────────────────────
+function renderPlan(){
+  const el=document.getElementById('planContent');
+  if(!state.data){el.innerHTML='<div class="plan-loading">…</div>';return;}
+  const phase=PHASES.find(p=>p.num===state.currentPhase)??PHASES[0];
+  const rows=state.data.filter(r=>r.datum>=phase.start&&r.datum<=phase.end);
+  const t=todayStr();
+  const totalKm=rows.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
 
-  const phase = PHASES.find(p=>p.num===state.currentPhase) ?? PHASES[0];
-  const rows = state.data.filter(r=>r.datum>=phase.start&&r.datum<=phase.end);
-  const t = todayStr();
-  const totalKm = rows.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
-
-  let h = `<div class="phase-banner">
+  let h=`<div class="phase-banner">
     <div class="phase-num">0${phase.num}</div>
     <div><div class="phase-name">${T(phase.key)}</div>
     <div class="phase-meta">${phase.start} → ${phase.end} · ${totalKm.toFixed(0)} ${T('phase_km')}</div></div>
   </div>`;
 
-  if (!rows.length) { h+=`<div class="no-data">${T('no_data')}</div>`; el.innerHTML=h; return; }
-
-  h += '<div class="plan-table">';
-  rows.forEach(row => {
-    const isPast=row.datum<t, isTdy=row.datum===t, work=isWork(row.type), ti=typeOf(row.type);
-    const parts = fmtDate(row.datum).split(' ');
-    h += `<div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}">
+  if(!rows.length){h+=`<div class="no-data">${T('no_data')}</div>`;el.innerHTML=h;return;}
+  h+='<div class="plan-table">';
+  rows.forEach(row=>{
+    const isPast=row.datum<t,isTdy=row.datum===t,work=isWork(row.type),ti=typeOf(row.type);
+    const parts=fmtDate(row.datum).split(' ');
+    h+=`<div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}" onclick="openDayModal('${row.datum}')">
       <div class="plan-date"><strong>${parts[0]} ${parts[1]}</strong>${parts[2]}</div>
       <div>
         <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:4px;">${T(ti.i18n)}</span>
@@ -793,79 +859,329 @@ function renderPlan() {
       <div class="plan-km">${row.km?esc(row.km)+'km':''}</div>
     </div>`;
   });
-  h += '</div>';
-  el.innerHTML = h;
-  requestAnimationFrame(() => el.querySelector('.is-today')?.scrollIntoView({behavior:'smooth',block:'center'}));
+  h+='</div>';
+  el.innerHTML=h;
+  requestAnimationFrame(()=>el.querySelector('.is-today')?.scrollIntoView({behavior:'smooth',block:'center'}));
 }
 
-// ── STATS ─────────────────────────────────────────────────────────────────
-function renderStats() {
-  const el = document.getElementById('statsContent');
-  if (!state.data) { el.innerHTML=`<div class="no-data">${T('no_data')}</div>`; return; }
+// ── DAY DETAIL MODAL ───────────────────────────────────────────────────────
+function openDayModal(dateStr){
+  const row=state.data?.find(r=>r.datum===dateStr);
+  const t=todayStr();
+  const isPast=dateStr<=t;
+  const ti=row?typeOf(row.type):null;
+  const content=document.getElementById('dayModalContent');
 
-  const t = todayStr();
-  const past = state.data.filter(r=>r.datum<=t);
-  const totalKm = past.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
-  const runCount = past.filter(r=>['run','duur','interval','tempo','race'].some(k=>(r.type||'').toLowerCase().includes(k))).length;
-  const fbRows = past.filter(r=>r.feedback);
-  const ratingRows = fbRows.filter(r=>/^\d/.test(r.feedback));
-  const avgRating = ratingRows.length ? ratingRows.reduce((s,r)=>s+parseInt(r.feedback[0]),0)/ratingRows.length : 0;
-  const goal = loadGoal();
-  const daysLeft = daysUntil(goal.date||'2026-09-05');
-  const mondayStr = getMondayStr();
-  const weekKm = state.data.filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
-  const months = state.lang==='en'?MONTHS_EN:MONTHS_NL;
+  let h=`<div class="modal-title">${fmtDateFull(dateStr)}</div>`;
 
-  let h = `<div class="stats-grid">
+  if(!row){
+    h+=`<div style="color:var(--muted);font-size:13px;margin-bottom:16px">${T('rest_day')}</div>`;
+  }else{
+    const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
+    h+=`<div class="card ${border}" style="margin-bottom:14px">
+      <div class="tc-top">
+        <div class="tc-emoji">${row.emoji||'🏃'}</div>
+        <div class="tc-main">
+          <div class="tc-type" style="color:${ti.text}">${T(ti.i18n)}</div>
+          <div class="tc-title">${esc(row.titel||'Training')}</div>
+          ${row.km?`<div class="tc-metric">${esc(row.km)} km</div>`:''}
+        </div>
+      </div>
+      ${row.detail?`<div class="tc-detail">${esc(row.detail)}</div>`:''}
+    </div>`;
+  }
+
+  // Feedback for past, notes for future
+  if(row&&!isWork(row.type)){
+    if(isPast){
+      h+=feedbackHtmlModal(dateStr,row.feedback);
+    }else{
+      // Future: notes field
+      const existingNote=row.feedback||'';
+      h+=`<div class="feedback-section">
+        <div class="feedback-title">${T('notes_q')}</div>
+        <textarea class="feedback-textarea" id="modalNoteText" style="height:80px">${esc(existingNote)}</textarea>
+        <button class="btn-primary" onclick="saveModalNote('${dateStr}')">${T('notes_save')}</button>
+      </div>`;
+    }
+  }
+
+  content.innerHTML=h;
+  attachModalStarListeners();
+  document.getElementById('dayModal').classList.add('open');
+  // reset modal edit state
+  state.editingFeedback=false;
+  state.selectedRating=0;
+}
+
+function feedbackHtmlModal(datum,existing){
+  const isEdit=!!existing;
+  let rating=0,text='';
+  if(isEdit){const m=existing.match(/^(\d)/);if(m)rating=parseInt(m[1]);const mt=existing.match(/–\s*(.+)$/);if(mt)text=mt[1];}
+  if(isEdit&&!state.editingFeedback){
+    return `<div class="prev-feedback">
+      <div class="prev-feedback-header">
+        <span class="prev-feedback-label">${T('feedback_logged')}</span>
+        <button class="edit-link" onclick="state.editingFeedback=true;openDayModal('${datum}')">${T('feedback_edit')}</button>
+      </div>
+      <div class="prev-feedback-text">${esc(existing)}</div>
+    </div>`;
+  }
+  const stars=['😵','😓','😐','💪','🔥'].map((e,i)=>
+    `<button class="star-btn${rating>0&&(i+1)<=rating?' active':''}" data-val="${i+1}">${e}</button>`
+  ).join('');
+  return `<div class="feedback-section">
+    <div class="feedback-title">${T('feedback_q')}</div>
+    <div class="feedback-stars">${stars}</div>
+    <textarea class="feedback-textarea" id="modalFbText">${esc(text)}</textarea>
+    <button class="btn-primary" id="modalSubmitBtn" onclick="handleModalFeedback('${esc(datum)}')">${isEdit?T('feedback_update'):T('feedback_save')}</button>
+    ${isEdit?`<button class="btn-secondary" onclick="state.editingFeedback=false;openDayModal('${datum}')">${T('feedback_cancel')}</button>`:''}
+  </div>`;
+}
+
+function attachModalStarListeners(){
+  document.querySelectorAll('#dayModalContent .star-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      state.selectedRating=parseInt(btn.dataset.val);
+      document.querySelectorAll('#dayModalContent .star-btn').forEach(b=>b.classList.toggle('active',parseInt(b.dataset.val)<=state.selectedRating));
+    });
+  });
+}
+
+async function handleModalFeedback(datum){
+  if(!state.selectedRating){showToast(T('select_score'));return;}
+  const btn=document.getElementById('modalSubmitBtn');
+  const tekst=document.getElementById('modalFbText')?.value||'';
+  btn.disabled=true;btn.textContent='…';
+  const ok=await submitFeedback(datum,state.selectedRating,tekst);
+  if(ok){state.editingFeedback=false;state.selectedRating=0;closeDayModal();if(state.currentTab==='today')renderToday();else if(state.currentTab==='plan')renderPlan();}
+  else{btn.disabled=false;btn.textContent=T('feedback_save');}
+}
+
+async function saveModalNote(datum){
+  // Save note as feedback text without a rating (future day)
+  const tekst=document.getElementById('modalNoteText')?.value||'';
+  if(!state.scriptUrl){showToast('❌ '+T('enter_url'));return;}
+  try{
+    const params=new URLSearchParams({action:'setFeedback',datum,rating:0,tekst});
+    const json=await(await fetch(state.scriptUrl+'?'+params)).json();
+    if(json.status!=='ok')throw new Error(json.message);
+    if(state.data){const row=state.data.find(r=>r.datum===datum);if(row)row.feedback=tekst;}
+    showToast('✓ '+T('notes_save'));closeDayModal();
+  }catch(e){showToast('❌ '+e.message);}
+}
+
+function closeDayModal(e){
+  if(e&&e.target!==document.getElementById('dayModal'))return;
+  document.getElementById('dayModal').classList.remove('open');
+  state.editingFeedback=false;state.selectedRating=0;
+}
+
+// ── CALENDAR ───────────────────────────────────────────────────────────────
+function renderCalendar(){
+  const el=document.getElementById('calContent');
+  const userRaces=loadRaces();
+  const y=state.calYear,m=state.calMonth;
+  const mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
+  const days=state.lang==='en'?DAYS_EN:DAYS_NL;
+  // Monday-first day order
+  const dowOrder=[1,2,3,4,5,6,0];
+  const dowLabels=dowOrder.map(i=>days[i]);
+
+  const firstDay=new Date(y,m,1);
+  const lastDay=new Date(y,m+1,0);
+  // pad start: Monday=0
+  let startPad=(firstDay.getDay()+6)%7;
+  const cells=[];
+  for(let i=0;i<startPad;i++){
+    const d=new Date(y,m,1-startPad+i);
+    cells.push({date:d,otherMonth:true});
+  }
+  for(let d=1;d<=lastDay.getDate();d++) cells.push({date:new Date(y,m,d),otherMonth:false});
+  while(cells.length%7!==0){const prev=cells[cells.length-1].date;const nd=new Date(prev);nd.setDate(prev.getDate()+1);cells.push({date:nd,otherMonth:true});}
+
+  const t=todayStr();
+
+  let h=`<div class="cal-nav">
+    <button class="cal-nav-btn" onclick="calPrev()">‹</button>
+    <div class="cal-month">${mf[m]} ${y}</div>
+    <button class="cal-nav-btn" onclick="calNext()">›</button>
+  </div>
+  <div class="cal-grid">
+    ${dowLabels.map(d=>`<div class="cal-dow">${d}</div>`).join('')}`;
+
+  cells.forEach(({date,otherMonth})=>{
+    const ds=date.toISOString().split('T')[0];
+    const isToday=ds===t;
+    const race=userRaces.find(r=>r.date===ds);
+    const hasRace=!!race;
+    const isMain=race?.mainGoal;
+    h+=`<div class="cal-cell${otherMonth?' other-month':''}${isToday?' is-today':''}${hasRace?' has-race':''}${isMain?' main-goal':''}"
+      onclick="${hasRace?`openRacePopup('${ds}')`:`''`}" style="cursor:${hasRace?'pointer':'default'}">
+      ${date.getDate()}
+    </div>`;
+  });
+  h+='</div>';
+
+  // Race list below
+  const monthRaces=userRaces.filter(r=>{const d=parseDate(r.date);return d.getFullYear()===y&&d.getMonth()===m;}).sort((a,b)=>a.date.localeCompare(b.date));
+  if(monthRaces.length){
+    h+=`<div class="section-label" style="margin-top:4px">Races deze maand</div>`;
+    monthRaces.forEach(r=>{
+      h+=`<div class="upcoming-row" onclick="openRacePopup('${r.date}')">
+        <div class="upcoming-date"><div class="upcoming-date-day">${fmtDate(r.date).split(' ')[0]}</div><div class="upcoming-date-num">${parseDate(r.date).getDate()}</div></div>
+        <div class="upcoming-body">
+          ${r.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.13);color:var(--accent);margin-bottom:3px;">🎯 Hoofddoel</span>`:''}
+          <div class="upcoming-title">${esc(r.name||'Race')}</div>
+          ${r.dist?`<div class="upcoming-metric">${esc(r.dist)}</div>`:''}
+        </div>
+        <div class="upcoming-emoji">🏁</div>
+      </div>`;
+    });
+  }
+
+  el.innerHTML=h;
+}
+
+function calPrev(){
+  state.calMonth--;if(state.calMonth<0){state.calMonth=11;state.calYear--;}
+  renderCalendar();
+}
+function calNext(){
+  state.calMonth++;if(state.calMonth>11){state.calMonth=0;state.calYear++;}
+  renderCalendar();
+}
+
+function openRacePopup(dateStr){
+  const userRaces=loadRaces();
+  const race=userRaces.find(r=>r.date===dateStr);
+  if(!race)return;
+  const content=document.getElementById('raceModalContent');
+  content.innerHTML=`<div class="modal-title">${esc(race.name||'Race')}</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);margin-bottom:12px">${fmtDateFull(dateStr)}</div>
+    ${race.dist?`<div style="font-size:13px;color:var(--muted);margin-bottom:8px">${esc(race.dist)}</div>`:''}
+    ${race.mainGoal?`<div class="badge" style="background:rgba(212,245,66,0.13);color:var(--accent);margin-bottom:14px">🎯 Hoofddoel</div>`:''}
+    <button class="btn-primary" style="margin-bottom:8px" onclick="openRaceModal('${race.id}')">Bewerken</button>
+    <button class="btn-secondary" onclick="deleteRace('${race.id}')">🗑 ${T('race_delete')}</button>`;
+  document.getElementById('raceModal').classList.add('open');
+}
+
+function openRaceModal(raceId){
+  closeRaceModal();
+  const races=loadRaces();
+  const race=raceId?races.find(r=>r.id===raceId):null;
+  state.editingRaceId=race?.id||null;
+  const content=document.getElementById('raceModalContent');
+  content.innerHTML=`<div class="modal-title">${T(race?'race_add':'race_add')}</div>
+    <div class="settings-field">
+      <label class="settings-label">${T('race_name')}</label>
+      <input type="text" class="settings-input" id="raceNameInput" value="${esc(race?.name||'')}" placeholder="Bijv. Big10 Rotterdam">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label">${T('race_date')}</label>
+      <input type="date" class="settings-input" id="raceDateInput" value="${esc(race?.date||'')}">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label">${T('race_dist')}</label>
+      <input type="text" class="settings-input" id="raceDistInput" value="${esc(race?.dist||'')}" placeholder="Bijv. 10 km">
+    </div>
+    <div class="settings-field" style="display:flex;align-items:center;gap:10px">
+      <input type="checkbox" id="raceMainInput" ${race?.mainGoal?'checked':''} style="width:18px;height:18px;accent-color:var(--accent)">
+      <label for="raceMainInput" class="settings-label" style="margin:0">${T('race_main')}</label>
+    </div>
+    <button class="btn-primary" style="margin-top:4px" onclick="saveRace()">${T('race_save')}</button>
+    ${race?`<button class="btn-secondary" onclick="deleteRace('${race.id}')">🗑 ${T('race_delete')}</button>`:''}`;
+  document.getElementById('raceModal').classList.add('open');
+}
+
+function saveRace(){
+  const name=document.getElementById('raceNameInput')?.value.trim();
+  const date=document.getElementById('raceDateInput')?.value;
+  const dist=document.getElementById('raceDistInput')?.value.trim();
+  const mainGoal=document.getElementById('raceMainInput')?.checked;
+  if(!name||!date){showToast('Naam en datum zijn verplicht');return;}
+  const races=loadRaces();
+  if(state.editingRaceId){
+    const idx=races.findIndex(r=>r.id===state.editingRaceId);
+    if(idx>=0)races[idx]={...races[idx],name,date,dist,mainGoal};
+  }else{
+    races.push({id:Date.now().toString(),name,date,dist,mainGoal});
+  }
+  persistRaces(races);closeRaceModal();renderCalendar();renderCountdown();updateHeader();
+  showToast('✓ Race opgeslagen');
+}
+
+function deleteRace(id){
+  const races=loadRaces().filter(r=>r.id!==id);
+  persistRaces(races);closeRaceModal();renderCalendar();renderCountdown();updateHeader();
+  showToast('Race verwijderd');
+}
+
+function closeRaceModal(e){
+  if(e&&e.target!==document.getElementById('raceModal'))return;
+  document.getElementById('raceModal').classList.remove('open');
+  state.editingRaceId=null;
+}
+
+// ── STATS ──────────────────────────────────────────────────────────────────
+function renderStats(){
+  const el=document.getElementById('statsContent');
+  if(!state.data){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;return;}
+  const t=todayStr();
+  const past=state.data.filter(r=>r.datum<=t);
+  const totalKm=past.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+  const runCount=past.filter(r=>['run','duur','interval','tempo','race'].some(k=>(r.type||'').toLowerCase().includes(k))).length;
+  const fbRows=past.filter(r=>r.feedback);
+  const ratingRows=fbRows.filter(r=>/^\d/.test(r.feedback));
+  const avgRating=ratingRows.length?ratingRows.reduce((s,r)=>s+parseInt(r.feedback[0]),0)/ratingRows.length:0;
+  // Use user races for "days to race"
+  const userRaces=loadRaces();
+  const mainRace=userRaces.find(r=>r.mainGoal)||userRaces[0];
+  const daysLeft=mainRace?daysUntil(mainRace.date):0;
+  const raceName=mainRace?.name||'—';
+  const mondayStr=getMondayStr();
+  const weekKm=state.data.filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+  const months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
+
+  let h=`<div class="stats-grid">
     <div class="stat-card"><div class="stat-label">${T('stats_total')}</div><div class="stat-val">${totalKm.toFixed(0)}</div><div class="stat-sub">${T('stats_done')}</div></div>
-    <div class="stat-card"><div class="stat-label">${T('stats_days')}</div><div class="stat-val">${daysLeft}</div><div class="stat-sub">${esc(goal.race||'Big10')}</div></div>
+    <div class="stat-card"><div class="stat-label">${T('stats_days')}</div><div class="stat-val">${daysLeft}</div><div class="stat-sub">${esc(raceName)}</div></div>
     <div class="stat-card"><div class="stat-label">${T('stats_runs')}</div><div class="stat-val">${runCount}</div><div class="stat-sub">${T('stats_sessions')}</div></div>
     <div class="stat-card"><div class="stat-label">${T('stats_week')}</div><div class="stat-val">${weekKm.toFixed(0)}</div><div class="stat-sub">${T('stats_week_sub')}</div></div>
     ${avgRating>0?`<div class="stat-card"><div class="stat-label">${T('stats_feel')}</div><div class="stat-val" style="font-size:28px">${['😵','😓','😐','💪','🔥'][Math.round(avgRating)-1]}</div><div class="stat-sub">${avgRating.toFixed(1)}/5 · ${ratingRows.length} ${T('stats_fb_sub')}</div></div>`:''}
     <div class="stat-card"><div class="stat-label">${T('stats_feedback')}</div><div class="stat-val">${fbRows.length}</div><div class="stat-sub">${T('stats_fb_sub')}</div></div>
   </div>`;
 
-  const recent = fbRows.slice(-8).reverse();
-  if (recent.length) {
-    h += `<div class="section-label" style="margin-bottom:10px">${T('stats_recent')}</div><div class="feedback-history">`;
-    recent.forEach(row => {
+  const recent=fbRows.slice(-8).reverse();
+  if(recent.length){
+    h+=`<div class="section-label" style="margin-bottom:10px">${T('stats_recent')}</div><div class="feedback-history">`;
+    recent.forEach(row=>{
       const d=parseDate(row.datum);
-      h += `<div class="fh-row">
+      h+=`<div class="fh-row">
         <div class="fh-date">${d.getDate()} ${months[d.getMonth()]}</div>
         <div class="fh-body"><div class="fh-title">${esc(row.titel||row.type||'Training')}</div><div class="fh-text">${esc(row.feedback)}</div></div>
         ${row.km?`<div class="fh-km">${esc(row.km)}km</div>`:''}
       </div>`;
     });
-    h += '</div>';
+    h+='</div>';
   }
-  el.innerHTML = h;
+  el.innerHTML=h;
 }
 
-// ── SETTINGS ──────────────────────────────────────────────────────────────
-function saveGoal() {
-  const g = { name:document.getElementById('goalName')?.value||'', dist:document.getElementById('goalDist')?.value||'', time:document.getElementById('goalTime')?.value||'', race:document.getElementById('goalRace')?.value||'', date:document.getElementById('goalDate')?.value||'' };
-  persistGoal(g); updateHeader();
+// ── SETTINGS ───────────────────────────────────────────────────────────────
+function addPrField(){
+  const sel=document.getElementById('prDistSelect'),dist=sel.value;
+  if(!dist)return;sel.value='';
+  const prs=loadPRs();if(dist in prs)return;
+  prs[dist]='';persistPRs(prs);renderPrFields();
 }
+function removePrField(dist){const prs=loadPRs();delete prs[dist];persistPRs(prs);renderPrFields();updateHeader();}
+function updatePR(dist,val){const prs=loadPRs();prs[dist]=val;persistPRs(prs);updateHeader();}
 
-function addPrField() {
-  const sel=document.getElementById('prDistSelect'), dist=sel.value;
-  if (!dist) return; sel.value='';
-  const prs=loadPRs(); if (dist in prs) return;
-  prs[dist]=''; persistPRs(prs); renderPrFields();
-}
-
-function removePrField(dist) {
-  const prs=loadPRs(); delete prs[dist]; persistPRs(prs); renderPrFields(); updateHeader();
-}
-
-function updatePR(dist, val) {
-  const prs=loadPRs(); prs[dist]=val; persistPRs(prs); updateHeader();
-}
-
-function renderPrFields() {
-  const container=document.getElementById('prFields'); if (!container) return;
-  const prs=loadPRs(), active=PR_ORDER.filter(d=>d in prs);
-  if (!active.length) { container.innerHTML=`<div style="font-size:11px;color:var(--faint);padding:4px 0">${T('pr_none')}</div>`; return; }
+function renderPrFields(){
+  const container=document.getElementById('prFields');if(!container)return;
+  const prs=loadPRs(),active=PR_ORDER.filter(d=>d in prs);
+  if(!active.length){container.innerHTML=`<div style="font-size:11px;color:var(--faint);padding:4px 0">${T('pr_none')}</div>`;return;}
   const ph=state.lang==='en'?'e.g. 37:56':'bijv. 37:56';
   container.innerHTML=active.map(d=>`
     <div class="pr-row">
@@ -875,114 +1191,194 @@ function renderPrFields() {
     </div>`).join('');
 }
 
-function renderSettingsFields() {
-  const g=loadGoal();
-  ['goalName','goalDist','goalTime','goalRace','goalDate'].forEach((id,i)=>{
-    const el=document.getElementById(id); if (el) el.value=Object.values(g)[i]||'';
-  });
-  const urlEl=document.getElementById('scriptUrl'); if (urlEl) urlEl.value=state.scriptUrl;
-  renderPrFields(); applyI18n();
+function renderSettingsFields(){
+  const urlEl=document.getElementById('scriptUrl');if(urlEl)urlEl.value=state.scriptUrl;
+  const tgEl=document.getElementById('telegramUser');if(tgEl)tgEl.value=localStorage.getItem('telegramUser')||'';
+  renderPrFields();applyI18n();
 }
 
-function saveSettings() {
+function saveSettings(){
   const url=document.getElementById('scriptUrl')?.value.trim();
-  if (!url) { showToast(T('enter_url')); return; }
-  state.scriptUrl=url; localStorage.setItem('scriptUrl',url);
-  showToast(T('connecting')); fetchData();
+  if(!url){showToast(T('enter_url'));return;}
+  state.scriptUrl=url;localStorage.setItem('scriptUrl',url);
+  showToast(T('connecting'));fetchData();
 }
 
-// ── HEADER ────────────────────────────────────────────────────────────────
-function updateHeader() {
-  const goal=loadGoal(), prs=loadPRs();
+function saveTelegram(){
+  const val=document.getElementById('telegramUser')?.value||'';
+  localStorage.setItem('telegramUser',val);
+}
+
+// ── HEADER ─────────────────────────────────────────────────────────────────
+function updateHeader(){
+  // Use races from calendar as source of truth for header
+  const userRaces=loadRaces();
+  const prs=loadPRs();
+  const mainRace=userRaces.find(r=>r.mainGoal)||userRaces[0];
   const nameEl=document.getElementById('topbarName');
-  if (nameEl) nameEl.textContent=goal.name||'';
+  const savedName=localStorage.getItem('userName')||'';
+  if(nameEl)nameEl.textContent=savedName;
   const goalEl=document.getElementById('topbarGoal');
-  if (goalEl) {
-    if (goal.race&&goal.time) goalEl.innerHTML=`<span style="color:var(--muted)">${T('goal_lbl')}: </span><strong>${esc(goal.race)}</strong> <strong style="color:var(--accent)">${esc(goal.time)}</strong>`;
-    else if (goal.time) goalEl.innerHTML=`<span style="color:var(--muted)">${T('goal_lbl')}: </span><strong style="color:var(--accent)">${esc(goal.time)}</strong>`;
-    else goalEl.innerHTML='';
+  if(goalEl){
+    if(mainRace){
+      const days=daysUntil(mainRace.date);
+      const cd=countdownDisplay(days);
+      goalEl.innerHTML=`<strong>${esc(mainRace.name)}</strong> <strong style="color:var(--accent)">${cd.val} ${cd.unit}</strong>`;
+    }else goalEl.innerHTML='';
   }
+  // PR: find PR matching main race distance
   const prEl=document.getElementById('topbarPR');
-  if (prEl) {
-    const pr=goal.dist&&prs[goal.dist];
-    prEl.innerHTML=pr?`<span style="color:var(--faint)">${T('pr_lbl')}: </span><strong>${esc(pr)}</strong>`:'';
+  if(prEl){
+    // try to match race distance to PR
+    const dist=mainRace?.dist||'';
+    let matchPR='';
+    if(dist.includes('10km')||dist.includes('10 km'))matchPR=prs['10km'];
+    else if(dist.includes('5km')||dist.includes('5 km'))matchPR=prs['5km'];
+    else if(dist.includes('HM')||dist.toLowerCase().includes('half'))matchPR=prs['HM'];
+    else if(dist.toLowerCase().includes('marathon'))matchPR=prs['M'];
+    prEl.innerHTML=matchPR?`<span style="color:var(--faint)">${T('pr_lbl')}: </span><strong>${esc(matchPR)}</strong>`:'';
   }
 }
 
-// ── I18N ──────────────────────────────────────────────────────────────────
-function applyI18n() {
-  const tabKeys=['today','week','plan','stats','settings'];
-  document.querySelectorAll('#tabsEl .tab').forEach((el,i)=>{ el.textContent=T(tabKeys[i]); });
-  document.querySelectorAll('#bottomNav .bn-label').forEach((el,i)=>{ el.textContent=T(tabKeys[i]); });
-  document.querySelectorAll('#phaseTabs .phase-tab').forEach((el,i)=>{ el.textContent=`${T('fase')} ${i+1} · ${T(PHASES[i].key)}`; });
-  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent=T(el.dataset.i18n); });
-  document.querySelectorAll('[data-i18n-opt]').forEach(el=>{ el.textContent=T(el.dataset.i18nOpt); });
+// ── I18N ───────────────────────────────────────────────────────────────────
+function applyI18n(){
+  const tabKeys=['today','week','plan','calendar','stats'];
+  document.querySelectorAll('#bottomNav .bn-label').forEach((el,i)=>{el.textContent=T(tabKeys[i]);});
+  document.querySelectorAll('#phaseTabs .phase-tab').forEach((el,i)=>{el.textContent=`${T('fase')} ${i+1} · ${T(PHASES[i].key)}`;});
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=T(el.dataset.i18n);});
+  document.querySelectorAll('[data-i18n-opt]').forEach(el=>{el.textContent=T(el.dataset.i18nOpt);});
+  // Update lang buttons
+  document.getElementById('langBtnNl')?.classList.toggle('active',state.lang==='nl');
+  document.getElementById('langBtnEn')?.classList.toggle('active',state.lang==='en');
   document.documentElement.lang=state.lang;
 }
 
-function toggleLang() {
-  state.lang=state.lang==='nl'?'en':'nl';
-  localStorage.setItem('lang',state.lang);
-  document.getElementById('langToggle').textContent=state.lang==='nl'?'🇳🇱':'🇬🇧';
-  applyI18n(); updateHeader(); renderActiveView(); renderCountdown();
+function setLang(lang){
+  state.lang=lang;localStorage.setItem('lang',lang);
+  applyI18n();updateHeader();renderActiveView();renderCountdown();
 }
 
-// ── UI ────────────────────────────────────────────────────────────────────
-function switchTab(tab) {
-  state.currentTab=tab; state.selectedRating=0;
-  document.querySelectorAll('#tabsEl .tab, #bottomNav .bn-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));
+// ── UI ─────────────────────────────────────────────────────────────────────
+function switchTab(tab){
+  state.currentTab=tab;state.selectedRating=0;
+  document.querySelectorAll('#bottomNav .bn-item').forEach(el=>el.classList.toggle('active',el.dataset.tab===tab));
   document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id==='view-'+tab));
   document.getElementById('scrollArea').scrollTop=0;
+  document.getElementById('calAddBtn').style.display=tab==='calendar'?'flex':'none';
   renderActiveView();
 }
 
-function selectPhase(num) {
+function selectPhase(num){
   state.currentPhase=num;
   document.querySelectorAll('#phaseTabs .phase-tab').forEach(el=>el.classList.toggle('active',parseInt(el.dataset.phase)===num));
   renderPlan();
 }
 
-function hideLoading() {
+function hideLoading(){
   const el=document.getElementById('loadingOverlay');
-  el.classList.add('hidden');
-  setTimeout(()=>el.style.display='none',350);
+  el.classList.add('hidden');setTimeout(()=>el.style.display='none',350);
 }
 
-function showToast(msg) {
+function showToast(msg){
   const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('show');
-  clearTimeout(el._t); el._t=setTimeout(()=>el.classList.remove('show'),2500);
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2500);
 }
 
-function updateConnectionStatus(ok, err) {
-  const dot=document.getElementById('statusDot'), txt=document.getElementById('statusText');
-  if (!dot||!txt) return;
+function updateConnectionStatus(ok,err){
+  const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText');
+  if(!dot||!txt)return;
   dot.className='status-dot '+(ok?'ok':'err');
   txt.textContent=ok?'Verbonden ✓':`Fout: ${err||'verbinding mislukt'}`;
 }
 
-// ── INIT ──────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  // Event delegation — one listener per container
-  document.getElementById('tabsEl').addEventListener('click', e => {
-    const tab = e.target.closest('.tab')?.dataset.tab; if (tab) switchTab(tab);
+// ── ONBOARDING ─────────────────────────────────────────────────────────────
+function shouldShowOnboarding(){
+  // Show if no user races AND no name set
+  const races=loadRaces();
+  const name=localStorage.getItem('userName')||'';
+  return races.length===0&&!name;
+}
+
+function showOnboarding(){
+  document.getElementById('onboarding').style.display='flex';
+}
+
+function onboardingNext(){
+  const name=document.getElementById('obName')?.value.trim();
+  const dist=document.getElementById('obDist')?.value;
+  const time=document.getElementById('obTime')?.value.trim();
+  const raceName=document.getElementById('obRace')?.value.trim();
+  const raceDate=document.getElementById('obDate')?.value;
+
+  if(name)localStorage.setItem('userName',name);
+
+  if(raceName&&raceDate){
+    const races=loadRaces();
+    races.push({id:Date.now().toString(),name:raceName,date:raceDate,dist:dist||'',mainGoal:true});
+    persistRaces(races);
+  }
+
+  // Store goal for PR matching
+  const g={name,dist,time,race:raceName,date:raceDate};
+  persistGoal(g);
+
+  document.getElementById('onboardingStep1').style.display='none';
+  document.getElementById('onboardingStep2').style.display='block';
+}
+
+function addObPrField(){
+  const sel=document.getElementById('obPrDist'),dist=sel.value;
+  if(!dist)return;sel.value='';
+  const prs=loadPRs();if(dist in prs)return;
+  prs[dist]='';persistPRs(prs);
+  const container=document.getElementById('obPrFields');
+  const active=PR_ORDER.filter(d=>d in prs);
+  container.innerHTML=active.map(d=>`
+    <div class="pr-row" style="margin-bottom:8px">
+      <label class="pr-dist-lbl">${d}</label>
+      <input type="text" class="settings-input" style="flex:1" placeholder="bijv. 37:56" value="${esc(prs[d]||'')}" oninput="updatePR('${d}',this.value)">
+    </div>`).join('');
+}
+
+function onboardingFinish(){
+  document.getElementById('onboarding').style.display='none';
+  updateHeader();renderCountdown();renderActiveView();
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+  // Service worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').then(reg=>{
+      reg.addEventListener('updatefound',()=>{
+        const nw=reg.installing;
+        nw.addEventListener('statechange',()=>{
+          if(nw.state==='installed'&&navigator.serviceWorker.controller){
+            showToast('🔄 Update beschikbaar — herlaad de app');
+          }
+        });
+      });
+    });
+  }
+
+  // Event delegation
+  document.getElementById('bottomNav').addEventListener('click',e=>{
+    const tab=e.target.closest('.bn-item')?.dataset.tab;if(tab)switchTab(tab);
   });
-  document.getElementById('bottomNav').addEventListener('click', e => {
-    const tab = e.target.closest('.bn-item')?.dataset.tab; if (tab) switchTab(tab);
-  });
-  document.getElementById('phaseTabs').addEventListener('click', e => {
-    const phase = e.target.closest('.phase-tab')?.dataset.phase; if (phase) selectPhase(parseInt(phase));
+  document.getElementById('phaseTabs').addEventListener('click',e=>{
+    const phase=e.target.closest('.phase-tab')?.dataset.phase;if(phase)selectPhase(parseInt(phase));
   });
 
-  state.currentPhase = (getCurrentPhase() ?? PHASES[0]).num;
-  document.getElementById('langToggle').textContent = state.lang==='nl'?'🇳🇱':'🇬🇧';
-  applyI18n();
-  updateHeader();
+  state.currentPhase=(getCurrentPhase()??PHASES[0]).num;
+  applyI18n();updateHeader();
 
-  if (state.scriptUrl) {
+  if(shouldShowOnboarding()){
+    hideLoading();showOnboarding();
+  }else if(state.scriptUrl){
     fetchData();
-  } else {
-    setTimeout(() => { hideLoading(); renderActiveView(); renderCountdown(); }, 600);
+  }else{
+    setTimeout(()=>{hideLoading();renderActiveView();renderCountdown();},600);
   }
 });
 </script>
