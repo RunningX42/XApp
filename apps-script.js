@@ -118,35 +118,37 @@ function setFeedback(e) {
 }
 
 function setDay(e) {
-  // C22: update any day field from the app
-  const datum  = e.parameter.datum;
+  const datum = e.parameter.datum;
   if (!datum) throw new Error('Datum ontbreekt');
+  const forceAdd = e.parameter.addRow === 'true'; // C44: always add new row
   const sheet = getSheet(e);
   const data = sheet.getDataRange().getValues();
   const headers = data[0].map(h => String(h).toLowerCase().trim());
   const datumCol = headers.indexOf('datum');
   if (datumCol === -1) throw new Error('Kolom "datum" niet gevonden');
 
-  const fields = ['titel','type','km','emoji','detail'];
-  let rowIdx = -1;
-  for (let i = 1; i < data.length; i++) {
-    let rowDatum = data[i][datumCol];
-    if (rowDatum instanceof Date) rowDatum = Utilities.formatDate(rowDatum, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-    else rowDatum = String(rowDatum).trim();
-    if (rowDatum === datum) { rowIdx = i; break; }
+  const fields = ['titel','type','km','detail','fase'];
+
+  if (!forceAdd) {
+    // Find existing row with same datum — update it
+    for (let i = 1; i < data.length; i++) {
+      let rowDatum = data[i][datumCol];
+      if (rowDatum instanceof Date) rowDatum = Utilities.formatDate(rowDatum, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+      else rowDatum = String(rowDatum).trim();
+      if (rowDatum === datum) {
+        fields.forEach(f => {
+          const c = headers.indexOf(f);
+          if (c >= 0 && e.parameter[f] !== undefined) sheet.getRange(i + 1, c + 1).setValue(e.parameter[f]);
+        });
+        return { status: 'ok', datum, action: 'updated' };
+      }
+    }
   }
 
-  if (rowIdx === -1) {
-    // New row: append
-    const newRow = new Array(headers.length).fill('');
-    newRow[datumCol] = datum;
-    fields.forEach(f => { const c = headers.indexOf(f); if (c >= 0 && e.parameter[f] !== undefined) newRow[c] = e.parameter[f]; });
-    sheet.appendRow(newRow);
-  } else {
-    fields.forEach(f => {
-      const c = headers.indexOf(f);
-      if (c >= 0 && e.parameter[f] !== undefined) sheet.getRange(rowIdx + 1, c + 1).setValue(e.parameter[f]);
-    });
-  }
-  return { status: 'ok', datum };
+  // Append new row (C44: addRow=true, or no existing row found)
+  const newRow = new Array(headers.length).fill('');
+  newRow[datumCol] = datum;
+  fields.forEach(f => { const c = headers.indexOf(f); if (c >= 0 && e.parameter[f] !== undefined) newRow[c] = e.parameter[f]; });
+  sheet.appendRow(newRow);
+  return { status: 'ok', datum, action: 'added' };
 }
