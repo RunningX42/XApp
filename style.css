@@ -32,11 +32,11 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-
 /* RACES BAR — second header strip (RacesBar) */
 .races-bar{display:flex;align-items:stretch;gap:0;padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
 .races-bar::-webkit-scrollbar{display:none}
-.rb-item{display:flex;flex-direction:column;align-items:flex-start;padding-right:14px;padding-left:14px;border-left:1px solid var(--border);min-width:80px;flex-shrink:0}
+.rb-item{display:flex;flex-direction:column;align-items:flex-start;padding-right:10px;padding-left:10px;border-left:1px solid var(--border);min-width:54px;flex-shrink:0}
 .rb-item:first-child{border-left:none;padding-left:0}
 .rb-name{display:flex;align-items:center;gap:4px;font-family:var(--font-m);font-size:10px;font-weight:600;color:var(--text);line-height:1.2}
 .rb-icon{font-size:12px}
-.rb-value{font-family:var(--font-d);font-weight:800;font-size:20px;line-height:1;color:var(--text);margin-top:3px}
+.rb-value{font-family:var(--font-d);font-weight:800;font-size:17px;line-height:1;color:var(--text);margin-top:2px}
 .rb-value.hi{color:var(--accent)}
 .rb-unit{font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:0.5px;margin-top:2px}
 .rb-add{padding-left:14px;border-left:1px solid var(--border);display:flex;align-items:center;font-family:var(--font-d);font-weight:300;font-size:22px;color:var(--muted);cursor:pointer;transition:color 0.15s;flex-shrink:0}
