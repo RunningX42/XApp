@@ -1008,60 +1008,6 @@ function renderToday(){
   attachStarListeners();
 }
 
-  if(!state.data){
-    h+=noSchemaHint();
-    h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
-    el.innerHTML=h;return;
-  }
-
-  const row=state.data.find(r=>r.datum===t);
-  // C24: show rest card only if type is exactly 'rust' or no row
-  if(!row||isRust(row.type)){
-    h+=`<div class="card">
-      <div class="rest-card-inner">
-        <div class="rest-emoji">😴</div>
-        <div><div class="rest-title">${T('rest_day')}</div><div class="rest-sub">${T('rest_msg')}</div></div>
-      </div>
-    </div>`;
-  }else{
-    const ti=typeOf(row.type);
-    const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
-    h+=`<div class="card ${border}">
-      <div class="tc-top">
-        <div class="tc-emoji">${row.emoji||'🏃'}</div>
-        <div class="tc-main">
-          <div class="tc-type" style="color:${ti.text}">${T(ti.i18n)}</div>
-          <div class="tc-title">${esc(row.titel||'Training')}</div>
-          ${row.km?`<div class="tc-metric">${esc(row.km)} km</div>`:''}
-        </div>
-      </div>
-      ${row.detail?`<div class="tc-detail">${esc(row.detail)}</div>`:''}
-    </div>`;
-    if(!isWork(row.type))h+=feedbackHtml(row.datum,row.feedback);
-  }
-
-  // Tomorrow
-  const tmrDate=new Date();tmrDate.setDate(tmrDate.getDate()+1);
-  const tmr=state.data.find(r=>r.datum===tmrDate.toISOString().split('T')[0]);
-  if(tmr){
-    h+=`<div class="card"><div class="tmr-card">
-      <div class="tmr-label">${T('tomorrow')} →</div>
-      <div class="tmr-row">
-        <div class="tmr-title">${tmr.emoji||''} ${esc(tmr.titel||'')}</div>
-        ${tmr.km?`<div class="tmr-metric">${esc(tmr.km)} km</div>`:''}
-      </div>
-    </div></div>`;
-  }
-
-  // C24: mob reminder only when type includes 'mobiliteit'
-  if(!row||isMob(row?.type)){
-    h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
-  }
-
-  el.innerHTML=h;
-  attachStarListeners();
-}
-
 function noSchemaHint(){
   return `<div class="no-connection-hint" onclick="switchTab('settings')">
     <div class="nch-icon">📋</div>
@@ -1129,6 +1075,85 @@ function renderWeek(){
   const jan4=new Date(d0.getFullYear(),0,4);
   const weekNum=Math.ceil(((d0-jan4)/86400000+jan4.getDay()+1)/7);
   const weekLabel=`${d0.getDate()}–${d6.getDate()} ${months[d0.getMonth()]}`;
+  const plannedKm=wd.reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
+  const doneKm=wd.filter(({date})=>date<=t).reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
+  const workDays=wd.filter(({row})=>row&&isWork(row.type)).length;
+  const fbDone=wd.filter(({row})=>row?.feedback).length;
+  const pct=plannedKm>0?Math.min(100,Math.round(doneKm/plannedKm*100)):0;
+
+  let h=`<div class="page-title" style="padding:14px 20px 4px">
+    <div><div class="pt-kicker">Week ${weekNum}</div><div class="pt-h">${weekLabel}</div></div>
+    <div style="text-align:right">
+      <div style="font-family:var(--font-d);font-weight:800;font-size:26px;color:var(--accent);line-height:1">${plannedKm.toFixed(0)}<span style="color:var(--muted);font-size:12px">km</span></div>
+      <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1px">GEPLAND</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:4px;padding:0 20px 8px;align-items:center">
+    <button onclick="state.weekOffset=(state.weekOffset||0)-1;renderWeek()" style="background:transparent;border:1px solid var(--border);padding:4px 10px;color:var(--muted);cursor:pointer;font-family:var(--font-d);font-size:16px;-webkit-tap-highlight-color:transparent">‹</button>
+    ${offset!==0?`<button onclick="state.weekOffset=0;renderWeek()" style="background:transparent;border:1px solid var(--border);padding:4px 10px;color:var(--muted);cursor:pointer;font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase">Nu</button>`:''}
+    <div style="flex:1"></div>
+    <button onclick="state.weekOffset=(state.weekOffset||0)+1;renderWeek()" style="background:transparent;border:1px solid var(--border);padding:4px 10px;color:var(--muted);cursor:pointer;font-family:var(--font-d);font-size:16px;-webkit-tap-highlight-color:transparent">›</button>
+  </div>
+  <div id="weekSwipeWrap" style="padding:0 20px">
+  <div style="margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+      <span style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600">${T('week_progress')}</span>
+      <span style="font-family:var(--font-m);font-size:10px;color:var(--text)">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span>
+    </div>
+    <div style="height:6px;background:var(--surface);border:1px solid var(--border);position:relative">
+      <div style="position:absolute;inset:0;width:${pct}%;background:var(--accent)"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px">
+      <span style="font-family:var(--font-m);font-size:9px;color:${pct===100?'var(--accent)':'var(--muted)'}">${pct}%</span>
+      <span style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${fbDone} ${T('week_feedback')} · ${workDays} ${T('week_werk')}</span>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px">`;
+
+  wd.forEach(({date,row})=>{
+    const isT=date===t,isPast=date<t,d=parseDate(date);
+    const ti=row?typeOf(row.type):null;
+    let status='';
+    if(row?.feedback)status=`<div style="font-family:var(--font-m);font-size:9px;color:var(--accent)">✓${row.km?' '+parseFloat(row.km).toFixed(0)+'k':''}</div>`;
+    else if(isWork(row?.type))status=`<div style="font-size:13px">🟡</div>`;
+    else if(row?.km)status=`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${parseFloat(row.km).toFixed(0)}k</div>`;
+    const dot=ti&&!status?`<div style="width:5px;height:5px;border-radius:50%;background:${isPast?'var(--faint)':ti.text};margin-top:4px"></div>`:'';
+    h+=`<div style="background:${isT?'var(--bg)':'var(--surface)'};border:1px solid ${isT?'var(--accent)':'var(--border)'};padding:8px 2px 10px;text-align:center;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-family:var(--font-m);font-size:8px;color:var(--muted);letter-spacing:0.5px">${days[d.getDay()]}</div>
+        <div style="font-family:var(--font-d);font-weight:800;font-size:16px;color:${isT?'var(--accent)':'var(--text)'};margin-top:2px">${d.getDate()}</div>
+      </div>
+      ${status||dot}
+    </div>`;
+  });
+  h+=`</div>`;
+
+  if(!state.data){h+=noSchemaHint();}
+  else{
+    const upcoming=wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
+    if(upcoming.length){
+      h+=`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${T('week_todo')}</div>`;
+      upcoming.forEach(({date,row})=>{
+        const isTdy=date===t,ti=typeOf(row.type),d=parseDate(date);
+        h+=`<div onclick="openDayModal('${date}')" style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid ${isTdy?'var(--accent)':'var(--border)'};padding:12px;margin-bottom:6px;cursor:pointer">
+          <div style="text-align:center;min-width:36px;padding-right:10px;border-right:1px solid var(--border)">
+            <div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${days[d.getDay()]}</div>
+            <div style="font-family:var(--font-d);font-weight:800;font-size:18px;color:${isTdy?'var(--accent)':'var(--text)'}">${d.getDate()}</div>
+          </div>
+          <div style="flex:1">
+            <div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${ti.text};margin-bottom:2px">${T(ti.i18n)}</div>
+            <div style="font-family:var(--font-d);font-weight:700;font-size:15px">${esc(row.titel||'')}</div>
+            ${row.km?`<div style="font-family:var(--font-m);font-size:10px;color:var(--accent);margin-top:2px">${esc(row.km)} km</div>`:''}
+          </div>
+          <span style="font-size:20px">${row.emoji||''}</span>
+        </div>`;
+      });
+    }
+  }
+  h+=`</div>`;
+  el.innerHTML=h;
+  requestAnimationFrame(()=>initWeekSwipe());
+}
 
 // ── PLAN ──────────────────────────────────────────────────────────────────────
 function renderPlan(){
@@ -2164,4 +2189,4 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 </script>
 </body>
-</html> 
+</html>
