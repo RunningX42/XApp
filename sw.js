@@ -1,5 +1,5 @@
-// RunningX service worker v1.6.0
-const VERSION = 'rx-v1.6.0';
+// RunningX service worker v1.7.0
+const VERSION = 'rx-v1.7.0';
 const CACHE = VERSION;
 const ASSETS = ['./', './index.html'];
 
