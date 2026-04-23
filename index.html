@@ -261,18 +261,58 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-
 .tg-dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
 .tg-dot.linked{background:var(--run-text)}
 
-/* BOTTOM NAV — TabBarLabeled with round + FAB */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:transparent;display:flex;align-items:center;gap:10px;padding:0 16px calc(var(--sb) + 14px);z-index:100;pointer-events:none}
+/* BOTTOM NAV — TabBarLabeled v4: 4 tabs, no +, click feel */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:transparent;display:flex;align-items:center;padding:0 16px calc(var(--sb) + 14px);z-index:100;pointer-events:none}
 .bn-pill{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:6px;display:flex;align-items:center;flex:1;pointer-events:all;box-shadow:0 8px 24px rgba(0,0,0,0.45)}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;background:none;border:1px solid transparent;color:var(--muted);border-radius:999px;padding:8px 4px;transition:all 0.18s ease;font-family:var(--font-m);font-size:8px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;background:none;border:1px solid transparent;color:var(--muted);border-radius:999px;padding:9px 4px;font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;font-weight:600;transition:background 0.12s,color 0.12s,border-color 0.12s,transform 0.08s;-webkit-tap-highlight-color:transparent;user-select:none}
 .bn-item.active{background:var(--bg);border-color:var(--accent);color:var(--accent)}
 .bn-item:hover:not(.active){color:var(--text)}
+.bn-item:active{transform:scale(0.91)}
 .bn-icon{display:flex;align-items:center;justify-content:center;line-height:1}
 .bn-label{font-family:var(--font-m);font-size:8px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
-/* Round + FAB */
-.bn-fab{width:56px;height:56px;min-width:56px;border-radius:50%;background:var(--accent);color:var(--bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:all;box-shadow:0 8px 24px rgba(198,242,78,0.2);flex-shrink:0;transition:background 0.15s,transform 0.12s}
-.bn-fab:hover{background:var(--accent-dim)}
-.bn-fab:active{transform:scale(0.94)}
+
+/* STATS OVERLAY */
+.stats-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:500;display:flex;flex-direction:column;justify-content:flex-end;animation:fadeIn 0.18s ease}
+.stats-sheet{background:var(--bg);border-top:1px solid var(--border);padding:16px 18px calc(var(--sb) + 24px);max-height:82dvh;overflow-y:auto;animation:slideUp 0.28s cubic-bezier(0.34,1.12,0.64,1)}
+.stats-grabber{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 12px}
+
+/* PAGE TITLE (screens v4) */
+.page-title{padding:14px 20px 4px;display:flex;align-items:flex-end;justify-content:space-between}
+.pt-kicker{font-family:var(--font-m);font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600}
+.pt-h{font-family:var(--font-d);font-weight:800;font-size:30px;letter-spacing:-0.5px;line-height:1;text-transform:uppercase;margin-top:4px}
+
+/* VANDAAG: primary run card metric row */
+.run-metric-row{display:flex;gap:18px;margin-top:12px}
+.run-metric-label{font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.run-metric-val{font-family:var(--font-d);font-weight:700;font-size:16px;margin-top:2px}
+.run-metric-unit{color:var(--muted);font-size:11px}
+
+/* WEEK SWIPE */
+.week-swipe-wrap{overflow:hidden;position:relative;touch-action:pan-y}
+.week-swipe-inner{display:flex;transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);will-change:transform}
+.week-slide{min-width:100%;flex-shrink:0}
+
+/* TRAINING: floating fase badge top-right */
+.fase-badge{position:sticky;top:8px;float:right;z-index:10;background:var(--accent);color:#000;font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 8px;pointer-events:none;margin-right:16px;margin-bottom:-28px}
+
+/* PHASE STRIP v4: 4 equal tiles */
+.phase-strip{display:flex;gap:4px;margin-bottom:10px}
+.phase-tile{flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:background 0.12s,border-color 0.12s}
+.phase-tile.active{background:var(--accent);border-color:var(--accent)}
+.phase-tile-name{font-family:var(--font-m);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;opacity:0.75;color:var(--muted)}
+.phase-tile.active .phase-tile-name{color:#000;opacity:0.75}
+.phase-tile-sub{font-family:var(--font-d);font-weight:800;font-size:14px;margin-top:2px;letter-spacing:0.3px;color:var(--text)}
+.phase-tile.active .phase-tile-sub{color:#000}
+
+/* KALENDER v4: lime circle today */
+.cal-cell.is-today{background:transparent}
+.cal-day-circle{width:30px;height:30px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:50%}
+.cal-day-circle.today{background:var(--accent);color:#000}
+.cal-dot-legend{display:flex;gap:12px;font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:0.5px;margin-top:4px}
+
+/* START RUN CTA */
+.btn-cta{width:100%;padding:12px;background:var(--accent);color:#000;border:0;cursor:pointer;font-family:var(--font-d);font-weight:800;font-size:14px;letter-spacing:1px;text-transform:uppercase;margin-top:14px;transition:background 0.12s,transform 0.08s;-webkit-tap-highlight-color:transparent}
+.btn-cta:active{transform:scale(0.98);background:var(--accent-dim)}
 
 /* LOADING */
 .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 0.3s}
@@ -417,6 +457,9 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-
       <div class="topbar-sub" id="topbarName"></div>
     </div>
     <div style="flex:1"></div>
+    <button class="topbar-gear" onclick="openStats()" title="Stats" style="margin-right:4px">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="17" y="4" width="4" height="17" rx="1"/></svg>
+    </button>
     <button class="topbar-gear" onclick="switchTab('settings')" title="Instellingen">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"/>
@@ -435,12 +478,12 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-
   <div class="scroll-area" id="scrollArea">
     <div class="view active" id="view-today"><div id="todayContent"></div></div>
     <div class="view" id="view-week"><div id="weekContent"></div></div>
-    <div class="view" id="view-plan">
-      <div class="phase-tabs" id="phaseTabs"></div>
-      <div id="planContent"></div>
+    <div class="view" id="view-plan" style="padding:0">
+      <div id="planPageTitle"></div>
+      <div class="phase-strip" id="phaseTabs" style="padding:0 16px;margin-top:10px"></div>
+      <div id="planContent" style="padding:0 16px 16px"></div>
     </div>
     <div class="view" id="view-calendar"><div id="calContent"></div></div>
-    <div class="view" id="view-stats"><div id="statsContent"></div></div>
     <div class="view" id="view-settings">
 
       <!-- ACCOUNT -->
@@ -514,7 +557,7 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-
       <div class="settings-group">
         <div class="settings-group-title" data-i18n="sg_app"></div>
         <div class="settings-section">
-          <div style="font-size:11px;color:var(--faint);font-family:var(--font-m);line-height:1.8;">RunningX · v1.6.0<br><span style="color:var(--accent)">🏃</span></div>
+          <div style="font-size:11px;color:var(--faint);font-family:var(--font-m);line-height:1.8;">RunningX · v1.7.0<br><span style="color:var(--accent)">🏃</span></div>
         </div>
       </div>
 
@@ -539,19 +582,15 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-
         <span class="bn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm-2 8h14v10H5V10z"/></svg></span>
         <span class="bn-label"></span>
       </button>
-      <button class="bn-item" data-tab="stats">
-        <span class="bn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="17" y="4" width="4" height="17" rx="1"/></svg></span>
-        <span class="bn-label"></span>
-      </button>
     </div>
-    <!-- Round + FAB -->
-    <button class="bn-fab" onclick="openRaceModal()" title="Race toevoegen">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-    </button>
   </div>
-</div>
+  <!-- Stats overlay -->
+  <div class="stats-overlay" id="statsOverlay" style="display:none" onclick="closeStats(event)">
+    <div class="stats-sheet" id="statsSheet" onclick="event.stopPropagation()">
+      <div class="stats-grabber"></div>
+      <div id="statsContent"></div>
+    </div>
+  </div>
 
 <script>
 // ── CONSTANTS ───────────────────────────────────────────────────────────────
@@ -686,6 +725,7 @@ const state={
   calMonth:  new Date().getMonth(),
   calSelectedDate:null,
   editingRaceId:null,
+  weekOffset:0,
   _prs:null,_races:null,
   swReg:null,
   pendingSW:null,
@@ -838,7 +878,6 @@ function renderActiveView(){
     case 'week':     renderWeek();break;
     case 'plan':     renderPlan();break;
     case 'calendar': renderCalendar();break;
-    case 'stats':    renderStats();break;
     case 'settings': renderSettingsFields();break;
   }
 }
@@ -884,13 +923,90 @@ function renderToday(){
   const mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
   const d=parseDate(t);
 
-  let faseLine='';
-  if(state.data){const tr=state.data.find(r=>r.datum===t);if(tr?.fase)faseLine=`<div class="today-phase-line">${esc(tr.fase)}</div>`;}
+  // fase from data
+  let faseKicker='';
+  if(state.data){const tr=state.data.find(r=>r.datum===t);if(tr?.fase)faseKicker=tr.fase;}
 
-  let h=`<div class="today-header">
-    <div class="today-date-big">${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}</div>
-    ${faseLine}
-  </div>`;
+  const kicker=`${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}${faseKicker?' · '+faseKicker:''}`;
+  let h=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Vandaag</div></div></div>`;
+
+  if(!state.data){
+    h+=`<div style="padding:0 16px">`;
+    h+=noSchemaHint();
+    h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div></div>`;
+    el.innerHTML=h;return;
+  }
+
+  const row=state.data.find(r=>r.datum===t);
+  h+=`<div style="padding:0 16px">`;
+
+  if(!row||isRust(row.type)){
+    h+=`<div class="card">
+      <div class="rest-card-inner">
+        <div class="rest-emoji">😴</div>
+        <div><div class="rest-title">${T('rest_day')}</div><div class="rest-sub">${T('rest_msg')}</div></div>
+      </div>
+    </div>`;
+  }else{
+    const ti=typeOf(row.type);
+    const isRun=hasType(row.type,'run');
+    const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
+    // Parse detail for pace/hr hints
+    const detail=row.detail||'';
+    const paceMatch=detail.match(/(\d+:\d+)[–-]?(\d+:\d+)?\/km/);
+    const hrMatch=detail.match(/<?\s*(\d+)\s*bpm/i)||detail.match(/HR\s*<?(\d+)/i);
+
+    h+=`<div class="card ${border}" style="padding:16px 16px 14px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <div style="font-family:var(--font-m);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:${ti.text}">${T(ti.i18n)}${row.titel?' · '+esc(row.titel):''}</div>
+        <div style="width:28px;height:28px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px">${row.emoji||'🏃'}</div>
+      </div>`;
+
+    if(row.km&&isRun){
+      // Big km display
+      h+=`<div style="font-family:var(--font-d);font-weight:800;font-size:44px;letter-spacing:-1px;line-height:1;margin-top:10px">${esc(row.km)} KM<span style="color:var(--accent)">.</span></div>`;
+      if(paceMatch||hrMatch){
+        h+=`<div class="run-metric-row">`;
+        if(paceMatch)h+=`<div><div class="run-metric-label">PACE</div><div class="run-metric-val">${esc(paceMatch[0].replace('/km',''))}<span class="run-metric-unit">/km</span></div></div>`;
+        if(hrMatch)h+=`<div><div class="run-metric-label">HR</div><div class="run-metric-val">&lt;${esc(hrMatch[1])}<span class="run-metric-unit">bpm</span></div></div>`;
+        h+=`</div>`;
+      }
+    }else if(row.km){
+      h+=`<div style="font-family:var(--font-d);font-weight:800;font-size:36px;line-height:1;margin-top:8px">${esc(row.km)} KM</div>`;
+    }
+
+    if(detail){h+=`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5;padding-top:12px;border-top:1px solid var(--border)">${esc(detail)}</div>`;}
+
+    if(!row.feedback&&isRun){
+      h+=`<button class="btn-cta">Start run →</button>`;
+    }
+    h+=`</div>`;
+
+    if(!isWork(row.type))h+=feedbackHtml(row.datum,row.feedback);
+  }
+
+  // Tomorrow — compact
+  const tmrDate=new Date();tmrDate.setDate(tmrDate.getDate()+1);
+  const tmr=state.data.find(r=>r.datum===tmrDate.toISOString().split('T')[0]);
+  if(tmr){
+    h+=`<div class="card" style="padding:14px 16px">
+      <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:6px">${T('tomorrow')} · ${days[tmrDate.getDay()]} ${tmrDate.getDate()}</div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <div style="width:28px;height:28px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px">${tmr.emoji||'📋'}</div>
+        <div style="font-family:var(--font-d);font-weight:700;font-size:16px;flex:1">${esc(tmr.titel||'')}</div>
+        ${tmr.km?`<div style="font-family:var(--font-m);font-size:10px;color:var(--accent)">${esc(tmr.km)} km</div>`:''}
+      </div>
+    </div>`;
+  }
+
+  if(!row||isMob(row?.type)){
+    h+=`<div class="mob-reminder"><div class="mob-title">${T('mob_reminder')}</div><div class="mob-text">${T('mob_text')}</div></div>`;
+  }
+
+  h+=`</div>`;
+  el.innerHTML=h;
+  attachStarListeners();
+}
 
   if(!state.data){
     h+=noSchemaHint();
@@ -1001,96 +1117,64 @@ async function handleFeedbackSubmit(datum){
 // ── WEEK ──────────────────────────────────────────────────────────────────────
 function renderWeek(){
   const el=document.getElementById('weekContent');
-  const t=todayStr(),dates=getWeekDates();
+  const offset=state.weekOffset||0;
+  const dates=getWeekDatesOffset(offset);
+  const t=todayStr();
   const days=state.lang==='en'?DAYS_EN:DAYS_NL;
   const wd=dates.map(d=>({date:d,row:state.data?.find(r=>r.datum===d)??null}));
-
-  const plannedKm=wd.reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
-  const doneKm=wd.filter(({date})=>date<=t).reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
-  // C24: count by standardised types
-  const trainDays=wd.filter(({row})=>row&&hasType(row.type,'run')).length;
-  const workDays=wd.filter(({row})=>row&&isWork(row.type)).length;
-  const fbDone=wd.filter(({row})=>row?.feedback).length;
-  const pct=plannedKm>0?Math.min(100,Math.round(doneKm/plannedKm*100)):0;
-
-  let h=`<div class="week-stat-grid">
-    <div class="week-stat"><div class="week-stat-val" style="color:var(--run-text)">${plannedKm.toFixed(0)}</div><div class="week-stat-lbl">${T('week_km')}</div></div>
-    <div class="week-stat"><div class="week-stat-val">${trainDays}</div><div class="week-stat-lbl">${T('week_sessions')}</div></div>
-    <div class="week-stat"><div class="week-stat-val" style="color:var(--work-text)">${workDays}</div><div class="week-stat-lbl">${T('week_werk')}</div></div>
-  </div>
-  <div class="progress-bar-wrap">
-    <div class="progress-bar-header"><span class="progress-bar-label">${T('week_progress')}</span><span class="progress-bar-val">${doneKm.toFixed(1)} / ${plannedKm.toFixed(0)} km</span></div>
-    <div class="progress-bar-track"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
-    <div class="progress-bar-footer"><span>${pct}% ${T('week_done')}</span><span style="color:${fbDone?'var(--run-text)':'var(--faint)'}">✓ ${fbDone} ${T('week_feedback')}</span></div>
-  </div>
-  <div class="day-tiles">`;
-
-  wd.forEach(({date,row})=>{
-    const isPast=date<t,isTdy=date===t,d=parseDate(date);
-    const ti=row?typeOf(row.type):null;
-    const dot=ti?ti.text:'transparent';
-    h+=`<div class="day-tile${isTdy?' is-today':''}${isPast&&!isTdy?' is-past':''}">
-      <div class="day-tile-day">${days[d.getDay()]}</div>
-      <div class="day-tile-num">${d.getDate()}</div>
-      <div class="day-tile-dot" style="background:${dot}"></div>
-      <div class="day-tile-check">${row?.feedback?'✓':''}</div>
-      ${row?.km?`<div class="day-tile-km">${parseFloat(row.km).toFixed(0)}k</div>`:''}
-    </div>`;
-  });
-  h+='</div>';
-
-  // Upcoming or empty
-  if(!state.data){h+=noSchemaHint();}
-  else{
-    const upcoming=wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
-    if(upcoming.length){
-      h+=`<div class="section-label">${T('week_todo')}</div>`;
-      upcoming.forEach(({date,row})=>{
-        const isTdy=date===t,ti=typeOf(row.type),d=parseDate(date);
-        h+=`<div class="upcoming-row${isTdy?' is-today':''}" onclick="openDayModal('${date}')">
-          <div class="upcoming-date${isTdy?' is-today':''}">
-            <div class="upcoming-date-day">${days[d.getDay()]}</div>
-            <div class="upcoming-date-num">${d.getDate()}</div>
-          </div>
-          <div class="upcoming-body">
-            <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:3px">${T(ti.i18n)}</span>
-            <div class="upcoming-title">${esc(row.titel||'')}</div>
-            ${row.km?`<div class="upcoming-metric">${esc(row.km)} km</div>`:''}
-          </div>
-          <div class="upcoming-emoji">${row.emoji||''}</div>
-        </div>`;
-      });
-    }
-  }
-  el.innerHTML=h;
-}
+  const d0=parseDate(dates[0]),d6=parseDate(dates[6]);
+  const mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
+  const months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
+  // Week number (ISO)
+  const jan4=new Date(d0.getFullYear(),0,4);
+  const weekNum=Math.ceil(((d0-jan4)/86400000+jan4.getDay()+1)/7);
+  const weekLabel=`${d0.getDate()}–${d6.getDate()} ${months[d0.getMonth()]}`;
 
 // ── PLAN ──────────────────────────────────────────────────────────────────────
 function renderPlan(){
   const el=document.getElementById('planContent');
+  const titleEl=document.getElementById('planPageTitle');
   const t=todayStr();
 
-  if(!state.data){
-    // C22: show current week even without schema
-    renderPlanWithoutData(t);
-    return;
+  // PageTitle
+  if(titleEl){
+    const races=loadRaces();
+    const mainRace=races.find(r=>r.mainGoal)||races[0];
+    const kicker=mainRace?`${esc(mainRace.name)} · ${countdownDisplay(daysUntil(mainRace.date)).val} ${countdownDisplay(daysUntil(mainRace.date)).unit}`:'Training';
+    titleEl.innerHTML=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Training</div></div></div>`;
   }
 
+  if(!state.data){renderPlanWithoutData(t);return;}
+
   const allRows=state.data.filter(r=>r.datum);
-  if(!allRows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;buildPhaseTabs([]);return;}
+  if(!allRows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;document.getElementById('phaseTabs').innerHTML='';return;}
 
   const faseValues=[...new Set(allRows.map(r=>r.fase||'').filter(Boolean))];
   const phaseTabs=document.getElementById('phaseTabs');
 
   if(faseValues.length>0){
-    const activeFase=phaseTabs.querySelector('.phase-tab.active')?.dataset.fase||faseValues[0];
-    phaseTabs.innerHTML=faseValues.map((f,i)=>
-      `<button class="phase-tab${f===activeFase?' active':''}" data-fase="${esc(f)}" onclick="selectFase(this,'${esc(f)}')">${esc(f)}</button>`
-    ).join('');
-    renderPlanRows(allRows.filter(r=>r.fase===activeFase),t);
+    // Determine active fase
+    let activeFase=state.currentFase||phaseTabs.querySelector('.phase-tile.active')?.dataset.fase||faseValues[0];
+    if(!faseValues.includes(activeFase))activeFase=faseValues[0];
+    state.currentFase=activeFase;
+
+    // Phase strip v4: 4 equal tiles
+    phaseTabs.innerHTML=faseValues.map((f,i)=>{
+      const shortName=f.replace(/Fase \d+\s*[·–-]\s*/i,'').trim()||f;
+      const faseNum=f.match(/\d+/)?.[0]||String(i+1);
+      return `<div class="phase-tile${f===activeFase?' active':''}" onclick="selectFase(this,'${esc(f)}')" data-fase="${esc(f)}">
+        <div class="phase-tile-name">F${faseNum}</div>
+        <div class="phase-tile-sub">${esc(shortName)}</div>
+      </div>`;
+    }).join('');
+
+    // Floating fase badge (top-right sticky)
+    const faseBadge=`<div class="fase-badge" id="faseBadge">${esc(activeFase)}</div>`;
+
+    renderPlanRows(allRows.filter(r=>r.fase===activeFase),t,faseBadge);
   }else{
     phaseTabs.innerHTML='';
-    renderPlanRows(allRows,t);
+    renderPlanRows(allRows,t,'');
   }
 }
 
@@ -1123,18 +1207,20 @@ function renderPlanWithoutData(t){
 }
 
 function selectFase(btn,fase){
-  document.querySelectorAll('#phaseTabs .phase-tab').forEach(b=>b.classList.toggle('active',b===btn));
-  renderPlanRows((state.data||[]).filter(r=>(r.fase||'')===(fase||'')),todayStr());
+  state.currentFase=fase;
+  document.querySelectorAll('#phaseTabs .phase-tile').forEach(b=>b.classList.toggle('active',b.dataset.fase===fase));
+  const badge=fase?`<div class="fase-badge">${fase.replace(/Fase \d+\s*[·–-]\s*/i,'').trim()||fase}</div>`:'';
+  renderPlanRows((state.data||[]).filter(r=>(r.fase||'')===(fase||'')),todayStr(),badge);
 }
 
-function renderPlanRows(rows,t){
+function renderPlanRows(rows,t,faseBadge=''){
   const el=document.getElementById('planContent');
   if(!rows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;return;}
 
-  let h='';
+  let h=faseBadge||'';
   let lastFase=null;
 
-  // C29: wrap in swipe container
+  // swipe + scroll container
   h+='<div class="plan-swipe-wrapper" id="planSwipeWrapper"><div class="plan-swipe-inner" id="planSwipeInner">';
   h+='<div class="plan-table">';
 
@@ -1172,7 +1258,7 @@ function renderPlanRows(rows,t){
 
   // C29: next-fase nudge at bottom
   const faseValues=state.data?[...new Set(state.data.map(r=>r.fase||'').filter(Boolean))]:[];
-  const activeFase=document.getElementById('phaseTabs')?.querySelector('.phase-tab.active')?.dataset.fase;
+  const activeFase=document.getElementById('phaseTabs')?.querySelector('.phase-tile.active')?.dataset.fase;
   if(activeFase&&faseValues.length>1){
     const idx=faseValues.indexOf(activeFase);
     if(idx<faseValues.length-1){
@@ -1199,10 +1285,10 @@ function togglePlanRow(id){
   if(!isOpen)detail.classList.add('open');
 }
 
-// C29: navigate to fase by name
+// navigate to fase by name
 function selectFaseByName(fase){
-  const btn=document.querySelector(`#phaseTabs .phase-tab[data-fase="${CSS.escape(fase)}"]`);
-  if(btn)selectFase(btn,fase);
+  const tile=document.querySelector(`#phaseTabs .phase-tile[data-fase="${CSS.escape(fase)}"]`);
+  if(tile)selectFase(tile,fase);
 }
 
 // C27: swipe gesture for Training tab
@@ -1228,7 +1314,7 @@ function swipePlanFase(dir){
   const faseValues=[...new Set(state.data.map(r=>r.fase||'').filter(Boolean))];
   if(faseValues.length<=1)return;
   const phaseTabs=document.getElementById('phaseTabs');
-  const active=phaseTabs?.querySelector('.phase-tab.active');
+  const active=phaseTabs?.querySelector('.phase-tile.active');
   if(!active)return;
   const idx=faseValues.indexOf(active.dataset.fase);
   const next=faseValues[idx+dir];
@@ -1432,6 +1518,96 @@ function closeDayModal(e){
   state.editingFeedback=false;state.selectedRating=0;
 }
 
+// ── STATS OVERLAY ─────────────────────────────────────────────────────────────
+function openStats(){
+  const el=document.getElementById('statsOverlay');
+  const content=document.getElementById('statsContent');
+  if(!el||!content)return;
+  const t=todayStr();
+  const past=state.data?state.data.filter(r=>r.datum<=t):[];
+  const totalKm=past.reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+  const runCount=past.filter(r=>hasType(r.type,'run')).length;
+  const fbRows=past.filter(r=>r.feedback);
+  const ratingRows=fbRows.filter(r=>/^\d/.test(r.feedback));
+  const avgRating=ratingRows.length?ratingRows.reduce((s,r)=>s+parseInt(r.feedback[0]),0)/ratingRows.length:0;
+  const races=loadRaces();
+  const mainRace=races.find(r=>r.mainGoal)||races[0];
+  const daysLeft=mainRace?daysUntil(mainRace.date):0;
+  const mondayStr=getMondayStr();
+  const weekKm=(state.data||[]).filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
+  const months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
+
+  const tiles=[
+    {label:T('stats_total'),val:totalKm.toFixed(0),unit:T('stats_done'),hi:true},
+    {label:T('stats_days'),val:daysLeft,unit:mainRace?.name||'—',hi:true},
+    {label:T('stats_runs'),val:runCount,unit:T('stats_sessions'),hi:false},
+    {label:T('stats_week'),val:weekKm.toFixed(0),unit:T('stats_week_sub'),hi:true},
+    avgRating>0?{label:T('stats_feel'),val:avgRating.toFixed(1),unit:`/5 · ${ratingRows.length} ${T('stats_fb_sub')}`,hi:false}:null,
+    {label:T('stats_feedback'),val:fbRows.length,unit:T('stats_fb_sub'),hi:false},
+  ].filter(Boolean);
+
+  let h=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+    <div>
+      <div style="font-family:var(--font-m);font-size:10px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;font-weight:600">Stats · all-time</div>
+      <div style="font-family:var(--font-d);font-weight:800;font-size:22px;text-transform:uppercase;margin-top:2px">Jouw run</div>
+    </div>
+    <button onclick="closeStats()" style="background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 10px;cursor:pointer;font-family:var(--font-m);font-size:10px;letter-spacing:1px;text-transform:uppercase">Sluit ✕</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">`;
+  tiles.forEach(t=>{
+    h+=`<div style="background:var(--surface);border:1px solid var(--border);padding:14px">
+      <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${esc(t.label)}</div>
+      <div style="font-family:var(--font-d);font-weight:800;font-size:32px;line-height:1;color:${t.hi?'var(--accent)':'var(--text)'}">${esc(String(t.val))}</div>
+      <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:0.5px;margin-top:4px">${esc(t.unit)}</div>
+    </div>`;
+  });
+  h+='</div>';
+  if(fbRows.length){
+    h+=`<div style="font-family:var(--font-m);font-size:10px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${T('stats_recent')}</div>`;
+    fbRows.slice(-3).reverse().forEach(row=>{
+      const d=parseDate(row.datum);
+      h+=`<div style="background:var(--surface);border:1px solid var(--border);padding:12px;margin-bottom:6px">
+        <div style="display:flex;justify-content:space-between">
+          <div style="font-family:var(--font-d);font-weight:700;font-size:14px">${esc(row.titel||'Training')}</div>
+          <span style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${d.getDate()} ${months[d.getMonth()]}</span>
+        </div>
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--text);margin-top:4px;line-height:1.5">${esc(row.feedback)}</div>
+      </div>`;
+    });
+  }
+  content.innerHTML=h;
+  el.style.display='flex';
+}
+
+function closeStats(e){
+  if(e&&e.target!==document.getElementById('statsOverlay'))return;
+  document.getElementById('statsOverlay').style.display='none';
+}
+
+// ── WEEK SWIPE ────────────────────────────────────────────────────────────────
+function initWeekSwipe(){
+  const wrap=document.getElementById('weekSwipeWrap');
+  if(!wrap||wrap._swipeInit)return;
+  wrap._swipeInit=true;
+  let sx=0,sy=0;
+  wrap.addEventListener('touchstart',e=>{sx=e.touches[0].clientX;sy=e.touches[0].clientY;},{passive:true});
+  wrap.addEventListener('touchend',e=>{
+    const dx=e.changedTouches[0].clientX-sx,dy=e.changedTouches[0].clientY-sy;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){
+      state.weekOffset=(state.weekOffset||0)+(dx<0?1:-1);
+      renderWeek();
+    }
+  },{passive:true});
+}
+
+// helper: get week dates for a given offset
+function getWeekDatesOffset(offset){
+  const n=new Date();n.setHours(0,0,0,0);
+  n.setDate(n.getDate()+(offset||0)*7);
+  const dow=n.getDay();n.setDate(n.getDate()-(dow===0?6:dow-1));
+  return Array.from({length:7},(_,i)=>{const d=new Date(n);d.setDate(n.getDate()+i);return d.toISOString().split('T')[0];});
+}
+
 // ── CALENDAR ──────────────────────────────────────────────────────────────────
 function renderCalendar(){
   const el=document.getElementById('calContent');
@@ -1449,65 +1625,108 @@ function renderCalendar(){
   for(let i=1;i<=lastDay.getDate();i++)cells.push({date:new Date(y,m,i),other:false});
   while(cells.length%7!==0){const p=cells[cells.length-1].date;const nd=new Date(p);nd.setDate(p.getDate()+1);cells.push({date:nd,other:true});}
 
-  let h=`<div class="cal-header">
-    <button class="cal-nav-btn" onclick="calPrev()">‹</button>
-    <div class="cal-month-label">${mf[m]} ${y}</div>
-    <button class="cal-add-race-btn" onclick="openRaceModal()">${T('cal_add_race')}</button>
-    <button class="cal-nav-btn" onclick="calNext()">›</button>
+  // Build training day marks from data
+  const trainingDates=new Set();
+  const doneDates=new Set();
+  const workDates=new Set();
+  if(state.data){
+    state.data.forEach(r=>{
+      if(!r.datum)return;
+      if(isWork(r.type))workDates.add(r.datum);
+      else if(r.datum){
+        trainingDates.add(r.datum);
+        if(r.feedback)doneDates.add(r.datum);
+      }
+    });
+  }
+
+  const mf_months=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
+  const months_short=state.lang==='en'?MONTHS_EN:MONTHS_NL;
+  let h=`<div class="page-title" style="padding:14px 20px 4px">
+    <div><div class="pt-kicker">Overzicht</div><div class="pt-h">${mf[m]} ${y}</div></div>
+    <button onclick="openRaceModal()" style="background:var(--accent);border:0;padding:9px 14px;color:#000;cursor:pointer;font-family:var(--font-d);font-weight:800;font-size:12px;letter-spacing:1px;text-transform:uppercase;border-radius:999px">+ Race</button>
   </div>
-  <div class="cal-grid">
+  <div style="padding:8px 20px 0">
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px">
+    <button onclick="calPrev()" style="background:transparent;border:1px solid var(--border);padding:6px 10px;color:var(--text);cursor:pointer;font-family:var(--font-d);font-size:14px;-webkit-tap-highlight-color:transparent">‹</button>
+    <div style="flex:1;text-align:center;font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase">${months_short[(m+11)%12]} · ${mf[m]} · ${months_short[(m+1)%12]}</div>
+    <button onclick="calNext()" style="background:transparent;border:1px solid var(--border);padding:6px 10px;color:var(--text);cursor:pointer;font-family:var(--font-d);font-size:14px;-webkit-tap-highlight-color:transparent">›</button>
+  </div>
+  <div class="cal-grid" style="margin-bottom:6px">
     ${dowOrder.map(i=>`<div class="cal-dow">${days[i]}</div>`).join('')}`;
 
   cells.forEach(({date,other})=>{
-    // BUG2 fix: use local date parts, not toISOString() which shifts on UTC offset
     const y2=date.getFullYear(),m2=String(date.getMonth()+1).padStart(2,'0'),d2=String(date.getDate()).padStart(2,'0');
     const ds=`${y2}-${m2}-${d2}`;
     const isToday=ds===t,race=races.find(r=>r.date===ds),isSel=state.calSelectedDate===ds;
-    const cls=[other?'other-month':'',isToday?'is-today':'',race?'has-race':'',race?.mainGoal?'main-goal':'',isSel?'selected':''].filter(Boolean).join(' ');
-    h+=`<div class="cal-cell ${cls}" onclick="${other?'':` selectCalDate('${ds}')`}">${date.getDate()}</div>`;
+    // Dot marks
+    let dot='';
+    if(race)dot=`<div style="width:14px;height:3px;background:var(--accent);margin:2px auto 0"></div>`;
+    else if(doneDates.has(ds))dot=`<div style="width:5px;height:5px;border-radius:50%;background:var(--accent);margin:3px auto 0"></div>`;
+    else if(workDates.has(ds))dot=`<div style="width:5px;height:5px;border-radius:50%;background:#e0b84a;margin:3px auto 0"></div>`;
+    else if(trainingDates.has(ds)&&!other)dot=`<div style="width:5px;height:5px;border-radius:50%;border:1px solid var(--accent);margin:3px auto 0"></div>`;
+
+    const textColor=isToday?'#000':(other?'var(--border)':'var(--text)');
+    const circleBg=isToday?'var(--accent)':(isSel?'rgba(198,242,78,0.22)':'transparent');
+    const onclick=other?'':`selectCalDate('${ds}')`;
+    h+=`<div onclick="${onclick}" style="padding:8px 0 10px;text-align:center;cursor:${other?'default':'pointer'};position:relative">
+      <div style="width:30px;height:30px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:50%;background:${circleBg}">
+        <span style="font-family:var(--font-d);font-weight:700;font-size:16px;color:${textColor}">${date.getDate()}</span>
+      </div>
+      ${dot}
+    </div>`;
   });
   h+='</div>';
+
+  // Dot legend
+  h+=`<div class="cal-dot-legend" style="margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+    <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:4px"></span>Gedaan</span>
+    <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid var(--accent);margin-right:4px"></span>Gepland</span>
+    <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#e0b84a;margin-right:4px"></span>Werk</span>
+    <span><span style="display:inline-block;width:14px;height:3px;background:var(--accent);margin-right:4px;vertical-align:middle"></span>Race</span>
+  </div>`;
 
   if(state.calSelectedDate){
     const selRace=races.find(r=>r.date===state.calSelectedDate);
     if(selRace){
-      h+=`<div style="background:rgba(212,245,66,0.04);border:1px solid rgba(212,245,66,0.18);border-radius:0;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+      h+=`<div style="background:rgba(198,242,78,0.04);border:1px solid rgba(198,242,78,0.18);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
         <div style="font-size:22px">${raceEmoji(selRace)}</div>
         <div style="flex:1">
-          ${selRace.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.13);color:var(--accent);margin-bottom:4px">${T('main_goal')}</span><br>`:''}
+          ${selRace.mainGoal?`<div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:3px">${T('main_goal')}</div>`:''}
           <div style="font-weight:600;font-size:13px">${esc(selRace.name||'Race')}</div>
           <div style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${esc(selRace.dist||'')}${selRace.raceType?' · '+esc(selRace.raceType):''}</div>
         </div>
-        <button style="background:none;border:1px solid var(--border);border-radius:4px;padding:6px 10px;color:var(--muted);font-family:var(--font-m);font-size:9px;cursor:pointer" onclick="openRaceModal('${selRace.id}')">✏️</button>
+        <button style="background:none;border:1px solid var(--border);padding:6px 10px;color:var(--muted);font-family:var(--font-m);font-size:9px;cursor:pointer" onclick="openRaceModal('${selRace.id}')">✏️</button>
       </div>`;
     }else{
       h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
         <div style="font-family:var(--font-m);font-size:10px;color:var(--muted);flex:1">${fmtDateFull(state.calSelectedDate)}</div>
-        <button class="cal-add-race-btn" onclick="openRaceModal(null,'${state.calSelectedDate}')">+ Race</button>
+        <button onclick="openRaceModal(null,'${state.calSelectedDate}')" style="background:var(--accent);border:0;padding:7px 12px;color:#000;font-family:var(--font-d);font-weight:700;font-size:11px;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;border-radius:999px">+ Race</button>
       </div>`;
     }
   }
 
-  const monthRaces=races.filter(r=>{const d=parseDate(r.date);return d.getFullYear()===y&&d.getMonth()===m;}).sort((a,b)=>a.date.localeCompare(b.date));
-  h+=`<div><div class="section-label">${T('races_this_month')}</div>`;
+  const monthRaces=races.filter(r=>{const rd=parseDate(r.date);return rd.getFullYear()===y&&rd.getMonth()===m;}).sort((a,b)=>a.date.localeCompare(b.date));
+  h+=`<div><div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${T('races_this_month')}</div>`;
   if(!monthRaces.length){
-    h+=`<div style="font-size:12px;color:var(--faint);padding:8px 2px">${T('no_races_month')}</div>`;
+    h+=`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);padding:8px 2px">${T('no_races_month')}</div>`;
   }else{
     monthRaces.forEach(r=>{
       h+=`<div class="cal-race-row${r.mainGoal?' cal-race-main':''}" onclick="openRaceModal('${r.id}')">
-        <div style="font-size:22px">${raceEmoji(r)}</div>
+        <div style="font-size:20px">${raceEmoji(r)}</div>
         <div style="flex:1;min-width:0">
-          ${r.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.1);color:var(--accent);margin-bottom:3px">${T('main_goal')}</span><br>`:''}
+          ${r.mainGoal?`<div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:2px">${T('main_goal')}</div>`:''}
           <div style="font-size:13px;font-weight:600">${esc(r.name||'Race')}</div>
           <div style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${fmtDate(r.date)}${r.dist?' · '+esc(r.dist):''}${r.raceType?' · '+esc(r.raceType):''}</div>
         </div>
         <div style="font-family:var(--font-m);font-size:10px;color:var(--accent);flex-shrink:0;text-align:right">
-          ${(()=>{const d=daysUntil(r.date),cd=countdownDisplay(d);return`<div style="font-family:var(--font-d);font-size:18px">${cd.val}</div><div style="font-size:8px;color:var(--faint)">${cd.unit}</div>`;})()}
+          ${(()=>{const cd=countdownDisplay(daysUntil(r.date));return`<div style="font-family:var(--font-d);font-size:18px">${cd.val}</div><div style="font-size:8px;color:var(--faint)">${cd.unit}</div>`;})()}
         </div>
       </div>`;
     });
   }
   h+='</div>';
+  h+='</div>'; // close padding wrapper
   el.innerHTML=h;
 }
 
@@ -1826,7 +2045,7 @@ function saveTelegram(){
 
 // ── I18N ──────────────────────────────────────────────────────────────────────
 function applyI18n(){
-  const tabKeys=['today','week','plan','calendar','stats'];
+  const tabKeys=['today','week','plan','calendar'];
   document.querySelectorAll('#bottomNav .bn-label').forEach((el,i)=>{el.textContent=T(tabKeys[i]);});
   document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=T(el.dataset.i18n);});
   document.querySelectorAll('[data-i18n-opt]').forEach(el=>{el.textContent=T(el.dataset.i18nOpt);});
