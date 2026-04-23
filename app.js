@@ -362,7 +362,7 @@ function renderToday(){
   const todayIsRace=state.data?.some(r=>r.datum===t&&isRace(r.type));
 
   const kicker=`${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}${faseKicker?' · '+faseKicker:''}`;
-  let h=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Vandaag</div></div><button onclick="openDayModal('${t}')" style="width:32px;height:32px;border-radius:50%;background:var(--run-text);color:#fff;border:none;cursor:pointer;font-size:22px;font-weight:300;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent">+</button></div>`;
+  let h=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Vandaag</div></div><button onclick="openAddActivity('${t}')" style="width:32px;height:32px;border-radius:50%;background:var(--run-text);color:#fff;border:none;cursor:pointer;font-size:22px;font-weight:300;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent">+</button></div>`;
 
   if(!state.data){
     h+=`<div style="padding:0 16px">`;
@@ -869,7 +869,7 @@ function openDayModal(dateStr){
     rows.forEach((r,idx)=>{
       const rti=typeOf(r.type);
       const rb=isWork(r.type)?'work-border':isRace(r.type)?'race-border':'';
-      h+=`<div class="card ${rb}" style="padding:14px 16px;margin-bottom:${idx<rows.length-1?'8':'10'}px">
+      h+=`<div class="card ${rb}" onclick="openDayModal('${dateStr}')" style="padding:14px 16px;margin-bottom:${idx<rows.length-1?'8':'10'}px;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:${r.detail?'10':'0'}px">
           <div style="width:32px;height:32px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
             ${RXIcon(r.type?.split(',')[0].trim()||'run',18,'var(--text)','var(--accent)')}
@@ -1013,6 +1013,45 @@ async function saveDayEdit(datum){
   renderActiveView();
 }
 
+// C44: open ADD mode (new activity), independent of existing row
+function openAddActivity(dateStr){
+  const content=document.getElementById('dayModalContent');
+  state.editingFeedback=false;state.selectedRating=0;
+
+  const d=parseDate(dateStr);
+  const dayNames=state.lang==='en'?DAYS_EN:DAYS_NL;
+  const mNames=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
+  const typeOptions=Object.entries(TYPES).map(([k,v])=>
+    `<option value="${k}"${k==='run'?' selected':''}>${T(v.i18n)}</option>`
+  ).join('');
+
+  content.innerHTML=`<div style="margin-bottom:16px">
+    <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${dayNames[d.getDay()]} · ${mNames[d.getMonth()]} ${d.getFullYear()}</div>
+    <div style="font-family:var(--font-d);font-weight:800;font-size:28px;line-height:1;text-transform:uppercase">${d.getDate()} ${mNames[d.getMonth()]}</div>
+  </div>
+  <div class="feedback-section">
+    <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">${T('add_training')}</div>
+    <div style="margin-bottom:8px">
+      <label class="settings-label">${T('type_label')}</label>
+      <select class="plan-edit-field" id="edit-type" style="width:100%;padding:8px 10px">${typeOptions}</select>
+    </div>
+    <div style="margin-bottom:8px">
+      <label class="settings-label">${T('field_titel')}</label>
+      <input class="plan-edit-field" id="edit-titel" value="" placeholder="${T('field_titel')}">
+    </div>
+    <div style="margin-bottom:8px">
+      <label class="settings-label">${T('field_km')}</label>
+      <input class="plan-edit-field" id="edit-km" value="" placeholder="0" type="number" step="0.1">
+    </div>
+    <div style="margin-bottom:8px">
+      <label class="settings-label">${T('field_detail')}</label>
+      <textarea class="plan-edit-field" id="edit-detail" style="height:56px;resize:none"></textarea>
+    </div>
+    <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
+  </div>`;
+  document.getElementById('dayModal').classList.add('open');
+}
+
 function closeDayModal(e){
   if(e&&e.target!==document.getElementById('dayModal'))return;
   document.getElementById('dayModal').classList.remove('open');
@@ -1102,16 +1141,21 @@ function initWeekSwipe(){
 }
 
 // helper: get week dates for a given offset
-// C46: week tile click — highlights corresponding "nog te doen" row
+// C51: week tile click — only border highlight, never opens modal
 function weekTileClick(date){
-  // Toggle selected date highlight
+  // Highlight tile
   document.querySelectorAll('[data-week-tile]').forEach(el=>{
-    el.style.borderColor=el.dataset.weekTile===date?'var(--accent)':'var(--border)';
+    const active=el.dataset.weekTile===date;
+    el.style.borderColor=active?'var(--accent)':'var(--border)';
+    el.style.transform=active?'scale(1.04)':'scale(1)';
   });
-  // Scroll to upcoming row if it exists
+  // Highlight + scroll to matching upcoming row (but don't open it)
   const row=document.querySelector(`[data-upcoming-date="${date}"]`);
-  if(row){row.scrollIntoView({behavior:'smooth',block:'nearest'});row.style.borderColor='var(--accent)';setTimeout(()=>row.style.borderColor='',1500);}
-  else openDayModal(date);
+  if(row){
+    row.scrollIntoView({behavior:'smooth',block:'nearest'});
+    row.style.borderColor='var(--accent)';
+    setTimeout(()=>row.style.borderColor='',1500);
+  }
 }
 
 function getWeekDatesOffset(offset){
