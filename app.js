@@ -143,15 +143,17 @@ const T=k=>STRINGS[state.lang]?.[k]??STRINGS.nl[k]??k;
 const esc=s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const todayStr=()=>new Date().toISOString().split('T')[0];
 const parseDate=s=>new Date(s+'T00:00:00');
+// Mon-first day index: JS getDay() is 0=Sun..6=Sat; our arrays are 0=Ma..6=Zo
+const dayIdx=d=>(d.getDay()+6)%7;
 const daysUntil=s=>{const n=new Date();n.setHours(0,0,0,0);return Math.round((parseDate(s)-n)/86400000);};
 
 function fmtDate(s){
   const d=parseDate(s),days=state.lang==='en'?DAYS_EN:DAYS_NL,months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
-  return `${days[d.getDay()]} ${d.getDate()} ${months[d.getMonth()]}`;
+  return `${days[dayIdx(d)]} ${d.getDate()} ${months[d.getMonth()]}`;
 }
 function fmtDateFull(s){
   const d=parseDate(s),days=state.lang==='en'?DAYS_EN:DAYS_NL,mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
-  return `${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]} ${d.getFullYear()}`;
+  return `${days[dayIdx(d)]} ${d.getDate()} ${mf[d.getMonth()]} ${d.getFullYear()}`;
 }
 function getMondayStr(){
   const n=new Date();n.setHours(12,0,0,0);
@@ -340,7 +342,7 @@ function renderRacesBar(){
     const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
     const goalStr=goalMatch?goalMatch[1]:'';
     h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer;min-width:60px">
-      <div class="rb-name" style="font-size:9px">${esc((r.titel||r.datum).substring(0,12))}</div>
+      <div class="rb-name" style="font-size:9px;white-space:normal;line-height:1.2;max-width:70px">${esc(r.titel||r.datum)}</div>
       <div class="rb-value${cd.val<=7?' hi':''}" style="font-size:16px">${cd.val}</div>
       <div class="rb-unit">${goalStr||cd.unit}</div>
     </div>`;
@@ -364,7 +366,7 @@ function renderToday(){
   // C34: if today is a race day, reflect that
   const todayIsRace=state.data?.some(r=>r.datum===t&&isRace(r.type));
 
-  const kicker=`${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}${faseKicker?' · '+faseKicker:''}`;
+  const kicker=`${days[dayIdx(d)]} ${d.getDate()} ${mf[d.getMonth()]}${faseKicker?' · '+faseKicker:''}`;
   let h=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Vandaag</div></div><button onclick="openAddActivity('${t}')" style="width:32px;height:32px;border-radius:50%;background:var(--run-text);color:#fff;border:none;cursor:pointer;font-size:22px;font-weight:300;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent">+</button></div>`;
 
   if(!state.data){
@@ -427,7 +429,7 @@ function renderToday(){
   const tmr=state.data.find(r=>r.datum===tmrDate.toISOString().split('T')[0]);
   if(tmr){
     h+=`<div class="card" style="padding:14px 16px">
-      <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:6px">${T('tomorrow')} · ${days[tmrDate.getDay()]} ${tmrDate.getDate()}</div>
+      <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:6px">${T('tomorrow')} · ${days[dayIdx(tmrDate)]} ${tmrDate.getDate()}</div>
       <div style="display:flex;align-items:center;gap:10px">
         <div style="width:28px;height:28px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">${RXIcon(tmr.type?.split(',')[0].trim()||'rust',14,'var(--muted)','var(--accent)')}</div>
         <div style="font-family:var(--font-d);font-weight:700;font-size:16px;flex:1">${esc(tmr.titel||'')}</div>
@@ -561,7 +563,7 @@ function renderWeek(){
     // C45: past days are faded; C46: click highlights day row below
     h+=`<div data-week-tile="${date}" onclick="weekTileClick('${date}')" style="background:${isT?'var(--bg)':'var(--surface)'};border:1px solid ${isT?'var(--accent)':'var(--border)'};padding:8px 2px 10px;text-align:center;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;opacity:${isPast&&!isT?0.45:1};cursor:pointer;transition:border-color 0.15s">
       <div>
-        <div style="font-family:var(--font-m);font-size:8px;color:var(--muted);letter-spacing:0.5px">${days[d.getDay()]}</div>
+        <div style="font-family:var(--font-m);font-size:8px;color:var(--muted);letter-spacing:0.5px">${days[dayIdx(d)]}</div>
         <div style="font-family:var(--font-d);font-weight:800;font-size:16px;color:${isT?'var(--accent)':'var(--text)'};margin-top:2px">${d.getDate()}</div>
       </div>
       ${status||dot}
@@ -571,14 +573,16 @@ function renderWeek(){
 
   if(!state.data){h+=noSchemaHint();}
   else{
-    const upcoming=wd.filter(({date,row})=>date>=t&&row&&row.type!=='');
+    // Week: show active days (exclude rust/werk), include past days greyed
+    const allDays=wd.filter(({date,row})=>row&&row.type!==''&&!isWork(row.type)&&!isRust(row.type));
+    const upcoming=allDays;
     if(upcoming.length){
       h+=`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${T('week_todo')}</div>`;
       upcoming.forEach(({date,row})=>{
-        const isTdy=date===t,ti=typeOf(row.type),d=parseDate(date);
-        h+=`<div data-upcoming-date="${date}" onclick="openDayModal('${date}')" style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid ${isTdy?'var(--accent)':'var(--border)'};padding:12px;margin-bottom:6px;cursor:pointer;transition:border-color 0.2s">
+        const isTdy=date===t,isPastDay=date<t,ti=typeOf(row.type),d=parseDate(date);
+        h+=`<div data-upcoming-date="${date}" onclick="openDayModal('${date}')" style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid ${isTdy?'var(--accent)':'var(--border)'};padding:12px;margin-bottom:6px;cursor:pointer;transition:border-color 0.2s;opacity:${isPastDay&&!isTdy?0.45:1}">
           <div style="text-align:center;min-width:36px;padding-right:10px;border-right:1px solid var(--border)">
-            <div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${days[d.getDay()]}</div>
+            <div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${days[dayIdx(d)]}</div>
             <div style="font-family:var(--font-d);font-weight:800;font-size:18px;color:${isTdy?'var(--accent)':'var(--text)'}">${d.getDate()}</div>
           </div>
           <div style="flex:1">
@@ -668,7 +672,7 @@ function renderPlanWithoutData(t){
     const rowId='pr-empty-'+date;
     h+=`<div>
       <div class="plan-row${isTdy?' is-today':''}${isPast?' is-past':''}" onclick="openDayModal('${date}')">
-        <div class="plan-row-date"><strong>${days[d.getDay()]} ${d.getDate()}</strong>${MONTHS_NL[d.getMonth()]}</div>
+        <div class="plan-row-date"><strong>${days[dayIdx(d)]} ${d.getDate()}</strong>${MONTHS_NL[d.getMonth()]}</div>
         <div class="plan-row-emoji">·</div>
         <div class="plan-row-body"><div class="plan-row-title" style="color:var(--faint)">—</div></div>
         <div class="plan-row-km"></div>
@@ -827,7 +831,7 @@ function openDayModal(dateStr){
   const dayNames=state.lang==='en'?DAYS_EN:DAYS_NL;
   const mNames=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
   let h=`<div style="margin-bottom:16px">
-    <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${dayNames[d.getDay()]} · ${mNames[d.getMonth()]} ${d.getFullYear()}</div>
+    <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${dayNames[dayIdx(d)]} · ${mNames[d.getMonth()]} ${d.getFullYear()}</div>
     <div style="font-family:var(--font-d);font-weight:800;font-size:28px;line-height:1;text-transform:uppercase">${d.getDate()} ${mNames[d.getMonth()]}</div>
   </div>`;
 
@@ -1006,7 +1010,7 @@ async function saveDayEdit(datum){
   // If connected, try to persist via API
   if(state.scriptUrl){
     try{
-      const params=new URLSearchParams({action:'setDay',datum,titel,type,km,emoji,detail});
+      const params=new URLSearchParams({action:'setDay',datum,titel,type,km,emoji,detail,addRow:'true'});
       if(state.sheetName)params.set('sheetName',state.sheetName);
       await fetch(state.scriptUrl+'?'+params);
     }catch(e){/* silent — local cache updated */}
@@ -1029,7 +1033,7 @@ function openAddActivity(dateStr){
   ).join('');
 
   content.innerHTML=`<div style="margin-bottom:16px">
-    <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${dayNames[d.getDay()]} · ${mNames[d.getMonth()]} ${d.getFullYear()}</div>
+    <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${dayNames[dayIdx(d)]} · ${mNames[d.getMonth()]} ${d.getFullYear()}</div>
     <div style="font-family:var(--font-d);font-weight:800;font-size:28px;line-height:1;text-transform:uppercase">${d.getDate()} ${mNames[d.getMonth()]}</div>
   </div>
   <div class="feedback-section">
