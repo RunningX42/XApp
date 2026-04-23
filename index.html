@@ -32,8 +32,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
 /* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--st) + 12px) 16px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;gap:8px}
-.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:19px;letter-spacing:1.5px;line-height:1;flex-shrink:0}
-.topbar-logo span{color:var(--accent)}
+/* U24: RunningX logo — "RUNNING" in text, "X" in accent, Bebas Neue */
+.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;line-height:1;flex-shrink:0;display:flex;align-items:baseline;gap:0}
+.topbar-logo .logo-running{color:var(--text);letter-spacing:2px}
+.topbar-logo .logo-x{color:var(--accent);font-size:19px;letter-spacing:0}
 .topbar-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:0.5px;margin-top:1px}
 .topbar-races{display:flex;gap:0;flex:1;min-width:0;overflow:hidden}
 .race-chip{display:flex;flex-direction:column;padding:5px 10px;min-width:0;flex-shrink:0;border-right:1px solid var(--border)}
@@ -299,6 +301,26 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .no-data{text-align:center;padding:32px;color:var(--faint);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px}
 
+/* C26: connection management */
+.connect-btn{width:100%;padding:12px 16px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:border-color 0.15s,color 0.15s}
+.connect-btn.connected{border-color:var(--run-text);background:rgba(76,175,80,0.06);color:var(--text)}
+.connect-btn.connected .cb-dot{background:var(--run-text)}
+.cb-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex-shrink:0}
+.cb-label{flex:1;min-width:0}
+.cb-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cb-status{font-size:9px;color:var(--muted);letter-spacing:0.5px;margin-top:1px}
+.connect-form{margin-top:10px}
+.disconnect-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:7px 14px;color:var(--faint);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;margin-top:8px;transition:border-color 0.12s,color 0.12s}
+.disconnect-btn:hover{border-color:var(--race-text);color:var(--race-text)}
+/* C27: swipe training — touch-driven week browse */
+.plan-swipe-wrapper{position:relative;overflow:hidden;touch-action:pan-y}
+.plan-swipe-inner{transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);will-change:transform}
+/* C29: floating fase label */
+.fase-float{position:sticky;top:0;z-index:5;padding:6px 14px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(13,13,13,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(212,245,66,0.12);opacity:0.9}
+.fase-next-nudge{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;color:var(--faint);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;border-top:1px solid var(--border);cursor:pointer;transition:color 0.15s}
+.fase-next-nudge:hover{color:var(--accent)}
+.fase-next-nudge svg{transition:transform 0.15s}
+.fase-next-nudge:hover svg{transform:translateX(3px)}
 @media(min-width:480px){.bottom-nav{left:0;right:0;transform:none}}
 </style>
 </head>
@@ -382,7 +404,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 <div class="app">
   <div class="topbar">
     <div style="flex-shrink:0">
-      <div class="topbar-logo">RX</div>
+      <div class="topbar-logo"><span class="logo-running">RUNNING</span><span class="logo-x">X</span></div>
       <div class="topbar-sub" id="topbarName"></div>
     </div>
     <div class="topbar-races" id="topbarRaces"></div>
@@ -467,22 +489,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <!-- KOPPELING -->
       <div class="settings-group">
         <div class="settings-group-title" data-i18n="sg_connect"></div>
-        <div class="settings-section">
-          <div class="settings-title" data-i18n="schema_title"></div>
-          <div class="settings-field">
-            <div class="settings-hint" data-i18n="schema_hint"></div>
-            <input type="url" class="settings-input" id="scriptUrl" placeholder="https://script.google.com/macros/s/…/exec" style="margin-top:8px">
-          </div>
-          <div class="settings-field" style="display:none" id="sheetNameField">
-            <label class="settings-label" data-i18n="sheet_name_label"></label>
-            <input type="text" class="settings-input" id="sheetNameInput" placeholder="Sheet1 / Blad1" oninput="saveSheetName()">
-            <div class="settings-hint" data-i18n="sheet_name_hint"></div>
-          </div>
-          <button class="btn-save" onclick="saveSettings()" data-i18n="api_save"></button>
-          <div class="connection-status">
-            <div class="status-dot" id="statusDot"></div>
-            <span id="statusText" data-i18n="not_connected"></span>
-          </div>
+        <div class="settings-section" id="connectSection">
+          <!-- filled by renderConnectSection() -->
         </div>
       </div>
 
@@ -490,7 +498,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div class="settings-group">
         <div class="settings-group-title" data-i18n="sg_app"></div>
         <div class="settings-section">
-          <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.4.0<br><span style="color:var(--accent)">🏃</span></div>
+          <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.5.0<br><span style="color:var(--accent)">🏃</span></div>
         </div>
       </div>
 
@@ -571,6 +579,11 @@ const STRINGS={
     logged_in_as:'Ingelogd als',not_logged_in:'Niet ingelogd',
     edit_day:'Dag bewerken',field_titel:'Titel',field_type:'Type',field_km:'Km',field_detail:'Detail',field_emoji:'Emoji',save_changes:'Wijzigingen opslaan',
     pr_placeholder:'bijv. 37:56',
+    connect_sheet:'Schema koppelen',connect_active:'Gekoppeld',connect_disconnect:'Ontkoppelen',connect_url_placeholder:'https://script.google.com/macros/s/…/exec',
+    connect_hint:'Plak de URL van je gepubliceerde Google Apps Script.',connect_disconnected:'Niet gekoppeld',
+    week_label:'Week',next_fase:'Volgende fase',
+    add_training:'Training toevoegen',type_label:'Type',
+    race_to_sheet:'Race opgeslagen in schema',race_to_sheet_err:'Race lokaal opgeslagen (geen schema)',
   },
   en:{
     today:'Today',week:'Week',plan:'Training',calendar:'Calendar',stats:'Stats',settings:'Settings',
@@ -613,6 +626,11 @@ const STRINGS={
     logged_in_as:'Signed in as',not_logged_in:'Not signed in',
     edit_day:'Edit day',field_titel:'Title',field_type:'Type',field_km:'Km',field_detail:'Detail',field_emoji:'Emoji',save_changes:'Save changes',
     pr_placeholder:'e.g. 37:56',
+    connect_sheet:'Connect schedule',connect_active:'Connected',connect_disconnect:'Disconnect',connect_url_placeholder:'https://script.google.com/macros/s/…/exec',
+    connect_hint:'Paste the URL of your published Google Apps Script.',connect_disconnected:'Not connected',
+    week_label:'Week',next_fase:'Next phase',
+    add_training:'Add training',type_label:'Type',
+    race_to_sheet:'Race saved to schedule',race_to_sheet_err:'Race saved locally (no schedule)',
   }
 };
 
@@ -630,8 +648,10 @@ const state={
   calSelectedDate:null,
   editingRaceId:null,
   _prs:null,_races:null,
-  swReg:null, // service worker registration
-  pendingSW:null, // waiting SW
+  swReg:null,
+  pendingSW:null,
+  planWeekOffset:0,     // C27: week swipe offset (0 = current week)
+  currentFase:null,     // C29: active fase for floating label
 };
 
 // ── HELPERS ──────────────────────────────────────────────────────────────────
@@ -1058,11 +1078,27 @@ function selectFase(btn,fase){
 function renderPlanRows(rows,t){
   const el=document.getElementById('planContent');
   if(!rows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;return;}
-  let h='<div class="plan-table">';
+
+  let h='';
+  let lastFase=null;
+
+  // C29: wrap in swipe container
+  h+='<div class="plan-swipe-wrapper" id="planSwipeWrapper"><div class="plan-swipe-inner" id="planSwipeInner">';
+  h+='<div class="plan-table">';
+
   rows.forEach(row=>{
     const isPast=row.datum<t,isTdy=row.datum===t,work=isWork(row.type),ti=typeOf(row.type);
     const parts=fmtDate(row.datum).split(' ');
     const rowId='pr-'+row.datum;
+
+    // C29: insert floating fase label when fase changes
+    if(row.fase&&row.fase!==lastFase){
+      h+=`</div><div class="fase-float">${esc(row.fase)}</div><div class="plan-table" style="border-top:none;border-radius:0 0 6px 6px">`;
+      lastFase=row.fase;
+    }else if(!lastFase&&!row.fase){
+      // no fase at all, normal rendering
+    }
+
     h+=`<div>
       <div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}" onclick="togglePlanRow('${rowId}','${row.datum}')">
         <div class="plan-row-date"><strong>${parts[0]} ${parts[1]}</strong>${parts[2]}</div>
@@ -1079,9 +1115,29 @@ function renderPlanRows(rows,t){
       </div>
     </div>`;
   });
+
   h+='</div>';
+
+  // C29: next-fase nudge at bottom
+  const faseValues=state.data?[...new Set(state.data.map(r=>r.fase||'').filter(Boolean))]:[];
+  const activeFase=document.getElementById('phaseTabs')?.querySelector('.phase-tab.active')?.dataset.fase;
+  if(activeFase&&faseValues.length>1){
+    const idx=faseValues.indexOf(activeFase);
+    if(idx<faseValues.length-1){
+      const nextFase=faseValues[idx+1];
+      h+=`<div class="fase-next-nudge" onclick="selectFaseByName('${esc(nextFase)}')">
+        ${esc(T('next_fase'))}: ${esc(nextFase)}
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>`;
+    }
+  }
+
+  h+='</div></div>'; // close swipe-inner + swipe-wrapper
   el.innerHTML=h;
-  requestAnimationFrame(()=>el.querySelector('.is-today')?.scrollIntoView({behavior:'smooth',block:'center'}));
+  requestAnimationFrame(()=>{
+    el.querySelector('.is-today')?.scrollIntoView({behavior:'smooth',block:'center'});
+    initPlanSwipe();
+  });
 }
 
 function togglePlanRow(id){
@@ -1091,7 +1147,45 @@ function togglePlanRow(id){
   if(!isOpen)detail.classList.add('open');
 }
 
-// ── DAY MODAL (C22: all fields editable) ─────────────────────────────────────
+// C29: navigate to fase by name
+function selectFaseByName(fase){
+  const btn=document.querySelector(`#phaseTabs .phase-tab[data-fase="${CSS.escape(fase)}"]`);
+  if(btn)selectFase(btn,fase);
+}
+
+// C27: swipe gesture for Training tab
+function initPlanSwipe(){
+  const wrapper=document.getElementById('planSwipeWrapper');
+  if(!wrapper)return;
+  let startX=0,startY=0,dragging=false;
+  wrapper.addEventListener('touchstart',e=>{
+    startX=e.touches[0].clientX;startY=e.touches[0].clientY;dragging=true;
+  },{passive:true});
+  wrapper.addEventListener('touchend',e=>{
+    if(!dragging)return;dragging=false;
+    const dx=e.changedTouches[0].clientX-startX;
+    const dy=e.changedTouches[0].clientY-startY;
+    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){
+      swipePlanFase(dx<0?1:-1);
+    }
+  },{passive:true});
+}
+
+function swipePlanFase(dir){
+  if(!state.data)return;
+  const faseValues=[...new Set(state.data.map(r=>r.fase||'').filter(Boolean))];
+  if(faseValues.length<=1)return;
+  const phaseTabs=document.getElementById('phaseTabs');
+  const active=phaseTabs?.querySelector('.phase-tab.active');
+  if(!active)return;
+  const idx=faseValues.indexOf(active.dataset.fase);
+  const next=faseValues[idx+dir];
+  if(next===undefined)return;
+  const btn=phaseTabs.querySelector(`[data-fase="${CSS.escape(next)}"]`);
+  if(btn)selectFase(btn,next);
+}
+
+// ── DAY MODAL (C22 + C28) ─────────────────────────────────────────────────────
 function openDayModal(dateStr){
   const row=state.data?.find(r=>r.datum===dateStr);
   const t=todayStr(),isPast=dateStr<=t;
@@ -1101,10 +1195,47 @@ function openDayModal(dateStr){
 
   let h=`<div class="modal-title">${fmtDateFull(dateStr)}</div>`;
 
-  // Training info card
-  if(row){
+  if(!row){
+    // C28: empty day — type picker at top, then training details, notes at bottom (smaller)
+    const typeOptions=Object.entries(TYPES).map(([k,v])=>
+      `<option value="${k}"${k==='rust'?' selected':''}>${T(v.i18n)}</option>`
+    ).join('');
+    h+=`<div class="feedback-section" style="margin-bottom:10px">
+      <div class="feedback-title">${T('add_training')}</div>
+      <div style="margin-bottom:8px">
+        <label class="settings-label">${T('type_label')}</label>
+        <select class="plan-edit-field" id="edit-type" style="width:100%;padding:8px 10px">
+          ${typeOptions}
+        </select>
+      </div>
+      <div style="margin-bottom:8px">
+        <label class="settings-label">${T('field_titel')}</label>
+        <input class="plan-edit-field" id="edit-titel" value="" placeholder="${T('field_titel')}">
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
+          <label class="settings-label">${T('field_km')}</label>
+          <input class="plan-edit-field" id="edit-km" value="" placeholder="0" type="number" step="0.1">
+        </div>
+        <div style="flex:1">
+          <label class="settings-label">${T('field_emoji')}</label>
+          <input class="plan-edit-field" id="edit-emoji" value="" placeholder="🏃">
+        </div>
+      </div>
+      <div style="margin-bottom:8px">
+        <label class="settings-label">${T('field_detail')}</label>
+        <textarea class="plan-edit-field" id="edit-detail" style="height:56px;resize:none"></textarea>
+      </div>
+      <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
+    </div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:10px">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
+      <textarea class="feedback-textarea" id="modalNoteText" style="height:56px;margin-bottom:8px"></textarea>
+      <button class="btn-secondary" style="margin-top:0" onclick="saveModalNote('${dateStr}')">${T('notes_save')}</button>
+    </div>`;
+  }else{
     const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
-    h+=`<div class="card ${border}" style="margin-bottom:14px">
+    h+=`<div class="card ${border}" style="margin-bottom:10px">
       <div class="tc-top">
         <div class="tc-emoji">${row.emoji||'🏃'}</div>
         <div class="tc-main">
@@ -1115,50 +1246,54 @@ function openDayModal(dateStr){
       </div>
       ${row.detail?`<div class="tc-detail">${esc(row.detail)}</div>`:''}
     </div>`;
-  }else{
-    h+=`<div style="color:var(--muted);font-size:13px;margin-bottom:14px">😴 ${T('rest_day')}</div>`;
-  }
 
-  // Feedback / notes
-  if(!row||!isWork(row.type)){
-    if(isPast){
-      h+=feedbackHtmlModal(dateStr,row?.feedback);
-    }else{
-      h+=`<div class="feedback-section">
-        <div class="feedback-title">${T('notes_q')}</div>
-        <textarea class="feedback-textarea" id="modalNoteText" style="height:80px">${esc(row?.feedback||'')}</textarea>
-        <button class="btn-primary" onclick="saveModalNote('${dateStr}')">${T('notes_save')}</button>
-      </div>`;
+    // Feedback / notes
+    if(!isWork(row.type)){
+      if(isPast){
+        h+=feedbackHtmlModal(dateStr,row?.feedback);
+      }else{
+        h+=`<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:10px">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
+          <textarea class="feedback-textarea" id="modalNoteText" style="height:60px;margin-bottom:8px">${esc(row?.feedback||'')}</textarea>
+          <button class="btn-secondary" style="margin-top:0" onclick="saveModalNote('${dateStr}')">${T('notes_save')}</button>
+        </div>`;
+      }
     }
-  }
 
-  // C22: Editable fields — available with or without schema
-  h+=`<div class="feedback-section" style="margin-top:4px">
-    <div class="feedback-title">${T('edit_day')}</div>
-    <div style="margin-bottom:8px">
-      <label class="settings-label">${T('field_titel')}</label>
-      <input class="plan-edit-field" id="edit-titel" value="${esc(row?.titel||'')}" placeholder="${T('field_titel')}">
-    </div>
-    <div style="margin-bottom:8px">
-      <label class="settings-label">${T('field_type')}</label>
-      <input class="plan-edit-field" id="edit-type" value="${esc(row?.type||'')}" placeholder="run, kracht, mobiliteit…">
-    </div>
-    <div style="display:flex;gap:8px;margin-bottom:8px">
-      <div style="flex:1">
-        <label class="settings-label">${T('field_km')}</label>
-        <input class="plan-edit-field" id="edit-km" value="${esc(row?.km||'')}" placeholder="0" type="number" step="0.1">
+    // Edit fields for existing row — collapsible
+    const typeOptions=Object.entries(TYPES).map(([k,v])=>
+      `<option value="${k}"${row.type===k?' selected':''}>${T(v.i18n)}</option>`
+    ).join('');
+    h+=`<div class="feedback-section" style="margin-top:4px">
+      <div class="feedback-title">${T('edit_day')}</div>
+      <div style="margin-bottom:8px">
+        <label class="settings-label">${T('field_titel')}</label>
+        <input class="plan-edit-field" id="edit-titel" value="${esc(row?.titel||'')}" placeholder="${T('field_titel')}">
       </div>
-      <div style="flex:1">
-        <label class="settings-label">${T('field_emoji')}</label>
-        <input class="plan-edit-field" id="edit-emoji" value="${esc(row?.emoji||'')}" placeholder="🏃">
+      <div style="margin-bottom:8px">
+        <label class="settings-label">${T('type_label')}</label>
+        <select class="plan-edit-field" id="edit-type" style="width:100%;padding:8px 10px">
+          ${typeOptions}
+          <option value="${esc(row.type||'')}"${!TYPES[row.type]?' selected':''}>${esc(row.type||'')}</option>
+        </select>
       </div>
-    </div>
-    <div style="margin-bottom:8px">
-      <label class="settings-label">${T('field_detail')}</label>
-      <textarea class="plan-edit-field" id="edit-detail" style="height:60px;resize:none">${esc(row?.detail||'')}</textarea>
-    </div>
-    <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
-  </div>`;
+      <div style="display:flex;gap:8px;margin-bottom:8px">
+        <div style="flex:1">
+          <label class="settings-label">${T('field_km')}</label>
+          <input class="plan-edit-field" id="edit-km" value="${esc(row?.km||'')}" placeholder="0" type="number" step="0.1">
+        </div>
+        <div style="flex:1">
+          <label class="settings-label">${T('field_emoji')}</label>
+          <input class="plan-edit-field" id="edit-emoji" value="${esc(row?.emoji||'')}" placeholder="🏃">
+        </div>
+      </div>
+      <div style="margin-bottom:8px">
+        <label class="settings-label">${T('field_detail')}</label>
+        <textarea class="plan-edit-field" id="edit-detail" style="height:56px;resize:none">${esc(row?.detail||'')}</textarea>
+      </div>
+      <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
+    </div>`;
+  }
 
   content.innerHTML=h;
   attachStarListeners('dayModalContent');
@@ -1272,7 +1407,9 @@ function renderCalendar(){
     ${dowOrder.map(i=>`<div class="cal-dow">${days[i]}</div>`).join('')}`;
 
   cells.forEach(({date,other})=>{
-    const ds=date.toISOString().split('T')[0];
+    // BUG2 fix: use local date parts, not toISOString() which shifts on UTC offset
+    const y2=date.getFullYear(),m2=String(date.getMonth()+1).padStart(2,'0'),d2=String(date.getDate()).padStart(2,'0');
+    const ds=`${y2}-${m2}-${d2}`;
     const isToday=ds===t,race=races.find(r=>r.date===ds),isSel=state.calSelectedDate===ds;
     const cls=[other?'other-month':'',isToday?'is-today':'',race?'has-race':'',race?.mainGoal?'main-goal':'',isSel?'selected':''].filter(Boolean).join(' ');
     h+=`<div class="cal-cell ${cls}" onclick="${other?'':` selectCalDate('${ds}')`}">${date.getDate()}</div>`;
@@ -1328,9 +1465,10 @@ function calNext(){state.calMonth++;if(state.calMonth>11){state.calMonth=0;state
 
 // ── RACE MODAL ────────────────────────────────────────────────────────────────
 function openRaceModal(raceId,prefillDate){
-  closeRaceModal();
+  // BUG1 fix: set editingRaceId before calling closeRaceModal
   const races=loadRaces(),race=raceId?races.find(r=>r.id===raceId):null;
   state.editingRaceId=race?.id||null;
+  document.getElementById('raceModal').classList.remove('open');
   const content=document.getElementById('raceModalContent');
   const distOpts=['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'].map(d=>
     `<option value="${d}"${race?.dist===d?'selected':''}>${d}</option>`
@@ -1392,11 +1530,25 @@ function saveRace(){
     races.push({id:Date.now().toString(),name,date,dist,raceType,mainGoal});
   }
   persistRaces(races);
-  const saved=parseDate(date);
-  state.calYear=saved.getFullYear();state.calMonth=saved.getMonth();state.calSelectedDate=date;
+  // BUG2 fix: parse date parts directly to avoid timezone off-by-one
+  const [sy,sm,sd]=date.split('-').map(Number);
+  state.calYear=sy;state.calMonth=sm-1;state.calSelectedDate=date;
   closeRaceModal();renderHeader();
   if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
-  showToast(T('race_saved'));
+
+  // C33: write race to sheet if connected
+  if(state.scriptUrl){
+    const titel=`Race: ${name}`;
+    const params=new URLSearchParams({action:'setDay',datum:date,titel,type:'race',emoji:'🏁',detail:`${dist||''}${raceType?' · '+raceType:''}`,km:''});
+    if(state.sheetName)params.set('sheetName',state.sheetName);
+    fetch(state.scriptUrl+'?'+params).then(()=>{
+      showToast(T('race_to_sheet'));
+    }).catch(()=>{
+      showToast(T('race_saved'));
+    });
+  }else{
+    showToast(T('race_saved'));
+  }
 }
 
 function deleteRace(id){
@@ -1495,6 +1647,60 @@ function logoutAccount(){
   showToast(T('saved'));
 }
 
+// ── C26: CONNECT SECTION ──────────────────────────────────────────────────────
+function renderConnectSection(){
+  const el=document.getElementById('connectSection');if(!el)return;
+  const connected=!!state.scriptUrl;
+  // Shorten URL for display — show only the ID segment
+  function shortUrl(url){
+    if(!url)return'';
+    const m=url.match(/\/s\/([^\/]+)\//);
+    return m?'…'+m[1].slice(-12)+'…':url.slice(0,32)+'…';
+  }
+  if(connected){
+    el.innerHTML=`
+      <button class="connect-btn connected" onclick="return false" style="cursor:default;margin-bottom:8px">
+        <div class="cb-dot"></div>
+        <div class="cb-label">
+          <div class="cb-name">${T('connect_active')}</div>
+          <div class="cb-status">${esc(shortUrl(state.scriptUrl))}${state.sheetName?' · '+esc(state.sheetName):''}</div>
+        </div>
+        <span style="font-size:16px">✓</span>
+      </button>
+      <button class="disconnect-btn" onclick="disconnectSheet()">${T('connect_disconnect')}</button>`;
+  }else{
+    // C30: URL input field when not connected
+    el.innerHTML=`
+      <div class="settings-title">${T('schema_title')}</div>
+      <div class="settings-field">
+        <div class="settings-hint" style="margin-bottom:8px">${T('connect_hint')}</div>
+        <input type="url" class="settings-input" id="scriptUrl" placeholder="${T('connect_url_placeholder')}"
+          value="${esc(state.scriptUrl)}">
+      </div>
+      <div class="settings-field" id="sheetNameField">
+        <label class="settings-label" data-i18n="sheet_name_label">${T('sheet_name_label')}</label>
+        <input type="text" class="settings-input" id="sheetNameInput" placeholder="Sheet1 / Blad1"
+          value="${esc(state.sheetName)}" oninput="saveSheetName()">
+        <div class="settings-hint">${T('sheet_name_hint')}</div>
+      </div>
+      <button class="btn-save" onclick="saveSettings()">${T('api_save')}</button>
+      <div class="connection-status" style="margin-top:10px">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">${T('not_connected')}</span>
+      </div>`;
+  }
+}
+
+function disconnectSheet(){
+  // C26: disconnect but keep data
+  state.scriptUrl='';state.sheetName='';
+  localStorage.removeItem('scriptUrl');localStorage.removeItem('sheetName');
+  // keep state.data in memory so existing views still work until reload
+  renderConnectSection();
+  renderHeader();
+  showToast(T('saved'));
+}
+
 // Telegram verify
 function verifyTelegram(){
   const user=document.getElementById('telegramUser')?.value.trim();
@@ -1533,9 +1739,8 @@ function renderPrFields(){
 }
 
 function renderSettingsFields(){
-  const urlEl=document.getElementById('scriptUrl');if(urlEl)urlEl.value=state.scriptUrl;
-  const snEl=document.getElementById('sheetNameInput');if(snEl)snEl.value=state.sheetName;
-  if(state.sheetName||true)document.getElementById('sheetNameField').style.display='block';
+  // C26/C30: connect section is fully dynamic
+  renderConnectSection();
   const tgEl=document.getElementById('telegramUser');if(tgEl)tgEl.value=localStorage.getItem('telegramUser')||'';
   const nameEl=document.getElementById('settingsName');if(nameEl)nameEl.value=localStorage.getItem('userName')||'';
   renderPrFields();renderAccountSection();updateTelegramStatus();applyI18n();
@@ -1550,7 +1755,11 @@ function saveSettings(){
   const url=document.getElementById('scriptUrl')?.value.trim();
   if(!url){showToast(T('enter_url'));return;}
   state.scriptUrl=url;localStorage.setItem('scriptUrl',url);
-  showToast(T('connecting'));fetchData();
+  // Also save sheet name if filled in
+  const sn=document.getElementById('sheetNameInput')?.value||'';
+  state.sheetName=sn;localStorage.setItem('sheetName',sn);
+  showToast(T('connecting'));
+  fetchData().then(()=>renderConnectSection());
 }
 
 function saveSheetName(){
@@ -1607,10 +1816,12 @@ function showToast(msg){
 }
 
 function updateConnectionStatus(ok,err){
+  // Update status dot/text if they exist in DOM (connect section when disconnected)
   const dot=document.getElementById('statusDot'),txt=document.getElementById('statusText');
-  if(!dot||!txt)return;
-  dot.className='status-dot '+(ok?'ok':'err');
-  txt.textContent=ok?T('connected'):`${T('conn_err')}: ${err||'?'}`;
+  if(dot)dot.className='status-dot '+(ok?'ok':'err');
+  if(txt)txt.textContent=ok?T('connected'):`${T('conn_err')}: ${err||'?'}`;
+  // If connected, re-render the connect section to show connected state
+  if(ok&&state.currentTab==='settings')renderConnectSection();
 }
 
 // ── ONBOARDING ────────────────────────────────────────────────────────────────
