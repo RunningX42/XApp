@@ -288,6 +288,12 @@ function renderActiveView(){
 }
 
 // ── HEADER ────────────────────────────────────────────────────────────────────
+function openDayFromRacesBar(datum){
+  // C39: navigate to Training tab and open day detail
+  switchTab('plan');
+  setTimeout(()=>openDayModal(datum),150);
+}
+
 function renderHeader(){
   const name=localStorage.getItem('userName')||'';
   document.getElementById('topbarName').textContent=name;
@@ -296,13 +302,20 @@ function renderHeader(){
 
 function renderRacesBar(){
   const bar=document.getElementById('racesBar');if(!bar)return;
-  // C34: sheet is source of truth — pull races from state.data
-  const sheetRaces=(state.data||[])
+  // C38: sheet primary, localStorage fallback
+  let sheetRaces=(state.data||[])
     .filter(r=>isRace(r.type)&&r.datum)
     .sort((a,b)=>a.datum.localeCompare(b.datum))
     .filter(r=>daysUntil(r.datum)>=-1)
     .slice(0,4);
-
+  if(!sheetRaces.length&&!state.scriptUrl){
+    // No sheet — use localStorage races
+    sheetRaces=loadRaces()
+      .filter(r=>daysUntil(r.date)>=-1)
+      .sort((a,b)=>a.date.localeCompare(b.date))
+      .slice(0,4)
+      .map(r=>({datum:r.date,titel:r.name,km:r.dist}));
+  }
   if(!sheetRaces.length){
     bar.innerHTML='';
     return;
@@ -311,10 +324,10 @@ function renderRacesBar(){
   let h='';
   sheetRaces.forEach(r=>{
     const cd=countdownDisplay(daysUntil(r.datum));
-    const dist=(r.km||'').toString().trim();
-    h+=`<div class="rb-item" onclick="switchTab('calendar')" style="cursor:pointer">
-      <div class="rb-name"><span class="rb-icon">${RXIcon('race',12,'var(--text)','var(--accent)')}</span> ${esc(r.titel||r.datum)}</div>
-      <div class="rb-value${cd.val<=7?' hi':''}">${cd.val}</div>
+    // C39: smaller chips, click opens day in training tab
+    h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer;min-width:60px">
+      <div class="rb-name" style="font-size:9px">${esc((r.titel||r.datum).substring(0,12))}</div>
+      <div class="rb-value${cd.val<=7?' hi':''}" style="font-size:16px">${cd.val}</div>
       <div class="rb-unit">${cd.unit}</div>
     </div>`;
   });
@@ -336,7 +349,7 @@ function renderToday(){
   const todayIsRace=state.data?.some(r=>r.datum===t&&isRace(r.type));
 
   const kicker=`${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}${faseKicker?' · '+faseKicker:''}`;
-  let h=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Vandaag</div></div></div>`;
+  let h=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Vandaag</div></div><button onclick="openDayModal('${t}')" style="width:32px;height:32px;border-radius:50%;background:var(--run-text);color:#fff;border:none;cursor:pointer;font-size:22px;font-weight:300;line-height:1;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent">+</button></div>`;
 
   if(!state.data){
     h+=`<div style="padding:0 16px">`;
@@ -521,11 +534,14 @@ function renderWeek(){
   wd.forEach(({date,row})=>{
     const isT=date===t,isPast=date<t,d=parseDate(date);
     const ti=row?typeOf(row.type):null;
+    const isWorkDay=isWork(row?.type);
     let status='';
     if(row?.feedback)status=`<div style="font-family:var(--font-m);font-size:9px;color:var(--accent)">✓${row.km?' '+parseFloat(row.km).toFixed(0)+'k':''}</div>`;
-    else if(isWork(row?.type))status=`<div style="font-size:13px">🟡</div>`;
+    // C44: werk shows label, no dot
+    else if(isWorkDay)status=`<div style="font-family:var(--font-m);font-size:8px;color:var(--work-text);letter-spacing:0.5px">werk</div>`;
     else if(row?.km)status=`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${parseFloat(row.km).toFixed(0)}k</div>`;
-    const dot=ti&&!status?`<div style="width:5px;height:5px;border-radius:50%;background:${isPast?'var(--faint)':ti.text};margin-top:4px"></div>`:'';
+    const dot=ti&&!status&&!isWorkDay?`<div style="width:5px;height:5px;border-radius:50%;background:${isPast?'var(--faint)':ti.text};margin-top:4px"></div>`:'';
+    // C44: no accent border for work days
     h+=`<div style="background:${isT?'var(--bg)':'var(--surface)'};border:1px solid ${isT?'var(--accent)':'var(--border)'};padding:8px 2px 10px;text-align:center;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:space-between">
       <div>
         <div style="font-family:var(--font-m);font-size:8px;color:var(--muted);letter-spacing:0.5px">${days[d.getDay()]}</div>
@@ -573,7 +589,8 @@ function renderPlan(){
   if(titleEl){
     const sheetRaceRows=(state.data||[]).filter(r=>isRace(r.type)&&r.datum).sort((a,b)=>a.datum.localeCompare(b.datum));
     const nextRace=sheetRaceRows.find(r=>daysUntil(r.datum)>=0);
-    const kicker=nextRace?`${esc(nextRace.titel||nextRace.datum)} · ${countdownDisplay(daysUntil(nextRace.datum)).val} ${countdownDisplay(daysUntil(nextRace.datum)).unit}`:'Training';
+    const _cd=nextRace?countdownDisplay(daysUntil(nextRace.datum)):null;
+    const kicker=nextRace?`Next race: ${esc(nextRace.titel||nextRace.datum)} · ${_cd.val} ${_cd.unit}`:'Training';
     titleEl.innerHTML=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Training</div></div></div>`;
   }
 
@@ -593,7 +610,7 @@ function renderPlan(){
 
     // Phase strip v4: 4 equal tiles
     phaseTabs.innerHTML=faseValues.map((f,i)=>{
-      const shortName=f.replace(/Fase \d+\s*[·–-]\s*/i,'').trim()||f;
+      const shortName=f.replace(/^Fase\s*\d+\s*[·–-]\s*/i,'').trim()||f;
       const faseNum=f.match(/\d+/)?.[0]||String(i+1);
       return `<div class="phase-tile${f===activeFase?' active':''}" onclick="selectFase(this,'${esc(f)}')" data-fase="${esc(f)}">
         <div class="phase-tile-name">F${faseNum}</div>
@@ -642,7 +659,7 @@ function renderPlanWithoutData(t){
 function selectFase(btn,fase){
   state.currentFase=fase;
   document.querySelectorAll('#phaseTabs .phase-tile').forEach(b=>b.classList.toggle('active',b.dataset.fase===fase));
-  const badge=fase?`<div class="fase-badge">${fase.replace(/Fase \d+\s*[·–-]\s*/i,'').trim()||fase}</div>`:'';
+  const badge=fase?`<div class="fase-badge">${esc(fase)}</div>`:'';
   renderPlanRows((state.data||[]).filter(r=>(r.fase||'')===(fase||'')),todayStr(),badge);
 }
 
@@ -797,10 +814,7 @@ function openDayModal(dateStr){
           <label class="settings-label">${T('field_km')}</label>
           <input class="plan-edit-field" id="edit-km" value="" placeholder="0" type="number" step="0.1">
         </div>
-        <div style="flex:1">
-          <label class="settings-label">${T('field_emoji')}</label>
-          <input class="plan-edit-field" id="edit-emoji" value="" placeholder="🏃">
-        </div>
+  
       </div>
       <div style="margin-bottom:8px">
         <label class="settings-label">${T('field_detail')}</label>
@@ -834,10 +848,11 @@ function openDayModal(dateStr){
       </div>`;
     });
 
-    // Feedback / notes
-    if(!isWork(row.type)){
+    // Feedback / notes — Fix: use first non-work row
+    const fbRow=rows.find(r=>!isWork(r.type))||row;
+    if(fbRow&&!isWork(fbRow.type)){
       if(isPast){
-        h+=feedbackHtmlModal(dateStr,row?.feedback);
+        h+=feedbackHtmlModal(dateStr,fbRow?.feedback);
       }else{
         h+=`<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:0;padding:10px 14px;margin-bottom:10px">
           <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
@@ -859,20 +874,21 @@ function openDayModal(dateStr){
       </div>
       <div style="margin-bottom:8px">
         <label class="settings-label">${T('type_label')}</label>
-        <select class="plan-edit-field" id="edit-type" style="width:100%;padding:8px 10px">
+        <select class="plan-edit-field" id="edit-type" style="width:100%;padding:8px 10px" onchange="document.getElementById('raceGoalWrap')&&(document.getElementById('raceGoalWrap').style.display=this.value==='race'?'block':'none')">
           ${typeOptions}
           <option value="${esc(row.type||'')}"${!TYPES[row.type]?' selected':''}>${esc(row.type||'')}</option>
         </select>
+      </div>
+      <div id="raceGoalWrap" style="margin-bottom:8px;display:${row.type==='race'?'block':'none'}">
+        <label class="settings-label">Doeltijd (optioneel)</label>
+        <input class="plan-edit-field" id="edit-goal" placeholder="bijv. 37:30" value="${esc(row?.detail?.match(/doel[:\s]+([0-9:]+)/i)?.[1]||'')}">
       </div>
       <div style="display:flex;gap:8px;margin-bottom:8px">
         <div style="flex:1">
           <label class="settings-label">${T('field_km')}</label>
           <input class="plan-edit-field" id="edit-km" value="${esc(row?.km||'')}" placeholder="0" type="number" step="0.1">
         </div>
-        <div style="flex:1">
-          <label class="settings-label">${T('field_emoji')}</label>
-          <input class="plan-edit-field" id="edit-emoji" value="${esc(row?.emoji||'')}" placeholder="🏃">
-        </div>
+
       </div>
       <div style="margin-bottom:8px">
         <label class="settings-label">${T('field_detail')}</label>
@@ -938,7 +954,7 @@ async function saveDayEdit(datum){
   const titel=document.getElementById('edit-titel')?.value.trim()||'';
   const type=document.getElementById('edit-type')?.value.trim()||'';
   const km=document.getElementById('edit-km')?.value.trim()||'';
-  const emoji=document.getElementById('edit-emoji')?.value.trim()||'';
+  const emoji='';
   const detail=document.getElementById('edit-detail')?.value.trim()||'';
 
   // Update local cache immediately
@@ -988,7 +1004,7 @@ function openStats(){
 
   const tiles=[
     {label:T('stats_total'),val:totalKm.toFixed(0),unit:T('stats_done'),hi:true},
-    {label:T('stats_days'),val:daysLeft,unit:mainRace?.name||'—',hi:true},
+    {label:T('stats_days'),val:daysLeft,unit:nextRace3?.titel||nextRace3?.datum||'—',hi:true},
     {label:T('stats_runs'),val:runCount,unit:T('stats_sessions'),hi:false},
     {label:T('stats_week'),val:weekKm.toFixed(0),unit:T('stats_week_sub'),hi:true},
     avgRating>0?{label:T('stats_feel'),val:avgRating.toFixed(1),unit:`/5 · ${ratingRows.length} ${T('stats_fb_sub')}`,hi:false}:null,
@@ -1084,8 +1100,9 @@ function renderCalendar(){
   if(state.data){
     state.data.forEach(r=>{
       if(!r.datum)return;
-      if(isWork(r.type))workDates.add(r.datum);
-      else if(!isRace(r.type)){
+      // C43: skip werk and rust from calendar dots
+      if(isWork(r.type)||isRust(r.type))return;
+      if(!isRace(r.type)){
         trainingDates.add(r.datum);
         if(r.feedback)doneDates.add(r.datum);
       }
@@ -1114,12 +1131,13 @@ function renderCalendar(){
     // Dot marks (C35: race = red circle)
     let dot='';
     if(doneDates.has(ds))dot=`<div style="width:5px;height:5px;border-radius:50%;background:var(--accent);margin:3px auto 0"></div>`;
-    else if(workDates.has(ds))dot=`<div style="width:5px;height:5px;border-radius:50%;background:#e0b84a;margin:3px auto 0"></div>`;
+
     else if(trainingDates.has(ds)&&!other)dot=`<div style="width:5px;height:5px;border-radius:50%;border:1px solid var(--accent);margin:3px auto 0"></div>`;
 
     // C35: race day = red circle around number
     const isRaceDayThis=isRaceDay&&!other;
-    const textColor=isToday?'#000':isRaceDayThis?'#fff':(other?'var(--border)':'var(--text)');
+    if(other){h+=`<div style="padding:8px 0 10px;text-align:center"></div>`;return;}
+    const textColor=isToday?'#000':isRaceDayThis?'#fff':'var(--text)';
     const circleBg=isToday?'var(--accent)':isRaceDayThis?'var(--race-text)':(isSel?'rgba(198,242,78,0.22)':'transparent');
     const onclick=other?'':`selectCalDate('${ds}')`;
     h+=`<div onclick="${onclick}" style="padding:8px 0 10px;text-align:center;cursor:${other?'default':'pointer'};position:relative">
@@ -1135,7 +1153,7 @@ function renderCalendar(){
   h+=`<div class="cal-dot-legend" style="margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)">
     <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-right:4px"></span>Gedaan</span>
     <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;border:1px solid var(--accent);margin-right:4px"></span>Gepland</span>
-    <span><span style="display:inline-block;width:6px;height:6px;border-radius:50%;background:#e0b84a;margin-right:4px"></span>Werk</span>
+
     <span><span style="display:inline-block;width:14px;height:3px;background:var(--accent);margin-right:4px;vertical-align:middle"></span>Race</span>
   </div>`;
 
@@ -1264,16 +1282,16 @@ function saveRace(){
   closeRaceModal();renderHeader();
   if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
 
-  // C33: write race to sheet if connected
+  // C38: always persist locally; also write to sheet if connected
   if(state.scriptUrl){
-    const titel=`Race: ${name}`;
-    const params=new URLSearchParams({action:'setDay',datum:date,titel,type:'race',emoji:'🏁',detail:`${dist||''}${raceType?' · '+raceType:''}`,km:''});
+    const detail=`${dist||''}${raceType?' · '+raceType:''}`;
+    const params=new URLSearchParams({action:'setDay',datum:date,titel:name,type:'race',emoji:'',detail,km:dist||''});
     if(state.sheetName)params.set('sheetName',state.sheetName);
     fetch(state.scriptUrl+'?'+params).then(()=>{
       showToast(T('race_to_sheet'));
-    }).catch(()=>{
-      showToast(T('race_saved'));
-    });
+      // Reload sheet data to reflect new race
+      fetchData();
+    }).catch(()=>showToast(T('race_saved')));
   }else{
     showToast(T('race_saved'));
   }
@@ -1386,38 +1404,35 @@ function renderConnectSection(){
     const m=url.match(/\/s\/([^\/]+)\//);
     return m?'…'+m[1].slice(-12)+'…':url.slice(0,32)+'…';
   }
-  if(connected){
-    el.innerHTML=`
-      <button class="connect-btn connected" onclick="return false" style="cursor:default;margin-bottom:8px">
-        <div class="cb-dot"></div>
-        <div class="cb-label">
-          <div class="cb-name">${T('connect_active')}</div>
-          <div class="cb-status">${esc(shortUrl(state.scriptUrl))}${state.sheetName?' · '+esc(state.sheetName):''}</div>
-        </div>
-        <span style="font-size:16px">✓</span>
-      </button>
-      <button class="disconnect-btn" onclick="disconnectSheet()">${T('connect_disconnect')}</button>`;
-  }else{
-    // C30: URL input field when not connected
-    el.innerHTML=`
-      <div class="settings-title">${T('schema_title')}</div>
-      <div class="settings-field">
-        <div class="settings-hint" style="margin-bottom:8px">${T('connect_hint')}</div>
-        <input type="url" class="settings-input" id="scriptUrl" placeholder="${T('connect_url_placeholder')}"
-          value="${esc(state.scriptUrl)}">
+  // Always show URL input; connected state adds status badge above it
+  const connectedBadge=connected?`
+    <div class="connect-btn connected" style="margin-bottom:10px;cursor:default">
+      <div class="cb-dot"></div>
+      <div class="cb-label">
+        <div class="cb-name">${T('connect_active')}</div>
+        <div class="cb-status">${esc(shortUrl(state.scriptUrl))}${state.sheetName?' · '+esc(state.sheetName):''}</div>
       </div>
-      <div class="settings-field" id="sheetNameField">
-        <label class="settings-label" data-i18n="sheet_name_label">${T('sheet_name_label')}</label>
-        <input type="text" class="settings-input" id="sheetNameInput" placeholder="Sheet1 / Blad1"
-          value="${esc(state.sheetName)}" oninput="saveSheetName()">
-        <div class="settings-hint">${T('sheet_name_hint')}</div>
-      </div>
-      <button class="btn-save" onclick="saveSettings()">${T('api_save')}</button>
-      <div class="connection-status" style="margin-top:10px">
-        <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">${T('not_connected')}</span>
-      </div>`;
-  }
+      <span style="font-size:14px">✓</span>
+    </div>
+    <button class="disconnect-btn" style="margin-bottom:12px" onclick="disconnectSheet()">${T('connect_disconnect')}</button>`:'';
+  el.innerHTML=connectedBadge+`
+    <div class="settings-title">${T('schema_title')}</div>
+    <div class="settings-field">
+      <div class="settings-hint" style="margin-bottom:8px">${T('connect_hint')}</div>
+      <input type="url" class="settings-input" id="scriptUrl" placeholder="${T('connect_url_placeholder')}"
+        value="${esc(state.scriptUrl)}">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label">${T('sheet_name_label')}</label>
+      <input type="text" class="settings-input" id="sheetNameInput" placeholder="Sheet1 / Blad1"
+        value="${esc(state.sheetName)}" oninput="saveSheetName()">
+      <div class="settings-hint">${T('sheet_name_hint')}</div>
+    </div>
+    <button class="btn-save" onclick="saveSettings()">${T('api_save')}</button>
+    <div class="connection-status" style="margin-top:10px">
+      <div class="status-dot${connected?' ok':''}" id="statusDot"></div>
+      <span id="statusText">${connected?T('connected'):T('not_connected')}</span>
+    </div>`;
 }
 
 function disconnectSheet(){
