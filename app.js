@@ -287,6 +287,17 @@ function renderActiveView(){
   }
 }
 
+// ── THEME ─────────────────────────────────────────────────────────────────────
+function applyTheme(){
+  document.documentElement.dataset.theme=state.theme;
+  document.querySelector('#themeBtnDark')?.classList.toggle('active',state.theme==='dark');
+  document.querySelector('#themeBtnLight')?.classList.toggle('active',state.theme==='light');
+}
+function setTheme(t){
+  state.theme=t;localStorage.setItem('theme',t);
+  applyTheme();
+}
+
 // ── HEADER ────────────────────────────────────────────────────────────────────
 function openDayFromRacesBar(datum){
   // C39: navigate to Training tab and open day detail
@@ -331,6 +342,8 @@ function renderRacesBar(){
       <div class="rb-unit">${cd.unit}</div>
     </div>`;
   });
+  // C50: always show + to add race
+  h+=`<div class="rb-add" onclick="openRaceModal()" style="flex-shrink:0">+</div>`;
   bar.innerHTML=h;
 }
 
@@ -526,7 +539,7 @@ function renderWeek(){
     </div>
     <div style="display:flex;justify-content:space-between;margin-top:6px">
       <span style="font-family:var(--font-m);font-size:9px;color:${pct===100?'var(--accent)':'var(--muted)'}">${pct}%</span>
-      <span style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${fbDone} ${T('week_feedback')} · ${workDays} ${T('week_werk')}</span>
+      <span style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${fbDone>0?`✓ ${fbDone} feedback · `:''}${workDays>0?`${workDays} werk`:''}</span>
     </div>
   </div>
   <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:12px">`;
@@ -542,7 +555,8 @@ function renderWeek(){
     else if(row?.km)status=`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${parseFloat(row.km).toFixed(0)}k</div>`;
     const dot=ti&&!status&&!isWorkDay?`<div style="width:5px;height:5px;border-radius:50%;background:${isPast?'var(--faint)':ti.text};margin-top:4px"></div>`:'';
     // C44: no accent border for work days
-    h+=`<div style="background:${isT?'var(--bg)':'var(--surface)'};border:1px solid ${isT?'var(--accent)':'var(--border)'};padding:8px 2px 10px;text-align:center;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:space-between">
+    // C45: past days are faded; C46: click highlights day row below
+    h+=`<div data-week-tile="${date}" onclick="weekTileClick('${date}')" style="background:${isT?'var(--bg)':'var(--surface)'};border:1px solid ${isT?'var(--accent)':'var(--border)'};padding:8px 2px 10px;text-align:center;min-height:72px;display:flex;flex-direction:column;align-items:center;justify-content:space-between;opacity:${isPast&&!isT?0.45:1};cursor:pointer;transition:border-color 0.15s">
       <div>
         <div style="font-family:var(--font-m);font-size:8px;color:var(--muted);letter-spacing:0.5px">${days[d.getDay()]}</div>
         <div style="font-family:var(--font-d);font-weight:800;font-size:16px;color:${isT?'var(--accent)':'var(--text)'};margin-top:2px">${d.getDate()}</div>
@@ -559,7 +573,7 @@ function renderWeek(){
       h+=`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${T('week_todo')}</div>`;
       upcoming.forEach(({date,row})=>{
         const isTdy=date===t,ti=typeOf(row.type),d=parseDate(date);
-        h+=`<div onclick="openDayModal('${date}')" style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid ${isTdy?'var(--accent)':'var(--border)'};padding:12px;margin-bottom:6px;cursor:pointer">
+        h+=`<div data-upcoming-date="${date}" onclick="openDayModal('${date}')" style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid ${isTdy?'var(--accent)':'var(--border)'};padding:12px;margin-bottom:6px;cursor:pointer;transition:border-color 0.2s">
           <div style="text-align:center;min-width:36px;padding-right:10px;border-right:1px solid var(--border)">
             <div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${days[d.getDay()]}</div>
             <div style="font-family:var(--font-d);font-weight:800;font-size:18px;color:${isTdy?'var(--accent)':'var(--text)'}">${d.getDate()}</div>
@@ -602,6 +616,9 @@ function renderPlan(){
   const faseValues=[...new Set(allRows.map(r=>r.fase||'').filter(Boolean))];
   const phaseTabs=document.getElementById('phaseTabs');
 
+  // C49: type filter state
+  if(!state.planTypeFilter)state.planTypeFilter='all';
+
   if(faseValues.length>0){
     // Determine active fase
     let activeFase=state.currentFase||phaseTabs.querySelector('.phase-tile.active')?.dataset.fase||faseValues[0];
@@ -621,7 +638,10 @@ function renderPlan(){
     // Floating fase badge (top-right sticky)
     const faseBadge=`<div class="fase-badge" id="faseBadge">${esc(activeFase)}</div>`;
 
-    renderPlanRows(allRows.filter(r=>r.fase===activeFase),t,faseBadge);
+    const filteredRows=state.planTypeFilter&&state.planTypeFilter!=='all'
+      ?allRows.filter(r=>r.fase===activeFase&&hasType(r.type,state.planTypeFilter))
+      :allRows.filter(r=>r.fase===activeFase);
+    renderPlanRows(filteredRows,t,faseBadge);
   }else{
     phaseTabs.innerHTML='';
     renderPlanRows(allRows,t,'');
@@ -667,7 +687,23 @@ function renderPlanRows(rows,t,faseBadge=''){
   const el=document.getElementById('planContent');
   if(!rows.length){el.innerHTML=`<div class="no-data">${T('no_data')}</div>`;return;}
 
-  let h=faseBadge||'';
+  // C49: type filter pills
+  const activeTypes=[...new Set(rows.map(r=>r.type?.split(',')[0].trim()).filter(Boolean))];
+  let filterH='';
+  if(activeTypes.length>1){
+    const types=['all',...activeTypes];
+    filterH=`<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">`;
+    types.forEach(tp=>{
+      const isAll=tp==='all';
+      const active=state.planTypeFilter===tp||(isAll&&(!state.planTypeFilter||state.planTypeFilter==='all'));
+      const label=isAll?'Alles':T(TYPES[tp]?.i18n||tp);
+      const icon=isAll?'':RXIcon(tp,14,active?'#000':'var(--muted)',active?'#000':'var(--accent)');
+      filterH+=`<button onclick="state.planTypeFilter='${tp}';renderPlan()" style="display:flex;align-items:center;gap:4px;padding:5px 10px;background:${active?'var(--accent)':'var(--surface)'};border:1px solid ${active?'var(--accent)':'var(--border)'};color:${active?'#000':'var(--muted)'};font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;-webkit-tap-highlight-color:transparent">${icon}${label}</button>`;
+    });
+    filterH+='</div>';
+  }
+
+  let h=(faseBadge||'')+filterH;
   let lastFase=null;
 
   // swipe + scroll container
@@ -688,10 +724,10 @@ function renderPlanRows(rows,t,faseBadge=''){
     }
 
     h+=`<div>
-      <div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}" onclick="togglePlanRow('${rowId}','${row.datum}')">
+      <div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}" onclick="togglePlanRow('${rowId}','${row.datum}')" style="padding:12px 12px">
         <div class="plan-row-date"><strong>${parts[0]} ${parts[1]}</strong>${parts[2]}</div>
         <div class="plan-row-emoji">${RXIcon(row.type?.split(',')[0].trim()||'rust',16,'var(--muted)','var(--accent)')}</div>
-        <div class="plan-row-body"><div class="plan-row-title">${esc(row.titel||'—')}</div></div>
+        <div class="plan-row-body"><div class="plan-row-title" style="font-size:16px;font-weight:700">${esc(row.titel||'—')}</div></div>
         ${row.km?`<div class="plan-row-km">${esc(row.km)}km</div>`:'<div class="plan-row-km"></div>'}
         ${row.feedback?'<div class="plan-row-feedback"></div>':''}
       </div>
@@ -714,7 +750,7 @@ function renderPlanRows(rows,t,faseBadge=''){
     if(idx<faseValues.length-1){
       const nextFase=faseValues[idx+1];
       h+=`<div class="fase-next-nudge" onclick="selectFaseByName('${esc(nextFase)}')">
-        ${esc(T('next_fase'))}: ${esc(nextFase)}
+        <span style="color:var(--faint);margin-right:4px">${esc(T('next_fase'))}:</span> ${esc(nextFase)}
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M5 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>`;
     }
@@ -1066,6 +1102,18 @@ function initWeekSwipe(){
 }
 
 // helper: get week dates for a given offset
+// C46: week tile click — highlights corresponding "nog te doen" row
+function weekTileClick(date){
+  // Toggle selected date highlight
+  document.querySelectorAll('[data-week-tile]').forEach(el=>{
+    el.style.borderColor=el.dataset.weekTile===date?'var(--accent)':'var(--border)';
+  });
+  // Scroll to upcoming row if it exists
+  const row=document.querySelector(`[data-upcoming-date="${date}"]`);
+  if(row){row.scrollIntoView({behavior:'smooth',block:'nearest'});row.style.borderColor='var(--accent)';setTimeout(()=>row.style.borderColor='',1500);}
+  else openDayModal(date);
+}
+
 function getWeekDatesOffset(offset){
   const n=new Date();n.setHours(0,0,0,0);
   n.setDate(n.getDate()+(offset||0)*7);
@@ -1535,7 +1583,7 @@ function applyI18n(){
 
 function setLang(lang){
   state.lang=lang;localStorage.setItem('lang',lang);
-  applyI18n();renderHeader();renderActiveView();
+  applyI18n();applyTheme();renderHeader();renderActiveView();
   showToast(T('saved')); // X14: toast after lang switch, already in new language
 }
 
