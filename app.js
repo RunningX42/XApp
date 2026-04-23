@@ -12,8 +12,8 @@ const TYPES={
 const TYPE_FALLBACK=TYPES.rust;
 
 const PR_ORDER=['800m','1500m','1mile','5km','10km','10mile','HM','M'];
-const DAYS_NL=['Zo','Ma','Di','Wo','Do','Vr','Za'];
-const DAYS_EN=['Su','Mo','Tu','We','Th','Fr','Sa'];
+const DAYS_NL=['Ma','Di','Wo','Do','Vr','Za','Zo'];
+const DAYS_EN=['Mo','Tu','We','Th','Fr','Sa','Su'];
 const MONTHS_FULL_NL=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 const MONTHS_FULL_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTHS_NL=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
@@ -154,9 +154,10 @@ function fmtDateFull(s){
   return `${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]} ${d.getFullYear()}`;
 }
 function getMondayStr(){
-  const n=new Date();n.setHours(0,0,0,0);
+  const n=new Date();n.setHours(12,0,0,0);
   const dow=n.getDay();n.setDate(n.getDate()-(dow===0?6:dow-1));
-  return n.toISOString().split('T')[0];
+  const y=n.getFullYear(),m=String(n.getMonth()+1).padStart(2,'0'),d=String(n.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
 }
 function getWeekDates(){
   // C36: always Mon-Sun
@@ -1159,10 +1160,16 @@ function weekTileClick(date){
 }
 
 function getWeekDatesOffset(offset){
-  const n=new Date();n.setHours(0,0,0,0);
+  const n=new Date();n.setHours(12,0,0,0); // noon avoids DST edge cases
   n.setDate(n.getDate()+(offset||0)*7);
-  const dow=n.getDay();n.setDate(n.getDate()-(dow===0?6:dow-1));
-  return Array.from({length:7},(_,i)=>{const d=new Date(n);d.setDate(n.getDate()+i);return d.toISOString().split('T')[0];});
+  const dow=n.getDay();
+  n.setDate(n.getDate()-(dow===0?6:dow-1)); // rewind to Monday
+  return Array.from({length:7},(_,i)=>{
+    const d=new Date(n);d.setDate(n.getDate()+i);
+    // local date parts — never UTC
+    const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  });
 }
 
 // ── CALENDAR ──────────────────────────────────────────────────────────────────
