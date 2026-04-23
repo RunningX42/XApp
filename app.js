@@ -1,4 +1,3 @@
-
 // ── CONSTANTS ───────────────────────────────────────────────────────────────
 // C24: standardised type keywords
 const TYPES={
@@ -160,8 +159,8 @@ function getMondayStr(){
   return n.toISOString().split('T')[0];
 }
 function getWeekDates(){
-  const m=parseDate(getMondayStr());
-  return Array.from({length:7},(_,i)=>{const d=new Date(m);d.setDate(m.getDate()+i);return d.toISOString().split('T')[0];});
+  // C36: always Mon-Sun
+  return getWeekDatesOffset(0);
 }
 
 // C24: type resolution — comma-separated, first valid type wins for colour
@@ -296,28 +295,29 @@ function renderHeader(){
 }
 
 function renderRacesBar(){
-  const races=loadRaces();
   const bar=document.getElementById('racesBar');if(!bar)return;
-  const visible=races.filter(r=>daysUntil(r.date)>=-1).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+  // C34: sheet is source of truth — pull races from state.data
+  const sheetRaces=(state.data||[])
+    .filter(r=>isRace(r.type)&&r.datum)
+    .sort((a,b)=>a.datum.localeCompare(b.datum))
+    .filter(r=>daysUntil(r.datum)>=-1)
+    .slice(0,4);
 
-  if(!visible.length){
-    // No races — show only + button
-    bar.innerHTML=`<div class="rb-add" onclick="openRaceModal()">+</div>`;
+  if(!sheetRaces.length){
+    bar.innerHTML='';
     return;
   }
 
   let h='';
-  visible.forEach(r=>{
-    const d=daysUntil(r.date),cd=countdownDisplay(d);
-    const hi=r.mainGoal;
-    const emoji=raceEmoji(r);
+  sheetRaces.forEach(r=>{
+    const cd=countdownDisplay(daysUntil(r.datum));
+    const dist=(r.km||'').toString().trim();
     h+=`<div class="rb-item" onclick="switchTab('calendar')" style="cursor:pointer">
-      <div class="rb-name"><span class="rb-icon">${emoji}</span> ${esc(r.name)}</div>
-      <div class="rb-value${hi?' hi':''}">${cd.val}</div>
+      <div class="rb-name"><span class="rb-icon">${RXIcon('race',12,'var(--text)','var(--accent)')}</span> ${esc(r.titel||r.datum)}</div>
+      <div class="rb-value${cd.val<=7?' hi':''}">${cd.val}</div>
       <div class="rb-unit">${cd.unit}</div>
     </div>`;
   });
-  h+=`<div class="rb-add" onclick="openRaceModal()">+</div>`;
   bar.innerHTML=h;
 }
 
@@ -332,6 +332,8 @@ function renderToday(){
   // fase from data
   let faseKicker='';
   if(state.data){const tr=state.data.find(r=>r.datum===t);if(tr?.fase)faseKicker=tr.fase;}
+  // C34: if today is a race day, reflect that
+  const todayIsRace=state.data?.some(r=>r.datum===t&&isRace(r.type));
 
   const kicker=`${days[d.getDay()]} ${d.getDate()} ${mf[d.getMonth()]}${faseKicker?' · '+faseKicker:''}`;
   let h=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Vandaag</div></div></div>`;
@@ -567,11 +569,11 @@ function renderPlan(){
   const titleEl=document.getElementById('planPageTitle');
   const t=todayStr();
 
-  // PageTitle
+  // PageTitle — C34: sheet races
   if(titleEl){
-    const races=loadRaces();
-    const mainRace=races.find(r=>r.mainGoal)||races[0];
-    const kicker=mainRace?`${esc(mainRace.name)} · ${countdownDisplay(daysUntil(mainRace.date)).val} ${countdownDisplay(daysUntil(mainRace.date)).unit}`:'Training';
+    const sheetRaceRows=(state.data||[]).filter(r=>isRace(r.type)&&r.datum).sort((a,b)=>a.datum.localeCompare(b.datum));
+    const nextRace=sheetRaceRows.find(r=>daysUntil(r.datum)>=0);
+    const kicker=nextRace?`${esc(nextRace.titel||nextRace.datum)} · ${countdownDisplay(daysUntil(nextRace.datum)).val} ${countdownDisplay(daysUntil(nextRace.datum)).unit}`:'Training';
     titleEl.innerHTML=`<div class="page-title"><div><div class="pt-kicker">${kicker}</div><div class="pt-h">Training</div></div></div>`;
   }
 
@@ -680,7 +682,7 @@ function renderPlanRows(rows,t,faseBadge=''){
         <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:6px">${T(ti.i18n)}</span>
         ${row.detail?`<div style="margin-top:4px;color:var(--muted)">${esc(row.detail)}</div>`:''}
         ${row.feedback?`<div class="plan-feedback-text">✓ ${esc(row.feedback)}</div>`:''}
-        <button style="margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:var(--font-m);font-size:9px;letter-spacing:1px;cursor:pointer" onclick="openDayModal('${row.datum}');event.stopPropagation()">📝</button>
+        <button style="margin-top:8px;background:none;border:1px solid var(--border);padding:5px 12px;color:var(--muted);font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color 0.12s,border-color 0.12s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='';this.style.borderColor=''" onclick="openDayModal('${row.datum}');event.stopPropagation()">Bewerken</button>
       </div>
     </div>`;
   });
@@ -756,13 +758,22 @@ function swipePlanFase(dir){
 
 // ── DAY MODAL (C22 + C28) ─────────────────────────────────────────────────────
 function openDayModal(dateStr){
-  const row=state.data?.find(r=>r.datum===dateStr);
+  // C34: support multiple rows per date
+  const rows=state.data?.filter(r=>r.datum===dateStr)||[];
+  const row=rows[0]||null;
   const t=todayStr(),isPast=dateStr<=t;
   const ti=row?typeOf(row.type):null;
   const content=document.getElementById('dayModalContent');
   state.editingFeedback=false;state.selectedRating=0;
 
-  let h=`<div class="modal-title">${fmtDateFull(dateStr)}</div>`;
+  // C37: date kicker + title layout
+  const d=parseDate(dateStr);
+  const dayNames=state.lang==='en'?DAYS_EN:DAYS_NL;
+  const mNames=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
+  let h=`<div style="margin-bottom:16px">
+    <div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px">${dayNames[d.getDay()]} · ${mNames[d.getMonth()]} ${d.getFullYear()}</div>
+    <div style="font-family:var(--font-d);font-weight:800;font-size:28px;line-height:1;text-transform:uppercase">${d.getDate()} ${mNames[d.getMonth()]}</div>
+  </div>`;
 
   if(!row){
     // C28: empty day — type picker at top, then training details, notes at bottom (smaller)
@@ -804,17 +815,24 @@ function openDayModal(dateStr){
     </div>`;
   }else{
     const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
-    h+=`<div class="card ${border}" style="margin-bottom:10px">
-      <div class="tc-top">
-        <div class="tc-emoji">${row.emoji||'🏃'}</div>
-        <div class="tc-main">
-          <div class="tc-type" style="color:${ti.text}">${T(ti.i18n)}</div>
-          <div class="tc-title">${esc(row.titel||'Training')}</div>
-          ${row.km?`<div class="tc-metric">${esc(row.km)} km</div>`:''}
+    // C37: cleaner card, C34: show all rows if multiple
+    rows.forEach((r,idx)=>{
+      const rti=typeOf(r.type);
+      const rb=isWork(r.type)?'work-border':isRace(r.type)?'race-border':'';
+      h+=`<div class="card ${rb}" style="padding:14px 16px;margin-bottom:${idx<rows.length-1?'8':'10'}px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:${r.detail?'10':'0'}px">
+          <div style="width:32px;height:32px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            ${RXIcon(r.type?.split(',')[0].trim()||'run',18,'var(--text)','var(--accent)')}
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:${rti.text};margin-bottom:2px">${T(rti.i18n)}</div>
+            <div style="font-family:var(--font-d);font-weight:800;font-size:20px;line-height:1">${esc(r.titel||'Training')}</div>
+          </div>
+          ${r.km?`<div style="font-family:var(--font-d);font-weight:800;font-size:22px;color:var(--accent);flex-shrink:0">${esc(r.km)}<span style="font-size:12px;color:var(--muted)">km</span></div>`:''}
         </div>
-      </div>
-      ${row.detail?`<div class="tc-detail">${esc(row.detail)}</div>`:''}
-    </div>`;
+        ${r.detail?`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);line-height:1.6;padding-top:10px;border-top:1px solid var(--border)">${esc(r.detail)}</div>`:''}
+      </div>`;
+    });
 
     // Feedback / notes
     if(!isWork(row.type)){
@@ -834,7 +852,7 @@ function openDayModal(dateStr){
       `<option value="${k}"${row.type===k?' selected':''}>${T(v.i18n)}</option>`
     ).join('');
     h+=`<div class="feedback-section" style="margin-top:4px">
-      <div class="feedback-title">${T('edit_day')}</div>
+      <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">${T('edit_day')}</div>
       <div style="margin-bottom:8px">
         <label class="settings-label">${T('field_titel')}</label>
         <input class="plan-edit-field" id="edit-titel" value="${esc(row?.titel||'')}" placeholder="${T('field_titel')}">
@@ -961,9 +979,9 @@ function openStats(){
   const fbRows=past.filter(r=>r.feedback);
   const ratingRows=fbRows.filter(r=>/^\d/.test(r.feedback));
   const avgRating=ratingRows.length?ratingRows.reduce((s,r)=>s+parseInt(r.feedback[0]),0)/ratingRows.length:0;
-  const races=loadRaces();
-  const mainRace=races.find(r=>r.mainGoal)||races[0];
-  const daysLeft=mainRace?daysUntil(mainRace.date):0;
+  const sheetRaceRows3=(state.data||[]).filter(r=>isRace(r.type)&&r.datum).sort((a,b)=>a.datum.localeCompare(b.datum));
+  const nextRace3=sheetRaceRows3.find(r=>daysUntil(r.datum)>=0)||sheetRaceRows3[0];
+  const daysLeft=nextRace3?daysUntil(nextRace3.datum):0;
   const mondayStr=getMondayStr();
   const weekKm=(state.data||[]).filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
   const months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
@@ -1056,15 +1074,18 @@ function renderCalendar(){
   for(let i=1;i<=lastDay.getDate();i++)cells.push({date:new Date(y,m,i),other:false});
   while(cells.length%7!==0){const p=cells[cells.length-1].date;const nd=new Date(p);nd.setDate(p.getDate()+1);cells.push({date:nd,other:true});}
 
+  // C34: all races come from sheet; no localStorage races
+  const sheetRaces=(state.data||[]).filter(r=>isRace(r.type)&&r.datum);
   // Build training day marks from data
   const trainingDates=new Set();
   const doneDates=new Set();
   const workDates=new Set();
+  const raceDates=new Set(sheetRaces.map(r=>r.datum));
   if(state.data){
     state.data.forEach(r=>{
       if(!r.datum)return;
       if(isWork(r.type))workDates.add(r.datum);
-      else if(r.datum){
+      else if(!isRace(r.type)){
         trainingDates.add(r.datum);
         if(r.feedback)doneDates.add(r.datum);
       }
@@ -1089,19 +1110,20 @@ function renderCalendar(){
   cells.forEach(({date,other})=>{
     const y2=date.getFullYear(),m2=String(date.getMonth()+1).padStart(2,'0'),d2=String(date.getDate()).padStart(2,'0');
     const ds=`${y2}-${m2}-${d2}`;
-    const isToday=ds===t,race=races.find(r=>r.date===ds),isSel=state.calSelectedDate===ds;
-    // Dot marks
+    const isToday=ds===t,isRaceDay=raceDates.has(ds),isSel=state.calSelectedDate===ds;
+    // Dot marks (C35: race = red circle)
     let dot='';
-    if(race)dot=`<div style="width:14px;height:3px;background:var(--accent);margin:2px auto 0"></div>`;
-    else if(doneDates.has(ds))dot=`<div style="width:5px;height:5px;border-radius:50%;background:var(--accent);margin:3px auto 0"></div>`;
+    if(doneDates.has(ds))dot=`<div style="width:5px;height:5px;border-radius:50%;background:var(--accent);margin:3px auto 0"></div>`;
     else if(workDates.has(ds))dot=`<div style="width:5px;height:5px;border-radius:50%;background:#e0b84a;margin:3px auto 0"></div>`;
     else if(trainingDates.has(ds)&&!other)dot=`<div style="width:5px;height:5px;border-radius:50%;border:1px solid var(--accent);margin:3px auto 0"></div>`;
 
-    const textColor=isToday?'#000':(other?'var(--border)':'var(--text)');
-    const circleBg=isToday?'var(--accent)':(isSel?'rgba(198,242,78,0.22)':'transparent');
+    // C35: race day = red circle around number
+    const isRaceDayThis=isRaceDay&&!other;
+    const textColor=isToday?'#000':isRaceDayThis?'#fff':(other?'var(--border)':'var(--text)');
+    const circleBg=isToday?'var(--accent)':isRaceDayThis?'var(--race-text)':(isSel?'rgba(198,242,78,0.22)':'transparent');
     const onclick=other?'':`selectCalDate('${ds}')`;
     h+=`<div onclick="${onclick}" style="padding:8px 0 10px;text-align:center;cursor:${other?'default':'pointer'};position:relative">
-      <div style="width:30px;height:30px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:50%;background:${circleBg}">
+      <div style="width:30px;height:30px;margin:0 auto;display:flex;align-items:center;justify-content:center;border-radius:50%;background:${circleBg}${isRaceDayThis?';border:2px solid var(--race-text)':''}">
         <span style="font-family:var(--font-d);font-weight:700;font-size:16px;color:${textColor}">${date.getDate()}</span>
       </div>
       ${dot}
@@ -1118,40 +1140,44 @@ function renderCalendar(){
   </div>`;
 
   if(state.calSelectedDate){
-    const selRace=races.find(r=>r.date===state.calSelectedDate);
-    if(selRace){
-      h+=`<div style="background:rgba(198,242,78,0.04);border:1px solid rgba(198,242,78,0.18);padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
-        <div style="font-size:22px">${raceEmoji(selRace)}</div>
-        <div style="flex:1">
-          ${selRace.mainGoal?`<div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:3px">${T('main_goal')}</div>`:''}
-          <div style="font-weight:600;font-size:13px">${esc(selRace.name||'Race')}</div>
-          <div style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${esc(selRace.dist||'')}${selRace.raceType?' · '+esc(selRace.raceType):''}</div>
-        </div>
-        <button style="background:none;border:1px solid var(--border);padding:6px 10px;color:var(--muted);font-family:var(--font-m);font-size:9px;cursor:pointer" onclick="openRaceModal('${selRace.id}')">✏️</button>
-      </div>`;
+    // C34: show all sheet rows for this date
+    const selRows=(state.data||[]).filter(r=>r.datum===state.calSelectedDate);
+    const selRaceRows=selRows.filter(r=>isRace(r.type));
+    if(selRows.length){
+      selRows.forEach(r=>{
+        const ti=typeOf(r.type);
+        h+=`<div style="background:${isRace(r.type)?'rgba(244,67,54,0.06)':'rgba(255,255,255,0.02)'};border:1px solid ${isRace(r.type)?'rgba(244,67,54,0.3)':'var(--border)'};padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px" onclick="openDayModal('${state.calSelectedDate}')">
+          <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center">${RXIcon(r.type?.split(',')[0].trim()||'run',18,'var(--text)','var(--accent)')}</div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${ti.text};margin-bottom:2px">${T(ti.i18n)}</div>
+            <div style="font-family:var(--font-d);font-weight:700;font-size:15px">${esc(r.titel||'')}</div>
+            ${r.km?`<div style="font-family:var(--font-m);font-size:10px;color:var(--accent);margin-top:2px">${esc(r.km)} km</div>`:''}
+          </div>
+        </div>`;
+      });
     }else{
-      h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
-        <div style="font-family:var(--font-m);font-size:10px;color:var(--muted);flex:1">${fmtDateFull(state.calSelectedDate)}</div>
-        <button onclick="openRaceModal(null,'${state.calSelectedDate}')" style="background:var(--accent);border:0;padding:7px 12px;color:#000;font-family:var(--font-d);font-weight:700;font-size:11px;cursor:pointer;text-transform:uppercase;letter-spacing:0.5px;border-radius:999px">+ Race</button>
-      </div>`;
+      h+=`<div style="font-family:var(--font-m);font-size:10px;color:var(--muted);padding:8px 0 12px">${fmtDateFull(state.calSelectedDate)}</div>`;
     }
   }
 
-  const monthRaces=races.filter(r=>{const rd=parseDate(r.date);return rd.getFullYear()===y&&rd.getMonth()===m;}).sort((a,b)=>a.date.localeCompare(b.date));
+  // C34: month races from sheet
+  const monthRaces=sheetRaces.filter(r=>{const rd=parseDate(r.datum);return rd.getFullYear()===y&&rd.getMonth()===m;}).sort((a,b)=>a.datum.localeCompare(b.datum));
   h+=`<div><div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${T('races_this_month')}</div>`;
   if(!monthRaces.length){
     h+=`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);padding:8px 2px">${T('no_races_month')}</div>`;
   }else{
     monthRaces.forEach(r=>{
-      h+=`<div class="cal-race-row${r.mainGoal?' cal-race-main':''}" onclick="openRaceModal('${r.id}')">
-        <div style="font-size:20px">${raceEmoji(r)}</div>
+      const cd=countdownDisplay(daysUntil(r.datum));
+      h+=`<div class="cal-race-row" onclick="openDayModal('${r.datum}')">
+        <div style="width:28px;height:28px;display:flex;align-items:center;justify-content:center">${RXIcon('race',20,'var(--race-text)','var(--race-text)')}</div>
         <div style="flex:1;min-width:0">
-          ${r.mainGoal?`<div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:2px">${T('main_goal')}</div>`:''}
-          <div style="font-size:13px;font-weight:600">${esc(r.name||'Race')}</div>
-          <div style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${fmtDate(r.date)}${r.dist?' · '+esc(r.dist):''}${r.raceType?' · '+esc(r.raceType):''}</div>
+          <div style="font-family:var(--font-m);font-size:9px;color:var(--race-text);letter-spacing:1px;text-transform:uppercase;font-weight:600;margin-bottom:2px">Race</div>
+          <div style="font-size:13px;font-weight:600">${esc(r.titel||r.datum)}</div>
+          ${r.km?`<div style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${esc(r.km)} km</div>`:''}
         </div>
-        <div style="font-family:var(--font-m);font-size:10px;color:var(--accent);flex-shrink:0;text-align:right">
-          ${(()=>{const cd=countdownDisplay(daysUntil(r.date));return`<div style="font-family:var(--font-d);font-size:18px">${cd.val}</div><div style="font-size:8px;color:var(--faint)">${cd.unit}</div>`;})()}
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-family:var(--font-d);font-size:18px;color:var(--accent)">${cd.val}</div>
+          <div style="font-family:var(--font-m);font-size:8px;color:var(--faint)">${cd.unit}</div>
         </div>
       </div>`;
     });
@@ -1277,10 +1303,11 @@ function renderStats(){
   const fbRows=past.filter(r=>r.feedback);
   const ratingRows=fbRows.filter(r=>/^\d/.test(r.feedback));
   const avgRating=ratingRows.length?ratingRows.reduce((s,r)=>s+parseInt(r.feedback[0]),0)/ratingRows.length:0;
-  const races=loadRaces();
-  const mainRace=races.find(r=>r.mainGoal)||races[0];
-  const daysLeft=mainRace?daysUntil(mainRace.date):0;
-  const raceName=mainRace?.name||'—';
+  // C34: races from sheet
+  const sheetRaceRows2=(state.data||[]).filter(r=>isRace(r.type)&&r.datum).sort((a,b)=>a.datum.localeCompare(b.datum));
+  const nextRace2=sheetRaceRows2.find(r=>daysUntil(r.datum)>=0)||sheetRaceRows2[0];
+  const daysLeft=nextRace2?daysUntil(nextRace2.datum):0;
+  const raceName=nextRace2?.titel||nextRace2?.datum||'—';
   const mondayStr=getMondayStr();
   const weekKm=(state.data||[]).filter(r=>r.datum>=mondayStr&&r.datum<=t).reduce((s,r)=>s+(parseFloat(r.km)||0),0);
   const months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
