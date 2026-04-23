@@ -391,7 +391,7 @@ function renderToday(){
     const paceMatch=detail.match(/(\d+:\d+)[–-]?(\d+:\d+)?\/km/);
     const hrMatch=detail.match(/<?\s*(\d+)\s*bpm/i)||detail.match(/HR\s*<?(\d+)/i);
 
-    h+=`<div class="card ${border}" style="padding:16px 16px 14px">
+    h+=`<div class="card ${border}" onclick="openDayModal('${t}')" style="padding:16px 16px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent">
       <div style="display:flex;justify-content:space-between;align-items:flex-start">
         <div style="font-family:var(--font-m);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:${ti.text}">${T(ti.i18n)}${row.titel?' · '+esc(row.titel):''}</div>
         <div style="width:28px;height:28px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">${RXIcon(row.type?.split(',')[0].trim()||'run',16,'var(--text)','var(--accent)')}</div>
@@ -1144,21 +1144,22 @@ function initWeekSwipe(){
 // helper: get week dates for a given offset
 // C51: week tile click — only border highlight, never opens modal
 function weekTileClick(date){
-  // Reset: remove inline override so original inline style from HTML is restored
+  const t=todayStr();
+  // Remove selected class from all, add to clicked
   document.querySelectorAll('[data-week-tile]').forEach(el=>{
-    el.style.borderColor='';
-    el.style.transform='';
+    if(el.dataset.weekTile===date){
+      el.classList.add('wt-selected');
+    } else {
+      el.classList.remove('wt-selected');
+    }
   });
-  // Only highlight the selected tile
-  const sel=document.querySelector(`[data-week-tile="${date}"]`);
-  if(sel) sel.style.borderColor='var(--accent)';
-  // Scroll to upcoming row
-  document.querySelectorAll('[data-upcoming-date]').forEach(el=>el.style.borderColor='');
+  // Scroll upcoming row
+  document.querySelectorAll('[data-upcoming-date]').forEach(el=>el.classList.remove('wt-selected'));
   const row=document.querySelector(`[data-upcoming-date="${date}"]`);
   if(row){
     row.scrollIntoView({behavior:'smooth',block:'nearest'});
-    row.style.borderColor='var(--accent)';
-    setTimeout(()=>row.style.borderColor='',1500);
+    row.classList.add('wt-selected');
+    setTimeout(()=>row.classList.remove('wt-selected'),1500);
   }
 }
 
