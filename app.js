@@ -870,7 +870,7 @@ function openDayModal(dateStr){
     rows.forEach((r,idx)=>{
       const rti=typeOf(r.type);
       const rb=isWork(r.type)?'work-border':isRace(r.type)?'race-border':'';
-      h+=`<div class="card ${rb}" onclick="openDayModal('${dateStr}')" style="padding:14px 16px;margin-bottom:${idx<rows.length-1?'8':'10'}px;cursor:pointer;-webkit-tap-highlight-color:transparent">
+      h+=`<div class="card ${rb}" onclick="openDayModal('${esc(dateStr)}')" style="padding:14px 16px;margin-bottom:${idx<rows.length-1?'8':'10'}px;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:${r.detail?'10':'0'}px">
           <div style="width:32px;height:32px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
             ${RXIcon(r.type?.split(',')[0].trim()||'run',18,'var(--text)','var(--accent)')}
@@ -1144,18 +1144,26 @@ function initWeekSwipe(){
 // helper: get week dates for a given offset
 // C51: week tile click — only border highlight, never opens modal
 function weekTileClick(date){
-  // Highlight tile
+  const t=todayStr();
+  // Reset ALL tiles to their natural border color
   document.querySelectorAll('[data-week-tile]').forEach(el=>{
-    const active=el.dataset.weekTile===date;
-    el.style.borderColor=active?'var(--accent)':'var(--border)';
-    el.style.transform=active?'scale(1.04)':'scale(1)';
+    const isToday=el.dataset.weekTile===t;
+    el.style.borderColor=isToday?'var(--accent)':'var(--border)';
+    el.style.transform='scale(1)';
   });
+  // Highlight selected tile (lime if it's today, white-ish accent otherwise)
+  const sel=document.querySelector(`[data-week-tile="${date}"]`);
+  if(sel){
+    sel.style.borderColor='var(--accent)';
+    sel.style.transform='scale(1.04)';
+  }
   // Highlight + scroll to matching upcoming row (but don't open it)
+  document.querySelectorAll('[data-upcoming-date]').forEach(el=>el.style.borderColor='');
   const row=document.querySelector(`[data-upcoming-date="${date}"]`);
   if(row){
     row.scrollIntoView({behavior:'smooth',block:'nearest'});
     row.style.borderColor='var(--accent)';
-    setTimeout(()=>row.style.borderColor='',1500);
+    setTimeout(()=>{row.style.borderColor='';},1500);
   }
 }
 
