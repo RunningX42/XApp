@@ -6,181 +6,185 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RunningX">
-<meta name="theme-color" content="#0d0d0d">
+<meta name="theme-color" content="#0a0a0a">
 <title>RunningX</title>
 <link rel="manifest" href="manifest.json">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0d0d0d;--surface:#181818;--border:#2e2e2e;
-  --accent:#d4f542;--accent2:#ff6b35;--accent3:#42d4f5;
-  --text:#ededed;--muted:#888;--faint:#4a4a4a;
-  /* C25: standardised type colours */
+  --bg:#0a0a0a;--surface:#141414;--border:#242424;
+  --accent:#c6f24e;--accent-dim:#8fb233;--accent2:#ff6b35;--accent3:#42d4f5;
+  --text:#ffffff;--muted:#9a9a9a;--faint:#4a4a4a;
   --run-bg:rgba(76,175,80,0.14);   --run-text:#4CAF50;
   --str-bg:rgba(33,150,243,0.14);  --str-text:#2196F3;
   --mob-bg:rgba(0,188,212,0.14);   --mob-text:#00BCD4;
-  --rest-bg:rgba(158,158,158,0.12);--rest-text:#9E9E9E;
+  --rest-bg:rgba(158,158,158,0.10);--rest-text:#9E9E9E;
   --race-bg:rgba(244,67,54,0.14);  --race-text:#F44336;
   --work-bg:rgba(255,193,7,0.14);  --work-text:#FFC107;
   --herstel-bg:rgba(156,39,176,0.14);--herstel-text:#9C27B0;
+  --font-d:'Barlow Condensed','Impact',sans-serif;
+  --font-m:'JetBrains Mono','ui-monospace',monospace;
   --st:env(safe-area-inset-top,0px);--sb:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.5;height:100%;overscroll-behavior:none}
+html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-size:14px;line-height:1.5;height:100%;overscroll-behavior:none}
 
 .app{display:flex;flex-direction:column;height:100dvh;max-width:480px;margin:0 auto}
 
-/* TOPBAR */
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--st) + 12px) 16px 12px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;z-index:10;gap:8px}
-/* U24: RunningX logo — "RUNNING" in text, "X" in accent, Bebas Neue */
-.topbar-logo{font-family:'Bebas Neue',sans-serif;font-size:16px;letter-spacing:2px;line-height:1;flex-shrink:0;display:flex;align-items:baseline;gap:0}
-.topbar-logo .logo-running{color:var(--text);letter-spacing:2px}
-.topbar-logo .logo-x{color:var(--accent);font-size:19px;letter-spacing:0}
-.topbar-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:0.5px;margin-top:1px}
-.topbar-races{display:flex;gap:0;flex:1;min-width:0;overflow:hidden}
-.race-chip{display:flex;flex-direction:column;padding:5px 10px;min-width:0;flex-shrink:0;border-right:1px solid var(--border)}
-.race-chip:first-child{border-left:1px solid var(--border)}
-.race-chip.main-chip .rc-name{color:var(--accent);font-weight:600}
-.race-chip.main-chip .rc-cd{color:var(--accent)}
-.rc-name{font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:90px;line-height:1.2}
-.rc-cd{font-family:'Bebas Neue',sans-serif;font-size:16px;line-height:1;color:var(--muted)}
-.rc-label{font-family:'DM Mono',monospace;font-size:8px;color:var(--faint);letter-spacing:0.5px}
-.race-chip-add{display:flex;align-items:center;justify-content:center;padding:6px 10px;color:var(--faint);font-size:16px;cursor:pointer;flex-shrink:0;border-right:1px solid var(--border);transition:color 0.15s}
-.race-chip-add:hover{color:var(--accent)}
-.race-chip-add:first-child{border-left:1px solid var(--border)}
-.topbar-gear{background:none;border:none;cursor:pointer;color:var(--faint);font-size:18px;padding:0;flex-shrink:0;line-height:1;transition:color 0.15s}
-.topbar-gear:hover{color:var(--muted)}
+/* TOPBAR — Brand-only strip (HeaderBrand) */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:calc(var(--st) + 14px) 20px 12px;background:var(--bg);flex-shrink:0;z-index:10;gap:12px}
+/* U24: Wordmark — RUNNING in white, X in lime, Barlow Condensed 800 */
+.topbar-logo{font-family:var(--font-d);font-weight:800;font-size:22px;letter-spacing:0.5px;line-height:0.9;flex-shrink:0;display:flex;align-items:baseline;gap:0;text-transform:uppercase}
+.topbar-logo .logo-running{color:var(--text)}
+.topbar-logo .logo-x{color:var(--accent)}
+.topbar-sub{font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1px;margin-top:3px;text-transform:uppercase}
+.topbar-gear{background:none;border:none;cursor:pointer;color:var(--muted);flex-shrink:0;line-height:1;transition:color 0.15s;padding:0}
+.topbar-gear:hover{color:var(--text)}
+.topbar-gear svg{display:block}
+
+/* RACES BAR — second header strip (RacesBar) */
+.races-bar{display:flex;align-items:stretch;gap:0;padding:10px 20px;background:var(--bg);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;scrollbar-width:none}
+.races-bar::-webkit-scrollbar{display:none}
+.rb-item{display:flex;flex-direction:column;align-items:flex-start;padding-right:14px;padding-left:14px;border-left:1px solid var(--border);min-width:80px;flex-shrink:0}
+.rb-item:first-child{border-left:none;padding-left:0}
+.rb-name{display:flex;align-items:center;gap:4px;font-family:var(--font-m);font-size:10px;font-weight:600;color:var(--text);line-height:1.2}
+.rb-icon{font-size:12px}
+.rb-value{font-family:var(--font-d);font-weight:800;font-size:20px;line-height:1;color:var(--text);margin-top:3px}
+.rb-value.hi{color:var(--accent)}
+.rb-unit{font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:0.5px;margin-top:2px}
+.rb-add{padding-left:14px;border-left:1px solid var(--border);display:flex;align-items:center;font-family:var(--font-d);font-weight:300;font-size:22px;color:var(--muted);cursor:pointer;transition:color 0.15s;flex-shrink:0}
+.rb-add:hover{color:var(--accent)}
 
 /* UPDATE BANNER */
-.update-banner{background:var(--accent);color:#000;font-family:'DM Mono',monospace;font-size:11px;font-weight:600;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;cursor:pointer;letter-spacing:0.5px}
-.update-banner button{background:none;border:1px solid rgba(0,0,0,0.25);border-radius:4px;padding:4px 10px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;cursor:pointer;color:#000;letter-spacing:0.5px}
+.update-banner{background:var(--accent);color:#000;font-family:var(--font-m);font-size:11px;font-weight:600;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;cursor:pointer;letter-spacing:0.5px}
+.update-banner button{background:none;border:1px solid rgba(0,0,0,0.25);border-radius:4px;padding:4px 10px;font-family:var(--font-m);font-size:10px;font-weight:700;cursor:pointer;color:#000;letter-spacing:0.5px}
 
 /* SCROLL */
-.scroll-area{flex:1;overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--sb) + 80px);-webkit-overflow-scrolling:touch}
+.scroll-area{flex:1;overflow-y:auto;overscroll-behavior:contain;padding-bottom:calc(var(--sb) + 100px);-webkit-overflow-scrolling:touch}
 .view{display:none;padding:16px;animation:fadeIn 0.18s ease}
 .view.active{display:block}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
 
-/* CARD */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:6px;margin-bottom:10px}
+/* CARD — sharp corners like design reference */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:0;margin-bottom:10px}
 .card.faded{opacity:0.65}
-.card.work-border{border-color:rgba(255,193,7,0.35)}
-.card.race-border{border-color:rgba(244,67,54,0.35)}
-.card.accent-border{border-color:rgba(212,245,66,0.28)}
+.card.work-border{border-color:rgba(255,193,7,0.4)}
+.card.race-border{border-color:rgba(244,67,54,0.4)}
+.card.accent-border{border-color:rgba(198,242,78,0.35)}
 .card-pad{padding:14px 16px}
-.badge{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:2px;display:inline-block}
+.badge{font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:0;display:inline-block}
 
 /* TODAY */
 .today-header{margin-bottom:18px}
-.today-date-big{font-family:'DM Sans',sans-serif;font-size:28px;font-weight:300;letter-spacing:-0.5px;line-height:1;color:var(--muted)}
-.today-phase-line{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:0.5px;margin-top:4px;opacity:0.8}
+.today-date-big{font-family:var(--font-d);font-size:32px;font-weight:700;letter-spacing:-0.5px;line-height:1;color:var(--muted)}
+.today-phase-line{font-family:var(--font-m);font-size:9px;color:var(--accent);letter-spacing:0.5px;margin-top:4px;opacity:0.8}
 .tc-top{display:flex;align-items:center;gap:12px;padding:14px 16px 10px}
 .tc-emoji{font-size:32px;flex-shrink:0}
 .tc-main{flex:1;min-width:0}
-.tc-type{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.tc-title{font-family:'Bebas Neue',sans-serif;font-size:30px;line-height:1;letter-spacing:0.5px}
-.tc-metric{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);margin-top:5px}
+.tc-type{font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.tc-title{font-family:var(--font-d);font-weight:800;font-size:28px;line-height:1;letter-spacing:0.3px}
+.tc-metric{font-family:var(--font-m);font-size:13px;color:var(--accent);margin-top:5px}
 .tc-detail{padding:10px 16px 14px;font-size:12px;color:var(--muted);line-height:1.6;border-top:1px solid var(--border)}
 .rest-card-inner{padding:16px 18px;display:flex;gap:14px;align-items:center}
 .rest-emoji{font-size:36px;flex-shrink:0}
-.rest-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.5px;margin-bottom:4px}
+.rest-title{font-family:var(--font-d);font-size:22px;letter-spacing:0.5px;margin-bottom:4px}
 .rest-sub{font-size:12px;color:var(--muted);line-height:1.5}
-.mob-reminder{background:rgba(0,188,212,0.05);border:1px solid rgba(0,188,212,0.15);border-radius:6px;padding:12px 14px;margin-top:4px}
-.mob-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--mob-text);text-transform:uppercase;margin-bottom:4px}
+.mob-reminder{background:rgba(0,188,212,0.05);border:1px solid rgba(0,188,212,0.15);border-radius:0;padding:12px 14px;margin-top:4px}
+.mob-title{font-family:var(--font-m);font-size:9px;letter-spacing:1px;color:var(--mob-text);text-transform:uppercase;margin-bottom:4px}
 .mob-text{font-size:12px;color:var(--muted)}
 .tmr-card{padding:12px 16px;opacity:0.65}
-.tmr-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.tmr-label{font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
 .tmr-row{display:flex;align-items:center;gap:10px}
 .tmr-title{font-size:14px;font-weight:600;flex:1}
-.tmr-metric{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
-.no-connection-hint{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:6px;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:10px}
+.tmr-metric{font-family:var(--font-m);font-size:11px;color:var(--accent)}
+.no-connection-hint{background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:0;padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;margin-bottom:10px}
 .nch-icon{font-size:20px;flex-shrink:0;opacity:0.5}
 .nch-text{font-size:12px;color:var(--muted);line-height:1.45}
-.nch-link{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:0.5px;margin-top:3px}
+.nch-link{font-family:var(--font-m);font-size:9px;color:var(--accent);letter-spacing:0.5px;margin-top:3px}
 
 /* FEEDBACK */
-.feedback-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px 16px;margin-bottom:10px}
-.feedback-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.feedback-section{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:14px 16px;margin-bottom:10px}
+.feedback-title{font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
 .feedback-stars{display:flex;gap:8px;margin-bottom:12px}
-.star-btn{width:42px;height:42px;border:1px solid var(--border);background:var(--bg);border-radius:6px;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.12s,background 0.12s,border-color 0.12s}
+.star-btn{width:42px;height:42px;border:1px solid var(--border);background:var(--bg);border-radius:0;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform 0.12s,background 0.12s,border-color 0.12s}
 .star-btn.active{background:rgba(76,175,80,0.15);border-color:var(--run-text);transform:scale(1.08)}
 .star-btn:active{transform:scale(0.94)}
-.feedback-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px 12px;resize:none;height:72px;margin-bottom:10px;outline:none;transition:border-color 0.15s}
+.feedback-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:0;color:var(--text);font-family:var(--font-m);font-size:12px;padding:10px 12px;resize:none;height:72px;margin-bottom:10px;outline:none;transition:border-color 0.15s}
 .feedback-textarea:focus{border-color:var(--accent)}
 .feedback-textarea::placeholder{color:var(--faint)}
-.prev-feedback{background:rgba(76,175,80,0.05);border:1px solid rgba(76,175,80,0.2);border-radius:6px;padding:10px 14px;margin-bottom:10px}
+.prev-feedback{background:rgba(76,175,80,0.05);border:1px solid rgba(76,175,80,0.2);border-radius:0;padding:10px 14px;margin-bottom:10px}
 .prev-feedback-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.prev-feedback-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--run-text);opacity:0.8}
+.prev-feedback-label{font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--run-text);opacity:0.8}
 .prev-feedback-text{font-size:12px;color:var(--muted);line-height:1.5}
-.edit-link{background:none;border:none;color:var(--accent);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
-.btn-primary{width:100%;background:var(--accent);color:#000;border:none;border-radius:6px;padding:12px;font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;cursor:pointer;transition:background 0.12s,transform 0.12s}
-.btn-primary:hover{background:#c8ec30}
+.edit-link{background:none;border:none;color:var(--accent);font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer}
+.btn-primary{width:100%;background:var(--accent);color:#000;border:none;border-radius:0;padding:12px;font-family:var(--font-m);font-size:11px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;cursor:pointer;transition:background 0.12s,transform 0.12s}
+.btn-primary:hover{background:#b0d93e}
 .btn-primary:active{transform:scale(0.98)}
 .btn-primary:disabled{opacity:0.5;cursor:not-allowed}
-.btn-secondary{width:100%;margin-top:8px;background:none;border:1px solid var(--border);border-radius:6px;padding:10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:border-color 0.12s,color 0.12s}
+.btn-secondary{width:100%;margin-top:8px;background:none;border:1px solid var(--border);border-radius:0;padding:10px;color:var(--muted);font-family:var(--font-m);font-size:10px;letter-spacing:1px;cursor:pointer;transition:border-color 0.12s,color 0.12s}
 .btn-secondary:hover{border-color:var(--muted);color:var(--text)}
 
 /* WEEK */
 .week-stat-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.week-stat{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 10px;text-align:center}
-.week-stat-val{font-family:'Bebas Neue',sans-serif;font-size:28px;line-height:1}
-.week-stat-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px}
-.progress-bar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:12px 14px;margin-bottom:10px}
+.week-stat{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:12px 10px;text-align:center}
+.week-stat-val{font-family:var(--font-d);font-size:28px;line-height:1}
+.week-stat-lbl{font-family:var(--font-m);font-size:9px;color:var(--faint);letter-spacing:1px;margin-top:2px}
+.progress-bar-wrap{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:12px 14px;margin-bottom:10px}
 .progress-bar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.progress-bar-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase}
-.progress-bar-val{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent)}
+.progress-bar-label{font-family:var(--font-m);font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase}
+.progress-bar-val{font-family:var(--font-m);font-size:11px;color:var(--accent)}
 .progress-bar-track{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
 .progress-bar-fill{height:100%;background:var(--run-text);border-radius:3px;transition:width 0.5s ease}
-.progress-bar-footer{display:flex;justify-content:space-between;margin-top:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--faint)}
+.progress-bar-footer{display:flex;justify-content:space-between;margin-top:6px;font-family:var(--font-m);font-size:9px;color:var(--faint)}
 .day-tiles{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:10px}
-.day-tile{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:8px 4px;text-align:center}
+.day-tile{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:8px 4px;text-align:center}
 .day-tile.is-today{border-color:rgba(212,245,66,0.5);background:rgba(212,245,66,0.05)}
 .day-tile.is-past{opacity:0.4}
-.day-tile-day{font-family:'DM Mono',monospace;font-size:8px;color:var(--faint);letter-spacing:0.5px}
+.day-tile-day{font-family:var(--font-m);font-size:8px;color:var(--faint);letter-spacing:0.5px}
 .day-tile.is-today .day-tile-day{color:var(--accent)}
-.day-tile-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--text);line-height:1.1}
+.day-tile-num{font-family:var(--font-d);font-size:18px;color:var(--text);line-height:1.1}
 .day-tile.is-today .day-tile-num{color:var(--accent)}
 .day-tile-dot{width:5px;height:5px;border-radius:50%;background:transparent;margin:4px auto 0}
 .day-tile-check{font-size:8px;color:var(--run-text);margin-top:2px;height:12px}
-.day-tile-km{font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);margin-top:1px}
-.section-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
-.upcoming-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.12s,background 0.12s}
+.day-tile-km{font-family:var(--font-m);font-size:8px;color:var(--muted);margin-top:1px}
+.section-label{font-family:var(--font-m);font-size:9px;color:var(--faint);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.upcoming-row{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.12s,background 0.12s}
 .upcoming-row:hover,.upcoming-row.is-today{border-color:rgba(212,245,66,0.28);background:rgba(212,245,66,0.03)}
-.upcoming-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);flex-shrink:0;text-align:center;width:28px}
+.upcoming-date{font-family:var(--font-m);font-size:10px;color:var(--faint);flex-shrink:0;text-align:center;width:28px}
 .upcoming-date.is-today{color:var(--accent)}
 .upcoming-date-day{font-size:8px;text-transform:uppercase}
 .upcoming-date-num{font-size:16px;font-weight:500;line-height:1.1}
 .upcoming-body{flex:1;min-width:0}
 .upcoming-title{font-size:13px;font-weight:600}
-.upcoming-metric{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);margin-top:2px}
+.upcoming-metric{font-family:var(--font-m);font-size:11px;color:var(--accent);margin-top:2px}
 .upcoming-emoji{font-size:20px;flex-shrink:0}
 
 /* TRAINING */
 .phase-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.phase-tab{padding:6px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:color 0.12s,border-color 0.12s,background 0.12s}
+.phase-tab{padding:6px 12px;border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border-radius:4px;transition:color 0.12s,border-color 0.12s,background 0.12s}
 .phase-tab:hover{color:var(--accent);border-color:var(--accent)}
 .phase-tab.active{background:var(--accent);color:#000;border-color:var(--accent);font-weight:700}
-.plan-table{background:var(--surface);border:1px solid var(--border);border-radius:6px;overflow:hidden}
-.plan-row{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid rgba(255,255,255,0.04);cursor:pointer;transition:background 0.1s;position:relative}
+.plan-table{background:var(--surface);border:1px solid var(--border);border-radius:0;overflow:hidden}
+.plan-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.1s;position:relative;border-left:3px solid transparent}
 .plan-row:hover{background:rgba(255,255,255,0.02)}
 .plan-row:last-child{border-bottom:none}
-.plan-row.is-today{background:rgba(212,245,66,0.04)}
+.plan-row.is-today{background:var(--surface);border-left-color:var(--accent)}
 .plan-row.is-past .plan-row-date,.plan-row.is-past .plan-row-title,.plan-row.is-past .plan-row-km{opacity:0.4}
 .plan-row.is-work{background:rgba(255,193,7,0.025)}
-.plan-row-date{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);flex-shrink:0;width:36px;line-height:1.4}
+.plan-row-date{font-family:var(--font-m);font-size:9px;color:var(--faint);flex-shrink:0;width:36px;line-height:1.4}
 .plan-row-date strong{display:block;color:var(--muted);font-size:10px}
 .plan-row.is-today .plan-row-date strong{color:var(--accent)}
 .plan-row-emoji{font-size:18px;flex-shrink:0;width:24px;text-align:center}
 .plan-row-body{flex:1;min-width:0}
 .plan-row-title{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.plan-row-km{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);flex-shrink:0}
+.plan-row-km{font-family:var(--font-m);font-size:11px;color:var(--accent);flex-shrink:0}
 .plan-row-feedback{width:6px;height:6px;border-radius:50%;background:var(--run-text);flex-shrink:0;opacity:0.7}
 .plan-row-detail{display:none;padding:0 14px 12px 14px;font-size:11px;color:var(--muted);line-height:1.5;border-top:1px solid rgba(255,255,255,0.04)}
 .plan-row-detail.open{display:block}
-.plan-feedback-text{font-family:'DM Mono',monospace;font-size:9px;background:rgba(76,175,80,0.1);color:var(--run-text);padding:2px 6px;border-radius:2px;margin-top:6px;display:inline-block}
-.plan-edit-field{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:7px 10px;outline:none;margin-top:4px;transition:border-color 0.15s}
+.plan-feedback-text{font-family:var(--font-m);font-size:9px;background:rgba(76,175,80,0.1);color:var(--run-text);padding:2px 6px;border-radius:2px;margin-top:6px;display:inline-block}
+.plan-edit-field{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:var(--font-m);font-size:11px;padding:7px 10px;outline:none;margin-top:4px;transition:border-color 0.15s}
 .plan-edit-field:focus{border-color:var(--accent)}
-.plan-loading{text-align:center;padding:40px 20px;color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:1px}
+.plan-loading{text-align:center;padding:40px 20px;color:var(--muted);font-family:var(--font-m);font-size:11px;letter-spacing:1px}
 .plan-loading::after{content:'';display:block;width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;margin:16px auto 0;animation:spin 0.8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .empty-week-row{padding:10px 14px;color:var(--faint);font-size:12px;font-style:italic;border-bottom:1px solid rgba(255,255,255,0.04)}
@@ -188,13 +192,13 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 
 /* CALENDAR */
 .cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding:0 2px}
-.cal-nav-btn{background:none;border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:6px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:border-color 0.12s,color 0.12s;flex-shrink:0}
+.cal-nav-btn{background:none;border:1px solid var(--border);color:var(--muted);width:34px;height:34px;border-radius:0;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:border-color 0.12s,color 0.12s;flex-shrink:0}
 .cal-nav-btn:hover{border-color:var(--accent);color:var(--accent)}
-.cal-month-label{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px}
-.cal-add-race-btn{background:var(--accent);color:#000;border:none;border-radius:6px;padding:7px 12px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.12s}
-.cal-add-race-btn:hover{background:#c8ec30}
+.cal-month-label{font-family:var(--font-d);font-size:22px;letter-spacing:1px}
+.cal-add-race-btn{background:var(--accent);color:#000;border:none;border-radius:0;padding:7px 12px;font-family:var(--font-m);font-size:9px;letter-spacing:1px;font-weight:700;cursor:pointer;white-space:nowrap;transition:background 0.12s}
+.cal-add-race-btn:hover{background:var(--accent-dim)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px}
-.cal-dow{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);text-align:center;padding:6px 0;letter-spacing:0.5px}
+.cal-dow{font-family:var(--font-m);font-size:9px;color:var(--faint);text-align:center;padding:6px 0;letter-spacing:0.5px}
 .cal-cell{aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;position:relative;font-size:13px;transition:background 0.1s,color 0.1s;color:var(--text)}
 .cal-cell:hover{background:rgba(255,255,255,0.06)}
 .cal-cell.other-month{opacity:0.2;cursor:default}
@@ -203,74 +207,79 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .cal-cell.selected{background:rgba(212,245,66,0.22);color:var(--accent)}
 .cal-cell.has-race::after{content:'';width:5px;height:5px;border-radius:50%;background:var(--race-text);position:absolute;bottom:2px}
 .cal-cell.has-race.main-goal::after{background:var(--accent)}
-.cal-race-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.12s}
+.cal-race-row{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:11px 14px;margin-bottom:6px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color 0.12s}
 .cal-race-row:hover{border-color:rgba(212,245,66,0.28)}
 .cal-race-main{border-left:2px solid var(--accent)}
 
 /* STATS */
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:14px}
-.stat-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
-.stat-val{font-family:'Bebas Neue',sans-serif;font-size:36px;line-height:1;color:var(--accent)}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:14px}
+.stat-label{font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px}
+.stat-val{font-family:var(--font-d);font-size:36px;line-height:1;color:var(--accent)}
 .stat-sub{font-size:11px;color:var(--muted);margin-top:2px}
 .feedback-history{display:flex;flex-direction:column;gap:6px}
-.fh-row{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:11px 14px;display:flex;gap:12px;align-items:flex-start}
-.fh-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--faint);flex-shrink:0;width:36px}
+.fh-row{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:11px 14px;display:flex;gap:12px;align-items:flex-start}
+.fh-date{font-family:var(--font-m);font-size:10px;color:var(--faint);flex-shrink:0;width:36px}
 .fh-body{flex:1}
 .fh-title{font-size:12px;font-weight:600;margin-bottom:2px}
 .fh-text{font-size:11px;color:var(--muted);line-height:1.45}
-.fh-km{font-family:'DM Mono',monospace;font-size:11px;color:var(--accent);flex-shrink:0}
+.fh-km{font-family:var(--font-m);font-size:11px;color:var(--accent);flex-shrink:0}
 
 /* SETTINGS */
 .settings-group{margin-bottom:20px}
-.settings-group-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:8px;padding-left:2px}
-.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:16px;margin-bottom:8px}
+.settings-group-title{font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--faint);margin-bottom:8px;padding-left:2px}
+.settings-section{background:var(--surface);border:1px solid var(--border);border-radius:0;padding:16px;margin-bottom:8px}
 .settings-divider{height:1px;background:var(--border);margin:12px 0}
-.settings-title{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+.settings-title{font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
 .settings-field{margin-bottom:12px}
 .settings-field:last-child{margin-bottom:0}
 .settings-label{font-size:12px;color:var(--muted);margin-bottom:5px;display:block}
-.settings-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;padding:9px 12px;outline:none;transition:border-color 0.15s}
+.settings-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:0;color:var(--text);font-family:var(--font-m);font-size:11px;padding:9px 12px;outline:none;transition:border-color 0.15s}
 .settings-input:focus{border-color:var(--accent)}
 .settings-hint{font-size:11px;color:var(--faint);margin-top:4px;line-height:1.45}
-.btn-save{background:var(--accent);color:#000;border:none;border-radius:6px;padding:10px 20px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;font-weight:700;cursor:pointer;transition:background 0.12s}
-.btn-save:hover{background:#c8ec30}
-.connection-status{display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:10px}
+.btn-save{background:var(--accent);color:#000;border:none;border-radius:0;padding:10px 20px;font-family:var(--font-m);font-size:10px;letter-spacing:1px;font-weight:700;cursor:pointer;transition:background 0.12s}
+.btn-save:hover{background:var(--accent-dim)}
+.connection-status{display:flex;align-items:center;gap:6px;font-family:var(--font-m);font-size:10px;color:var(--muted);margin-top:10px}
 .status-dot{width:6px;height:6px;border-radius:50%;background:var(--faint)}
 .status-dot.ok{background:var(--run-text)}
 .status-dot.err{background:var(--race-text)}
 .pr-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.pr-dist-lbl{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);width:72px;flex-shrink:0}
+.pr-dist-lbl{font-family:var(--font-m);font-size:10px;color:var(--muted);width:72px;flex-shrink:0}
 .lang-toggle-row{display:flex;gap:8px}
-.lang-btn{flex:1;padding:9px 12px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;border-radius:6px;cursor:pointer;transition:all 0.12s;text-align:center}
+.lang-btn{flex:1;padding:9px 12px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:var(--font-m);font-size:11px;border-radius:0;cursor:pointer;transition:all 0.12s;text-align:center}
 .lang-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(212,245,66,0.06)}
 /* Login UI */
 .account-row{display:flex;align-items:center;gap:10px}
 .account-avatar{width:36px;height:36px;border-radius:50%;background:rgba(212,245,66,0.15);border:1px solid rgba(212,245,66,0.3);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .account-info{flex:1;min-width:0}
 .account-email{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.account-status{font-family:'DM Mono',monospace;font-size:9px;color:var(--faint);margin-top:1px}
-.account-logout{background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;flex-shrink:0;transition:border-color 0.12s,color 0.12s}
+.account-status{font-family:var(--font-m);font-size:9px;color:var(--faint);margin-top:1px}
+.account-logout{background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:var(--font-m);font-size:9px;cursor:pointer;flex-shrink:0;transition:border-color 0.12s,color 0.12s}
 .account-logout:hover{border-color:var(--race-text);color:var(--race-text)}
 .login-form{display:flex;flex-direction:column;gap:8px}
-.telegram-status{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)}
+.telegram-status{display:flex;align-items:center;gap:6px;margin-top:8px;font-family:var(--font-m);font-size:10px;color:var(--muted)}
 .tg-dot{width:6px;height:6px;border-radius:50%;background:var(--faint);flex-shrink:0}
 .tg-dot.linked{background:var(--run-text)}
 
-/* BOTTOM NAV */
-.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:rgba(13,13,13,0.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--border);display:flex;padding-bottom:var(--sb);z-index:100}
-.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 8px;cursor:pointer;background:none;border:none;color:var(--faint);transition:color 0.15s}
-.bn-item:hover{color:var(--muted)}
-.bn-item.active{color:var(--accent)}
-.bn-icon{font-size:20px;line-height:1}
-.bn-label{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.5px;text-transform:uppercase}
+/* BOTTOM NAV — TabBarLabeled with round + FAB */
+.bottom-nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;background:transparent;display:flex;align-items:center;gap:10px;padding:0 16px calc(var(--sb) + 14px);z-index:100;pointer-events:none}
+.bn-pill{background:var(--surface);border:1px solid var(--border);border-radius:999px;padding:6px;display:flex;align-items:center;flex:1;pointer-events:all;box-shadow:0 8px 24px rgba(0,0,0,0.45)}
+.bn-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;background:none;border:1px solid transparent;color:var(--muted);border-radius:999px;padding:8px 4px;transition:all 0.18s ease;font-family:var(--font-m);font-size:8px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+.bn-item.active{background:var(--bg);border-color:var(--accent);color:var(--accent)}
+.bn-item:hover:not(.active){color:var(--text)}
+.bn-icon{display:flex;align-items:center;justify-content:center;line-height:1}
+.bn-label{font-family:var(--font-m);font-size:8px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+/* Round + FAB */
+.bn-fab{width:56px;height:56px;min-width:56px;border-radius:50%;background:var(--accent);color:var(--bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;pointer-events:all;box-shadow:0 8px 24px rgba(198,242,78,0.2);flex-shrink:0;transition:background 0.15s,transform 0.12s}
+.bn-fab:hover{background:var(--accent-dim)}
+.bn-fab:active{transform:scale(0.94)}
 
 /* LOADING */
 .loading-overlay{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity 0.3s}
 .loading-overlay.hidden{opacity:0;pointer-events:none}
-.loading-logo{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:3px;color:var(--text);margin-bottom:6px}
+.loading-logo{font-family:var(--font-d);font-size:52px;letter-spacing:3px;color:var(--text);margin-bottom:6px}
 .loading-logo span{color:var(--accent)}
-.loading-sub{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:28px}
+.loading-sub{font-family:var(--font-m);font-size:10px;letter-spacing:2px;color:var(--faint);text-transform:uppercase;margin-bottom:28px}
 .loading-bar{width:120px;height:2px;background:var(--border);border-radius:1px;overflow:hidden}
 .loading-bar-fill{height:100%;background:var(--accent);border-radius:1px;animation:loadbar 1.8s ease-in-out infinite}
 @keyframes loadbar{0%{width:0;transform:translateX(0)}50%{width:80px}100%{width:0;transform:translateX(120px)}}
@@ -281,7 +290,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .modal-sheet{background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:480px;max-height:88dvh;overflow-y:auto;padding:20px 18px calc(var(--sb) + 20px);transform:translateY(100%);transition:transform 0.28s cubic-bezier(0.34,1.12,0.64,1)}
 .modal-backdrop.open .modal-sheet{transform:translateY(0)}
 .modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px}
-.modal-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.5px;margin-bottom:14px}
+.modal-title{font-family:var(--font-d);font-size:22px;letter-spacing:0.5px;margin-bottom:14px}
 .modal-close{position:absolute;top:16px;right:18px;background:none;border:none;color:var(--muted);font-size:22px;cursor:pointer;line-height:1}
 
 /* ONBOARDING - dimmed overlay, licht wegklikbaar */
@@ -289,20 +298,20 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .onboarding-sheet{background:var(--surface);border:1px solid var(--border);border-radius:14px 14px 0 0;width:100%;max-width:480px;max-height:85dvh;overflow-y:auto;padding:20px 20px calc(var(--sb) + 20px);animation:slideUp 0.28s cubic-bezier(0.34,1.12,0.64,1)}
 @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .ob-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
-.ob-logo{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1.5px}
+.ob-logo{font-family:var(--font-d);font-size:20px;letter-spacing:1.5px}
 .ob-logo span{color:var(--accent)}
-.ob-skip{background:none;border:none;color:var(--faint);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.5px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0;transition:color 0.12s}
+.ob-skip{background:none;border:none;color:var(--faint);font-family:var(--font-m);font-size:10px;letter-spacing:0.5px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;padding:0;transition:color 0.12s}
 .ob-skip:hover{color:var(--muted)}
 .ob-title{font-size:17px;font-weight:600;margin-bottom:16px;line-height:1.3}
-.ob-step{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
+.ob-step{font-family:var(--font-m);font-size:9px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px}
 
 /* TOAST */
-.toast{position:fixed;bottom:calc(var(--sb) + 72px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#000;font-family:'DM Mono',monospace;font-size:11px;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity 0.22s,transform 0.22s;pointer-events:none;z-index:400;white-space:nowrap}
+.toast{position:fixed;bottom:calc(var(--sb) + 72px);left:50%;transform:translateX(-50%) translateY(20px);background:var(--accent);color:#000;font-family:var(--font-m);font-size:11px;padding:10px 18px;border-radius:20px;opacity:0;transition:opacity 0.22s,transform 0.22s;pointer-events:none;z-index:400;white-space:nowrap}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-.no-data{text-align:center;padding:32px;color:var(--faint);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px}
+.no-data{text-align:center;padding:32px;color:var(--faint);font-family:var(--font-m);font-size:11px;letter-spacing:0.5px}
 
 /* C26: connection management */
-.connect-btn{width:100%;padding:12px 16px;border-radius:6px;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.5px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:border-color 0.15s,color 0.15s}
+.connect-btn{width:100%;padding:12px 16px;border-radius:0;border:1px solid var(--border);background:var(--bg);color:var(--muted);font-family:var(--font-m);font-size:11px;letter-spacing:0.5px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:border-color 0.15s,color 0.15s}
 .connect-btn.connected{border-color:var(--run-text);background:rgba(76,175,80,0.06);color:var(--text)}
 .connect-btn.connected .cb-dot{background:var(--run-text)}
 .cb-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex-shrink:0}
@@ -310,14 +319,14 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 .cb-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .cb-status{font-size:9px;color:var(--muted);letter-spacing:0.5px;margin-top:1px}
 .connect-form{margin-top:10px}
-.disconnect-btn{background:none;border:1px solid var(--border);border-radius:6px;padding:7px 14px;color:var(--faint);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer;margin-top:8px;transition:border-color 0.12s,color 0.12s}
+.disconnect-btn{background:none;border:1px solid var(--border);border-radius:0;padding:7px 14px;color:var(--faint);font-family:var(--font-m);font-size:9px;letter-spacing:1px;cursor:pointer;margin-top:8px;transition:border-color 0.12s,color 0.12s}
 .disconnect-btn:hover{border-color:var(--race-text);color:var(--race-text)}
 /* C27: swipe training — touch-driven week browse */
 .plan-swipe-wrapper{position:relative;overflow:hidden;touch-action:pan-y}
 .plan-swipe-inner{transition:transform 0.28s cubic-bezier(0.4,0,0.2,1);will-change:transform}
 /* C29: floating fase label */
-.fase-float{position:sticky;top:0;z-index:5;padding:6px 14px;font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(13,13,13,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(212,245,66,0.12);opacity:0.9}
-.fase-next-nudge{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;color:var(--faint);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;border-top:1px solid var(--border);cursor:pointer;transition:color 0.15s}
+.fase-float{position:sticky;top:0;z-index:5;padding:6px 14px;font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent);background:rgba(13,13,13,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid rgba(212,245,66,0.12);opacity:0.9}
+.fase-next-nudge{display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;color:var(--faint);font-family:var(--font-m);font-size:10px;letter-spacing:1px;border-top:1px solid var(--border);cursor:pointer;transition:color 0.15s}
 .fase-next-nudge:hover{color:var(--accent)}
 .fase-next-nudge svg{transition:transform 0.15s}
 .fase-next-nudge:hover svg{transform:translateX(3px)}
@@ -407,9 +416,16 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div class="topbar-logo"><span class="logo-running">RUNNING</span><span class="logo-x">X</span></div>
       <div class="topbar-sub" id="topbarName"></div>
     </div>
-    <div class="topbar-races" id="topbarRaces"></div>
-    <button class="topbar-gear" onclick="switchTab('settings')" title="Instellingen">⚙</button>
+    <div style="flex:1"></div>
+    <button class="topbar-gear" onclick="switchTab('settings')" title="Instellingen">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
   </div>
+  <!-- Races bar — second header strip (filled by renderRacesBar()) -->
+  <div class="races-bar" id="racesBar"></div>
   <!-- Update banner (hidden by default) -->
   <div class="update-banner" id="updateBanner" style="display:none" onclick="applyUpdate()">
     <span id="updateBannerText">🔄 Update beschikbaar</span>
@@ -498,7 +514,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
       <div class="settings-group">
         <div class="settings-group-title" data-i18n="sg_app"></div>
         <div class="settings-section">
-          <div style="font-size:11px;color:var(--faint);font-family:'DM Mono',monospace;line-height:1.8;">RunningX · v1.5.0<br><span style="color:var(--accent)">🏃</span></div>
+          <div style="font-size:11px;color:var(--faint);font-family:var(--font-m);line-height:1.8;">RunningX · v1.6.0<br><span style="color:var(--accent)">🏃</span></div>
         </div>
       </div>
 
@@ -506,11 +522,34 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 
   <div class="bottom-nav" id="bottomNav">
-    <button class="bn-item active" data-tab="today"><span class="bn-icon">📍</span><span class="bn-label"></span></button>
-    <button class="bn-item" data-tab="week"><span class="bn-icon">📅</span><span class="bn-label"></span></button>
-    <button class="bn-item" data-tab="plan"><span class="bn-icon">🏃</span><span class="bn-label"></span></button>
-    <button class="bn-item" data-tab="calendar"><span class="bn-icon">📆</span><span class="bn-label"></span></button>
-    <button class="bn-item" data-tab="stats"><span class="bn-icon">📊</span><span class="bn-label"></span></button>
+    <div class="bn-pill">
+      <button class="bn-item active" data-tab="today">
+        <span class="bn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3.1 2.6 10.4a1 1 0 0 0 .6 1.8H5v8a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1v-8h1.8a1 1 0 0 0 .6-1.8L12 3.1z"/></svg></span>
+        <span class="bn-label"></span>
+      </button>
+      <button class="bn-item" data-tab="week">
+        <span class="bn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm-2 8h14v10H5V10z"/><rect x="7" y="13" width="4" height="4" fill="currentColor" opacity="0.5"/></svg></span>
+        <span class="bn-label"></span>
+      </button>
+      <button class="bn-item" data-tab="plan">
+        <span class="bn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="16.5" cy="3.8" r="2"/><path d="M13.5 7.5c-1.2.2-2.2.9-3 1.9l-2.1 2.6a1 1 0 0 0 .2 1.4l2.2 1.6-1.8 4.3a1 1 0 0 0 1.8.8l2.3-4.6a1.2 1.2 0 0 0-.3-1.4l-1.1-.9 1.4-1.7.8 1.9c.3.6.9 1 1.5 1.1l2.7.5a1 1 0 0 0 .3-2l-2.3-.4-1.6-3.5a2 2 0 0 0-2-1.6z"/><path d="M7 14l-3 4a1 1 0 0 0 1.6 1.2l2.9-3.7L7 14z"/></svg></span>
+        <span class="bn-label"></span>
+      </button>
+      <button class="bn-item" data-tab="calendar">
+        <span class="bn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2V2h-2v2H9V2H7zm-2 8h14v10H5V10z"/></svg></span>
+        <span class="bn-label"></span>
+      </button>
+      <button class="bn-item" data-tab="stats">
+        <span class="bn-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="14" width="4" height="7" rx="1"/><rect x="10" y="9" width="4" height="12" rx="1"/><rect x="17" y="4" width="4" height="17" rx="1"/></svg></span>
+        <span class="bn-label"></span>
+      </button>
+    </div>
+    <!-- Round + FAB -->
+    <button class="bn-fab" onclick="openRaceModal()" title="Race toevoegen">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+    </button>
   </div>
 </div>
 
@@ -806,22 +845,35 @@ function renderActiveView(){
 
 // ── HEADER ────────────────────────────────────────────────────────────────────
 function renderHeader(){
-  const races=loadRaces();
   const name=localStorage.getItem('userName')||'';
   document.getElementById('topbarName').textContent=name;
-  const container=document.getElementById('topbarRaces');
-  const visible=races.filter(r=>daysUntil(r.date)>=-1).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,3);
+  renderRacesBar();
+}
+
+function renderRacesBar(){
+  const races=loadRaces();
+  const bar=document.getElementById('racesBar');if(!bar)return;
+  const visible=races.filter(r=>daysUntil(r.date)>=-1).sort((a,b)=>a.date.localeCompare(b.date)).slice(0,4);
+
+  if(!visible.length){
+    // No races — show only + button
+    bar.innerHTML=`<div class="rb-add" onclick="openRaceModal()">+</div>`;
+    return;
+  }
+
   let h='';
   visible.forEach(r=>{
     const d=daysUntil(r.date),cd=countdownDisplay(d);
-    h+=`<div class="race-chip${r.mainGoal?' main-chip':''}" onclick="switchTab('calendar')">
-      <div class="rc-name">${raceEmoji(r)} ${esc(r.name)}</div>
-      <div class="rc-cd">${cd.val}</div>
-      <div class="rc-label">${cd.unit}</div>
+    const hi=r.mainGoal;
+    const emoji=raceEmoji(r);
+    h+=`<div class="rb-item" onclick="switchTab('calendar')" style="cursor:pointer">
+      <div class="rb-name"><span class="rb-icon">${emoji}</span> ${esc(r.name)}</div>
+      <div class="rb-value${hi?' hi':''}">${cd.val}</div>
+      <div class="rb-unit">${cd.unit}</div>
     </div>`;
   });
-  h+=`<div class="race-chip-add${!visible.length?' ':''}" onclick="openRaceModal()" title="${T('race_add')}">+</div>`;
-  container.innerHTML=h;
+  h+=`<div class="rb-add" onclick="openRaceModal()">+</div>`;
+  bar.innerHTML=h;
 }
 
 // ── TODAY ─────────────────────────────────────────────────────────────────────
@@ -1111,7 +1163,7 @@ function renderPlanRows(rows,t){
         <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:6px">${T(ti.i18n)}</span>
         ${row.detail?`<div style="margin-top:4px;color:var(--muted)">${esc(row.detail)}</div>`:''}
         ${row.feedback?`<div class="plan-feedback-text">✓ ${esc(row.feedback)}</div>`:''}
-        <button style="margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;cursor:pointer" onclick="openDayModal('${row.datum}');event.stopPropagation()">📝</button>
+        <button style="margin-top:8px;background:none;border:1px solid var(--border);border-radius:4px;padding:5px 10px;color:var(--muted);font-family:var(--font-m);font-size:9px;letter-spacing:1px;cursor:pointer" onclick="openDayModal('${row.datum}');event.stopPropagation()">📝</button>
       </div>
     </div>`;
   });
@@ -1228,8 +1280,8 @@ function openDayModal(dateStr){
       </div>
       <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
     </div>
-    <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:10px">
-      <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
+    <div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:0;padding:10px 14px;margin-bottom:10px">
+      <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
       <textarea class="feedback-textarea" id="modalNoteText" style="height:56px;margin-bottom:8px"></textarea>
       <button class="btn-secondary" style="margin-top:0" onclick="saveModalNote('${dateStr}')">${T('notes_save')}</button>
     </div>`;
@@ -1252,8 +1304,8 @@ function openDayModal(dateStr){
       if(isPast){
         h+=feedbackHtmlModal(dateStr,row?.feedback);
       }else{
-        h+=`<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:6px;padding:10px 14px;margin-bottom:10px">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
+        h+=`<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:0;padding:10px 14px;margin-bottom:10px">
+          <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
           <textarea class="feedback-textarea" id="modalNoteText" style="height:60px;margin-bottom:8px">${esc(row?.feedback||'')}</textarea>
           <button class="btn-secondary" style="margin-top:0" onclick="saveModalNote('${dateStr}')">${T('notes_save')}</button>
         </div>`;
@@ -1419,18 +1471,18 @@ function renderCalendar(){
   if(state.calSelectedDate){
     const selRace=races.find(r=>r.date===state.calSelectedDate);
     if(selRace){
-      h+=`<div style="background:rgba(212,245,66,0.04);border:1px solid rgba(212,245,66,0.18);border-radius:6px;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+      h+=`<div style="background:rgba(212,245,66,0.04);border:1px solid rgba(212,245,66,0.18);border-radius:0;padding:12px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
         <div style="font-size:22px">${raceEmoji(selRace)}</div>
         <div style="flex:1">
           ${selRace.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.13);color:var(--accent);margin-bottom:4px">${T('main_goal')}</span><br>`:''}
           <div style="font-weight:600;font-size:13px">${esc(selRace.name||'Race')}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${esc(selRace.dist||'')}${selRace.raceType?' · '+esc(selRace.raceType):''}</div>
+          <div style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${esc(selRace.dist||'')}${selRace.raceType?' · '+esc(selRace.raceType):''}</div>
         </div>
-        <button style="background:none;border:1px solid var(--border);border-radius:4px;padding:6px 10px;color:var(--muted);font-family:'DM Mono',monospace;font-size:9px;cursor:pointer" onclick="openRaceModal('${selRace.id}')">✏️</button>
+        <button style="background:none;border:1px solid var(--border);border-radius:4px;padding:6px 10px;color:var(--muted);font-family:var(--font-m);font-size:9px;cursor:pointer" onclick="openRaceModal('${selRace.id}')">✏️</button>
       </div>`;
     }else{
       h+=`<div style="display:flex;gap:8px;margin-bottom:12px;align-items:center">
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);flex:1">${fmtDateFull(state.calSelectedDate)}</div>
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--muted);flex:1">${fmtDateFull(state.calSelectedDate)}</div>
         <button class="cal-add-race-btn" onclick="openRaceModal(null,'${state.calSelectedDate}')">+ Race</button>
       </div>`;
     }
@@ -1447,10 +1499,10 @@ function renderCalendar(){
         <div style="flex:1;min-width:0">
           ${r.mainGoal?`<span class="badge" style="background:rgba(212,245,66,0.1);color:var(--accent);margin-bottom:3px">${T('main_goal')}</span><br>`:''}
           <div style="font-size:13px;font-weight:600">${esc(r.name||'Race')}</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted)">${fmtDate(r.date)}${r.dist?' · '+esc(r.dist):''}${r.raceType?' · '+esc(r.raceType):''}</div>
+          <div style="font-family:var(--font-m);font-size:10px;color:var(--muted)">${fmtDate(r.date)}${r.dist?' · '+esc(r.dist):''}${r.raceType?' · '+esc(r.raceType):''}</div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);flex-shrink:0;text-align:right">
-          ${(()=>{const d=daysUntil(r.date),cd=countdownDisplay(d);return`<div style="font-family:'Bebas Neue',sans-serif;font-size:18px">${cd.val}</div><div style="font-size:8px;color:var(--faint)">${cd.unit}</div>`;})()}
+        <div style="font-family:var(--font-m);font-size:10px;color:var(--accent);flex-shrink:0;text-align:right">
+          ${(()=>{const d=daysUntil(r.date),cd=countdownDisplay(d);return`<div style="font-family:var(--font-d);font-size:18px">${cd.val}</div><div style="font-size:8px;color:var(--faint)">${cd.unit}</div>`;})()}
         </div>
       </div>`;
     });
