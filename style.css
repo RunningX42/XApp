@@ -319,3 +319,6 @@ html,body{background:var(--bg);color:var(--text);font-family:var(--font-d);font-
   .toast{max-width:350px}
 }
 @media(min-width:480px){.bottom-nav{left:50%;right:auto;transform:translateX(-50%)}}
+
+/* Week tile selected state */
+.wt-selected{border-color:var(--accent) !important}
