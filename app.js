@@ -337,10 +337,12 @@ function renderRacesBar(){
   sheetRaces.forEach(r=>{
     const cd=countdownDisplay(daysUntil(r.datum));
     // C39: smaller chips, click opens day in training tab
+    const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
+    const goalStr=goalMatch?goalMatch[1]:'';
     h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer;min-width:60px">
       <div class="rb-name" style="font-size:9px">${esc((r.titel||r.datum).substring(0,12))}</div>
       <div class="rb-value${cd.val<=7?' hi':''}" style="font-size:16px">${cd.val}</div>
-      <div class="rb-unit">${cd.unit}</div>
+      <div class="rb-unit">${goalStr||cd.unit}</div>
     </div>`;
   });
   // C50: always show + to add race
@@ -1348,6 +1350,10 @@ function openRaceModal(raceId,prefillDate){
       </select>
       <input type="text" class="settings-input" id="raceTypeCustom" placeholder="Vrije tekst" style="margin-top:6px;display:none" value="${esc(['Weg','Baan','Trail','Ultra','Virtueel'].includes(race?.raceType||'')?'':race?.raceType||'')}">
     </div>
+    <div class="settings-field">
+      <label class="settings-label">Doeltijd (optioneel)</label>
+      <input type="text" class="settings-input" id="raceGoalInput" value="${esc(race?.goal||'')}" placeholder="bijv. 37:30">
+    </div>
     <div class="settings-field" style="display:flex;align-items:center;gap:10px">
       <input type="checkbox" id="raceMainInput" ${race?.mainGoal?'checked':''} style="width:18px;height:18px;accent-color:var(--accent)">
       <label for="raceMainInput" class="settings-label" style="margin:0">${T('race_main')}</label>
@@ -1362,7 +1368,7 @@ function openRaceModal(raceId,prefillDate){
   if(race?.raceType){const s=document.getElementById('raceTypeSelect');if([...s.options].some(o=>o.value===race.raceType))s.value=race.raceType;else{s.value='__custom';document.getElementById('raceTypeCustom').style.display='block';}}
 }
 
-function saveRace(){
+async function saveRace(){
   const name=document.getElementById('raceNameInput')?.value.trim();
   const date=document.getElementById('raceDateInput')?.value;
   if(!name||!date){showToast(T('race_required'));return;}
@@ -1371,30 +1377,35 @@ function saveRace(){
   const typeSel=document.getElementById('raceTypeSelect')?.value;
   const raceType=typeSel==='__custom'?document.getElementById('raceTypeCustom')?.value.trim():typeSel;
   const mainGoal=document.getElementById('raceMainInput')?.checked;
+  const goal=document.getElementById('raceGoalInput')?.value.trim()||'';
   const races=loadRaces();
   if(state.editingRaceId){
     const idx=races.findIndex(r=>r.id===state.editingRaceId);
-    if(idx>=0)races[idx]={...races[idx],name,date,dist,raceType,mainGoal};
+    if(idx>=0)races[idx]={...races[idx],name,date,dist,raceType,mainGoal,goal};
   }else{
-    races.push({id:Date.now().toString(),name,date,dist,raceType,mainGoal});
+    races.push({id:Date.now().toString(),name,date,dist,raceType,mainGoal,goal});
   }
   persistRaces(races);
-  // BUG2 fix: parse date parts directly to avoid timezone off-by-one
   const [sy,sm,sd]=date.split('-').map(Number);
   state.calYear=sy;state.calMonth=sm-1;state.calSelectedDate=date;
   closeRaceModal();renderHeader();
   if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
 
-  // C38: always persist locally; also write to sheet if connected
+  // C38: write to sheet if connected
   if(state.scriptUrl){
-    const detail=`${dist||''}${raceType?' · '+raceType:''}`;
+    const parts=[dist,raceType,goal?`Doel: ${goal}`:''].filter(Boolean);
+    const detail=parts.join(' · ');
     const params=new URLSearchParams({action:'setDay',datum:date,titel:name,type:'race',emoji:'',detail,km:dist||''});
     if(state.sheetName)params.set('sheetName',state.sheetName);
-    fetch(state.scriptUrl+'?'+params).then(()=>{
+    try{
+      const res=await fetch(state.scriptUrl+'?'+params);
+      const json=await res.json();
+      if(json.status!=='ok')throw new Error(json.message||'Sheet error');
       showToast(T('race_to_sheet'));
-      // Reload sheet data to reflect new race
-      fetchData();
-    }).catch(()=>showToast(T('race_saved')));
+      await fetchData();
+    }catch(e){
+      showToast('❌ '+e.message);
+    }
   }else{
     showToast(T('race_saved'));
   }
