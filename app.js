@@ -1130,6 +1130,7 @@ function closeDayModal(e){
   if(e&&e.target!==document.getElementById('dayModal'))return;
   document.getElementById('dayModal').classList.remove('open');
   state.editingFeedback=false;state.selectedRating=0;
+  state.editingRowIndex=null;
 }
 
 // ── STATS OVERLAY ─────────────────────────────────────────────────────────────
