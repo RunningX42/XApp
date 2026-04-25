@@ -120,6 +120,7 @@ const STRINGS={
 // ── STATE ────────────────────────────────────────────────────────────────────
 const state={
   scriptUrl: localStorage.getItem('scriptUrl')||'',
+  sheetId:    localStorage.getItem('sheetId')||'',
   sheetName: localStorage.getItem('sheetName')||'',
   lang:      localStorage.getItem('lang')||'nl',
   data:      null,
@@ -252,6 +253,7 @@ function applyUpdate(){
 
 function apiParams(extra={}){
   const p=new URLSearchParams({...extra});
+  if(state.sheetId)p.set('sheetId',state.sheetId);
   if(state.sheetName)p.set('sheetName',state.sheetName);
   return p;
 }
@@ -1613,9 +1615,16 @@ function renderConnectSection(){
   el.innerHTML=connectedBadge+`
     <div class="settings-title">${T('schema_title')}</div>
     <div class="settings-field">
-      <div class="settings-hint" style="margin-bottom:8px">${T('connect_hint')}</div>
+      <label class="settings-label">Apps Script URL</label>
+      <div class="settings-hint" style="margin-bottom:6px">${T('connect_hint')}</div>
       <input type="url" class="settings-input" id="scriptUrl" placeholder="${T('connect_url_placeholder')}"
         value="${esc(state.scriptUrl)}">
+    </div>
+    <div class="settings-field">
+      <label class="settings-label">Google Sheet URL</label>
+      <div class="settings-hint" style="margin-bottom:6px">Plak de volledige URL van je Google Sheet.</div>
+      <input type="url" class="settings-input" id="sheetIdInput" placeholder="https://docs.google.com/spreadsheets/d/..."
+        value="${esc(state.sheetId)}">
     </div>
     <div class="settings-field">
       <label class="settings-label">${T('sheet_name_label')}</label>
@@ -1694,7 +1703,10 @@ function saveSettings(){
   const url=document.getElementById('scriptUrl')?.value.trim();
   if(!url){showToast(T('enter_url'));return;}
   state.scriptUrl=url;localStorage.setItem('scriptUrl',url);
-  // Also save sheet name if filled in
+  const sheetRaw=document.getElementById('sheetIdInput')?.value.trim()||'';
+  const sheetIdMatch=sheetRaw.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
+  const sid=sheetIdMatch?sheetIdMatch[1]:sheetRaw; // fallback: treat as raw ID
+  state.sheetId=sid;localStorage.setItem('sheetId',sid);
   const sn=document.getElementById('sheetNameInput')?.value||'';
   state.sheetName=sn;localStorage.setItem('sheetName',sn);
   showToast(T('connecting'));
