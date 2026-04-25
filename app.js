@@ -408,7 +408,8 @@ function renderToday(){
     el.innerHTML=h;return;
   }
 
-  const row=state.data.find(r=>r.datum===t);
+  const todayRows=state.data.filter(r=>r.datum===t);
+  const row=todayRows[0]||null;
   h+=`<div style="padding:0 16px">`;
 
   if(!row||isRust(row.type)){
@@ -538,7 +539,7 @@ function renderWeek(){
   const dates=getWeekDatesOffset(offset);
   const t=todayStr();
   const days=state.lang==='en'?DAYS_EN:DAYS_NL;
-  const wd=dates.map(d=>({date:d,row:state.data?.find(r=>r.datum===d)??null}));
+  const wd=dates.map(d=>({date:d,rows:(state.data||[]).filter(r=>r.datum===d),row:(state.data||[]).find(r=>r.datum===d)??null}));
   const d0=parseDate(dates[0]),d6=parseDate(dates[6]);
   const mf=state.lang==='en'?MONTHS_FULL_EN:MONTHS_FULL_NL;
   const months=state.lang==='en'?MONTHS_EN:MONTHS_NL;
@@ -546,10 +547,10 @@ function renderWeek(){
   const jan4=new Date(d0.getFullYear(),0,4);
   const weekNum=Math.ceil(((d0-jan4)/86400000+jan4.getDay()+1)/7);
   const weekLabel=`${d0.getDate()}–${d6.getDate()} ${months[d0.getMonth()]}`;
-  const plannedKm=wd.reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
-  const doneKm=wd.filter(({date})=>date<=t).reduce((s,{row})=>s+(parseFloat(row?.km)||0),0);
-  const workDays=wd.filter(({row})=>row&&isWork(row.type)).length;
-  const fbDone=wd.filter(({row})=>row?.feedback).length;
+  const plannedKm=wd.reduce((s,{rows})=>s+rows.reduce((a,r)=>a+(parseFloat(r.km)||0),0),0);
+  const doneKm=wd.filter(({date})=>date<=t).reduce((s,{rows})=>s+rows.reduce((a,r)=>a+(parseFloat(r.km)||0),0),0);
+  const workDays=wd.filter(({rows})=>rows.some(r=>isWork(r.type))).length;
+  const fbDone=wd.filter(({rows})=>rows.some(r=>r.feedback)).length;
   const pct=plannedKm>0?Math.min(100,Math.round(doneKm/plannedKm*100)):0;
 
   let h=`<div class="page-title" style="padding:14px 20px 4px">
@@ -606,23 +607,29 @@ function renderWeek(){
   if(!state.data){h+=noSchemaHint();}
   else{
     // Week: show active days (exclude rust/werk), include past days greyed
-    const allDays=wd.filter(({date,row})=>row&&row.type!==''&&!isWork(row.type)&&!isRust(row.type));
-    const upcoming=allDays;
-    if(upcoming.length){
+    // All active rows grouped by date
+    const activeDays=wd.map(({date,rows})=>({date,activeRows:rows.filter(r=>r.type&&!isWork(r.type)&&!isRust(r.type))})).filter(({activeRows})=>activeRows.length);
+    if(activeDays.length){
       h+=`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:8px">${T('week_todo')}</div>`;
-      upcoming.forEach(({date,row})=>{
-        const isTdy=date===t,isPastDay=date<t,ti=typeOf(row.type),d=parseDate(date);
-        h+=`<div data-upcoming-date="${date}" onclick="openDayModal('${date}')" style="display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid ${isTdy?'var(--accent)':'var(--border)'};padding:12px;margin-bottom:6px;cursor:pointer;transition:border-color 0.2s;opacity:${isPastDay&&!isTdy?0.45:1}">
-          <div style="text-align:center;min-width:36px;padding-right:10px;border-right:1px solid var(--border)">
-            <div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${days[dayIdx(d)]}</div>
-            <div style="font-family:var(--font-d);font-weight:800;font-size:18px;color:${isTdy?'var(--accent)':'var(--text)'}">${d.getDate()}</div>
+      activeDays.forEach(({date,activeRows})=>{
+        const isTdy=date===t,isPastDay=date<t,d=parseDate(date);
+        h+=`<div data-upcoming-date="${date}" style="background:var(--surface);border:1px solid ${isTdy?'var(--accent)':'var(--border)'};padding:12px;margin-bottom:6px;opacity:${isPastDay&&!isTdy?0.45:1};transition:border-color 0.2s">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:${activeRows.length>1?'10':'0'}px">
+            <div style="text-align:center;min-width:36px;padding-right:10px;border-right:1px solid var(--border);flex-shrink:0">
+              <div style="font-family:var(--font-m);font-size:9px;color:var(--muted)">${days[dayIdx(d)]}</div>
+              <div style="font-family:var(--font-d);font-weight:800;font-size:18px;color:${isTdy?'var(--accent)':'var(--text)'}">${d.getDate()}</div>
+            </div>
+            <div style="flex:1;min-width:0">
+              ${activeRows.map((row,i)=>{const ti=typeOf(row.type);return`<div onclick="openDayModalRow(${row.rowIndex},'${date}')" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:${i>0?'8px 0 0':0};${i>0?'border-top:1px solid var(--border);margin-top:8px':''}">
+                <div style="width:18px;height:18px;flex-shrink:0">${RXIcon(row.type?.split(',')[0].trim()||'rust',16,'var(--muted)','var(--accent)')}</div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${ti.text}">${T(ti.i18n)}</div>
+                  <div style="font-family:var(--font-d);font-weight:700;font-size:14px">${esc(row.titel||'')}</div>
+                </div>
+                ${row.km?`<div style="font-family:var(--font-m);font-size:10px;color:var(--accent);flex-shrink:0">${esc(row.km)}km</div>`:''}
+              </div>`;}).join('')}
+            </div>
           </div>
-          <div style="flex:1">
-            <div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${ti.text};margin-bottom:2px">${T(ti.i18n)}</div>
-            <div style="font-family:var(--font-d);font-weight:700;font-size:15px">${esc(row.titel||'')}</div>
-            ${row.km?`<div style="font-family:var(--font-m);font-size:10px;color:var(--accent);margin-top:2px">${esc(row.km)} km</div>`:''}
-          </div>
-          <div style="width:22px;height:22px;flex-shrink:0">${RXIcon(row.type?.split(',')[0].trim()||'rust',20,'var(--muted)','var(--accent)')}</div>
         </div>`;
       });
     }
@@ -849,10 +856,13 @@ function swipePlanFase(dir){
 }
 
 // ── DAY MODAL (C22 + C28) ─────────────────────────────────────────────────────
-function openDayModal(dateStr){
+function openDayModal(dateStr,targetRowIndex){
   // C34: support multiple rows per date
   const rows=state.data?.filter(r=>r.datum===dateStr)||[];
-  const row=rows[0]||null;
+  // If targetRowIndex given, show that specific row; else show all
+  const row=targetRowIndex
+    ?rows.find(r=>r.rowIndex===targetRowIndex)||rows[0]||null
+    :rows[0]||null;
   const t=todayStr(),isPast=dateStr<=t;
   const ti=row?typeOf(row.type):null;
   const content=document.getElementById('dayModalContent');
@@ -1087,6 +1097,16 @@ async function deleteActivity(rowIndex){
 }
 
 // C44: open ADD mode (new activity), independent of existing row
+// Open day modal for a specific row by rowIndex (multi-activity days)
+function openDayModalRow(rowIndex,dateStr){
+  // Pre-set the editingRowIndex so openDayModal uses the right row
+  state.editingRowIndex=rowIndex;
+  // Find the specific row and pass it as context
+  const row=state.data?.find(r=>r.rowIndex===rowIndex);
+  if(row)openDayModal(dateStr,rowIndex);
+  else openDayModal(dateStr);
+}
+
 function openAddActivity(dateStr){
   const content=document.getElementById('dayModalContent');
   state.editingFeedback=false;state.selectedRating=0;
