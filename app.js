@@ -420,41 +420,36 @@ function renderToday(){
       </div>
     </div>`;
   }else{
-    const ti=typeOf(row.type);
-    const isRun=hasType(row.type,'run');
-    const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
-    // Parse detail for pace/hr hints
-    const detail=row.detail||'';
-    const paceMatch=detail.match(/(\d+:\d+)[–-]?(\d+:\d+)?\/km/);
-    const hrMatch=detail.match(/<?\s*(\d+)\s*bpm/i)||detail.match(/HR\s*<?(\d+)/i);
-
-    h+=`<div class="card ${border}" onclick="openDayModal('${t}')" style="padding:16px 16px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div style="font-family:var(--font-m);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:${ti.text}">${T(ti.i18n)}${row.titel?' · '+esc(row.titel):''}</div>
-        <div style="width:28px;height:28px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">${RXIcon(row.type?.split(',')[0].trim()||'run',16,'var(--text)','var(--accent)')}</div>
-      </div>`;
-
-    if(row.km&&isRun){
-      // Big km display
-      h+=`<div style="font-family:var(--font-d);font-weight:800;font-size:44px;letter-spacing:-1px;line-height:1;margin-top:10px">${esc(row.km)} KM<span style="color:var(--accent)">.</span></div>`;
-      if(paceMatch||hrMatch){
-        h+=`<div class="run-metric-row">`;
-        if(paceMatch)h+=`<div><div class="run-metric-label">PACE</div><div class="run-metric-val">${esc(paceMatch[0].replace('/km',''))}<span class="run-metric-unit">/km</span></div></div>`;
-        if(hrMatch)h+=`<div><div class="run-metric-label">HR</div><div class="run-metric-val">&lt;${esc(hrMatch[1])}<span class="run-metric-unit">bpm</span></div></div>`;
-        h+=`</div>`;
+    // Render ALL today rows
+    const activeRows=todayRows.filter(r=>!isRust(r.type));
+    activeRows.forEach(row=>{
+      const ti=typeOf(row.type);
+      const isRun=hasType(row.type,'run');
+      const border=isWork(row.type)?'work-border':isRace(row.type)?'race-border':'';
+      const detail=row.detail||'';
+      const paceMatch=detail.match(/(\d+:\d+)[–-]?(\d+:\d+)?\/km/);
+      const hrMatch=detail.match(/<?\s*(\d+)\s*bpm/i)||detail.match(/HR\s*<?(\d+)/i);
+      h+=`<div class="card ${border}" onclick="openDayModalRow(${row.rowIndex},'${t}')" style="padding:16px 16px 14px;cursor:pointer;-webkit-tap-highlight-color:transparent;margin-bottom:8px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div style="font-family:var(--font-m);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:${ti.text}">${T(ti.i18n)}${row.titel?' · '+esc(row.titel):''}</div>
+          <div style="width:28px;height:28px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center">${RXIcon(row.type?.split(',')[0].trim()||'run',16,'var(--text)','var(--accent)')}</div>
+        </div>`;
+      if(row.km&&isRun){
+        h+=`<div style="font-family:var(--font-d);font-weight:800;font-size:44px;letter-spacing:-1px;line-height:1;margin-top:10px">${esc(row.km)} KM<span style="color:var(--accent)">.</span></div>`;
+        if(paceMatch||hrMatch){
+          h+=`<div class="run-metric-row">`;
+          if(paceMatch)h+=`<div><div class="run-metric-label">PACE</div><div class="run-metric-val">${esc(paceMatch[0].replace('/km',''))}<span class="run-metric-unit">/km</span></div></div>`;
+          if(hrMatch)h+=`<div><div class="run-metric-label">HR</div><div class="run-metric-val">&lt;${esc(hrMatch[1])}<span class="run-metric-unit">bpm</span></div></div>`;
+          h+=`</div>`;
+        }
+      }else if(row.km){
+        h+=`<div style="font-family:var(--font-d);font-weight:800;font-size:36px;line-height:1;margin-top:8px">${esc(row.km)} KM</div>`;
       }
-    }else if(row.km){
-      h+=`<div style="font-family:var(--font-d);font-weight:800;font-size:36px;line-height:1;margin-top:8px">${esc(row.km)} KM</div>`;
-    }
-
-    if(detail){h+=`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5;padding-top:12px;border-top:1px solid var(--border)">${esc(detail)}</div>`;}
-
-    if(!row.feedback&&isRun){
-      h+=`<button class="btn-cta">Start run →</button>`;
-    }
-    h+=`</div>`;
-
-    if(!isWork(row.type))h+=feedbackHtml(row.datum,row.feedback);
+      if(detail){h+=`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5;padding-top:12px;border-top:1px solid var(--border)">${esc(detail)}</div>`;}
+      if(!row.feedback&&isRun){h+=`<button class="btn-cta">Start run →</button>`;}
+      h+=`</div>`;
+      if(!isWork(row.type))h+=feedbackHtml(row.datum,row.feedback);
+    });
   }
 
   // Tomorrow — compact
@@ -781,7 +776,7 @@ function renderPlanRows(rows,t,faseBadge=''){
         <span class="badge" style="background:${ti.bg};color:${ti.text};margin-bottom:6px">${T(ti.i18n)}</span>
         ${row.detail?`<div style="margin-top:4px;color:var(--muted)">${esc(row.detail)}</div>`:''}
         ${row.feedback?`<div class="plan-feedback-text">✓ ${esc(row.feedback)}</div>`:''}
-        <button style="margin-top:8px;background:none;border:1px solid var(--border);padding:5px 12px;color:var(--muted);font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color 0.12s,border-color 0.12s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='';this.style.borderColor=''" onclick="openDayModal('${row.datum}');event.stopPropagation()">Bewerken</button>
+        <button style="margin-top:8px;background:none;border:1px solid var(--border);padding:5px 12px;color:var(--muted);font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:color 0.12s,border-color 0.12s" onmouseover="this.style.color='var(--accent)';this.style.borderColor='var(--accent)'" onmouseout="this.style.color='';this.style.borderColor=''" onclick="openDayModalRow(${row.rowIndex},'${row.datum}');event.stopPropagation()">Bewerken</button>
       </div>
     </div>`;
   });
@@ -860,8 +855,10 @@ function openDayModal(dateStr,targetRowIndex){
   // C34: support multiple rows per date
   const rows=state.data?.filter(r=>r.datum===dateStr)||[];
   // If targetRowIndex given, show that specific row; else show all
-  const row=targetRowIndex
-    ?rows.find(r=>r.rowIndex===targetRowIndex)||rows[0]||null
+  // Priority: state.editingRowIndex > targetRowIndex > first row
+  const resolvedIdx=state.editingRowIndex||targetRowIndex||null;
+  const row=resolvedIdx
+    ?rows.find(r=>r.rowIndex===resolvedIdx)||rows[0]||null
     :rows[0]||null;
   const t=todayStr(),isPast=dateStr<=t;
   const ti=row?typeOf(row.type):null;
