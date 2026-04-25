@@ -754,7 +754,7 @@ function renderPlanRows(rows,t,faseBadge=''){
   rows.forEach(row=>{
     const isPast=row.datum<t,isTdy=row.datum===t,work=isWork(row.type),ti=typeOf(row.type);
     const parts=fmtDate(row.datum).split(' ');
-    const rowId='pr-'+row.datum;
+    const rowId='pr-'+(row.rowIndex||row.datum);
 
     // C29: insert floating fase label when fase changes
     if(row.fase&&row.fase!==lastFase){
@@ -930,54 +930,64 @@ function openDayModal(dateStr,targetRowIndex){
       </div>`;
     });
 
-    // Feedback / notes — Fix: use first non-work row
-    const fbRow=rows.find(r=>!isWork(r.type))||row;
-    if(fbRow&&!isWork(fbRow.type)){
+    // Feedback — dag level, one block, collapsed by default
+    const fbRow=rows.find(r=>!isWork(r.type)&&!isRust(r.type))||null;
+    const existingFb=fbRow?.feedback||'';
+    if(fbRow){
       if(isPast){
-        h+=feedbackHtmlModal(dateStr,fbRow?.feedback);
-      }else{
-        h+=`<div style="background:rgba(255,255,255,0.02);border:1px solid var(--border);border-radius:0;padding:10px 14px;margin-bottom:10px">
-          <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--faint);margin-bottom:6px">${T('notes_q')}</div>
-          <textarea class="feedback-textarea" id="modalNoteText" style="height:60px;margin-bottom:8px">${esc(row?.feedback||'')}</textarea>
-          <button class="btn-secondary" style="margin-top:0" onclick="saveModalNote('${dateStr}')">${T('notes_save')}</button>
-        </div>`;
+        if(existingFb&&!state.editingFeedback){
+          // Show compact "given" state + edit link
+          h+=`<div class="prev-feedback" style="margin-bottom:10px">
+            <div class="prev-feedback-header">
+              <span class="prev-feedback-label">${T('feedback_logged')}</span>
+              <button class="edit-link" onclick="state.editingFeedback=true;openDayModal('${dateStr}',${row?.rowIndex||'null'})">${T('feedback_edit')}</button>
+            </div>
+            <div class="prev-feedback-text">${esc(existingFb)}</div>
+          </div>`;
+        }else{
+          // Collapsed — show "Geef feedback" link that expands inline
+          h+=`<div id="fbCollapse" style="margin-bottom:10px">
+            ${!existingFb?`<button onclick="expandFeedback('${dateStr}')" style="background:none;border:none;color:var(--accent);font-family:var(--font-m);font-size:10px;letter-spacing:1px;cursor:pointer;padding:0;text-transform:uppercase">› ${T('feedback_q')}</button>`:''}
+            ${existingFb?feedbackHtmlModal(dateStr,existingFb):''}
+          </div>`;
+          // expandFeedback() is called by the button onclick
+        }
       }
     }
 
-    // Edit fields for existing row — collapsible
+    // Edit section — collapsible
     const typeOptions=Object.entries(TYPES).map(([k,v])=>
       `<option value="${k}"${row.type===k?' selected':''}>${T(v.i18n)}</option>`
     ).join('');
-    h+=`<div class="feedback-section" style="margin-top:4px">
-      <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:12px">${T('edit_day')}</div>
-      <div style="margin-bottom:8px">
-        <label class="settings-label">${T('field_titel')}</label>
-        <input class="plan-edit-field" id="edit-titel" value="${esc(row?.titel||'')}" placeholder="${T('field_titel')}">
-      </div>
-      <div style="margin-bottom:8px">
-        <label class="settings-label">${T('type_label')}</label>
-        <select class="plan-edit-field" id="edit-type" style="width:100%;padding:8px 10px" onchange="document.getElementById('raceGoalWrap')&&(document.getElementById('raceGoalWrap').style.display=this.value==='race'?'block':'none')">
-          ${typeOptions}
-          <option value="${esc(row.type||'')}"${!TYPES[row.type]?' selected':''}>${esc(row.type||'')}</option>
-        </select>
-      </div>
-      <div id="raceGoalWrap" style="margin-bottom:8px;display:${row.type==='race'?'block':'none'}">
-        <label class="settings-label">Doeltijd (optioneel)</label>
-        <input class="plan-edit-field" id="edit-goal" placeholder="bijv. 37:30" value="${esc(row?.detail?.match(/doel[:\s]+([0-9:]+)/i)?.[1]||'')}">
-      </div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <div style="flex:1">
+    h+=`<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:10px">
+      <button onclick="document.getElementById('editFields').style.display=document.getElementById('editFields').style.display==='none'?'block':'none'" style="background:none;border:none;color:var(--muted);font-family:var(--font-m);font-size:10px;letter-spacing:1px;cursor:pointer;padding:0;text-transform:uppercase;width:100%;text-align:left;margin-bottom:6px">› ${T('edit_day')}</button>
+      <div id="editFields" style="display:none">
+        <div style="margin-bottom:8px">
+          <label class="settings-label">${T('field_titel')}</label>
+          <input class="plan-edit-field" id="edit-titel" value="${esc(row?.titel||'')}" placeholder="${T('field_titel')}">
+        </div>
+        <div style="margin-bottom:8px">
+          <label class="settings-label">${T('type_label')}</label>
+          <select class="plan-edit-field" id="edit-type" style="width:100%;padding:8px 10px" onchange="document.getElementById('raceGoalWrap')&&(document.getElementById('raceGoalWrap').style.display=this.value==='race'?'block':'none')">
+            ${typeOptions}
+            <option value="${esc(row.type||'')}"${!TYPES[row.type]?' selected':''}>${esc(row.type||'')}</option>
+          </select>
+        </div>
+        <div id="raceGoalWrap" style="margin-bottom:8px;display:${row.type==='race'?'block':'none'}">
+          <label class="settings-label">Doeltijd (optioneel)</label>
+          <input class="plan-edit-field" id="edit-goal" placeholder="bijv. 37:30" value="${esc(row?.detail?.match(/doel[:\s]+([0-9:]+)/i)?.[1]||'')}">
+        </div>
+        <div style="margin-bottom:8px">
           <label class="settings-label">${T('field_km')}</label>
           <input class="plan-edit-field" id="edit-km" value="${esc(row?.km||'')}" placeholder="0" type="number" step="0.1">
         </div>
-
+        <div style="margin-bottom:8px">
+          <label class="settings-label">${T('field_detail')}</label>
+          <textarea class="plan-edit-field" id="edit-detail" style="height:56px;resize:none">${esc(row?.detail||'')}</textarea>
+        </div>
+        <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
+        ${row?.rowIndex?`<button class="btn-secondary" style="margin-top:6px;color:var(--race-text);border-color:rgba(244,67,54,0.4)" onclick="deleteActivity(${row.rowIndex})">Verwijderen</button>`:''}
       </div>
-      <div style="margin-bottom:8px">
-        <label class="settings-label">${T('field_detail')}</label>
-        <textarea class="plan-edit-field" id="edit-detail" style="height:56px;resize:none">${esc(row?.detail||'')}</textarea>
-      </div>
-      <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
-      ${row?.rowIndex?`<button class="btn-secondary" style="margin-top:6px;color:var(--race-text);border-color:rgba(244,67,54,0.4)" onclick="deleteActivity(${row.rowIndex})">Verwijderen</button>`:''}
     </div>`;
   }
 
@@ -1010,6 +1020,19 @@ function feedbackHtmlModal(datum,existing){
     <button class="btn-primary" id="modalSubmitBtn" onclick="handleModalFeedback('${esc(datum)}')">${isEdit?T('feedback_update'):T('feedback_save')}</button>
     ${isEdit?`<button class="btn-secondary" onclick="state.editingFeedback=false;openDayModal('${datum}')">${T('feedback_cancel')}</button>`:''}
   </div>`;
+}
+
+function expandFeedback(datum){
+  const el=document.getElementById('fbCollapse');if(!el)return;
+  const stars=['😵','😓','😐','💪','🔥'].map((e,i)=>
+    `<button class="star-btn" data-val="${i+1}">${e}</button>`).join('');
+  el.innerHTML=`<div class="feedback-section">
+    <div class="feedback-title">${T('feedback_q')}</div>
+    <div class="feedback-stars">${stars}</div>
+    <textarea class="feedback-textarea" id="modalFbText"></textarea>
+    <button class="btn-primary" id="modalSubmitBtn" onclick="handleModalFeedback('${esc(datum)}')">${T('feedback_save')}</button>
+  </div>`;
+  attachStarListeners('fbCollapse');
 }
 
 async function handleModalFeedback(datum){
