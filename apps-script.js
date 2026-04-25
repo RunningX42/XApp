@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════════════════════
-// GOOGLE APPS SCRIPT – RunningX API
+// GOOGLE APPS SCRIPT – RunningX API v2.2
 //
 // HOE INSTALLEREN:
 // 1. Ga naar script.google.com → Nieuw project
@@ -9,27 +9,16 @@
 // 5. Type: Web App · Execute as: Me · Who has access: Anyone
 // 6. Kopieer de Web App URL → plak in app onder Instellingen
 //
-// CONFIGURATIE (X2/X3):
-// - SHEET_ID kan ook via URL-parameter worden meegegeven: ?sheet=<URL>&tab=<naam>
-// - Als SHEET_NAME leeg is, wordt het eerste tabblad automatisch gebruikt
+// KOLOMMEN: datum | type | titel | detail | km | feedback | fase
+// ACTIES: getAll | addRow | updateRow | deleteRow | setFeedback
 // ═══════════════════════════════════════════════════════
 
-// X2: Configureerbaar via URL-parameter 'sheetId', fallback naar constante
-const DEFAULT_SHEET_ID = '';  // Vul hier je sheet ID in, of gebruik de URL-parameter
-// X3: Configureerbaar via URL-parameter 'sheetName', fallback naar eerste tabblad
-const DEFAULT_SHEET_NAME = ''; // Leeg = automatisch eerste tabblad
-
-// Kolommen (C24 + C21 update):
-// datum | type | titel | detail | emoji | km | feedback | fase
-// type: komma-gescheiden sleutelwoorden: run / werk / kracht / mobiliteit / rust / race / herstel
-
-function getSheetId(e) {
-  return (e && e.parameter && e.parameter.sheetId) || DEFAULT_SHEET_ID;
-}
+const DEFAULT_SHEET_ID = '';
+const DEFAULT_SHEET_NAME = '';
 
 function getSheet(e) {
-  const sheetId = getSheetId(e);
-  if (!sheetId) throw new Error('Sheet ID niet geconfigureerd. Voeg sheet ID toe in de apps-script code of via URL-parameter.');
+  const sheetId = (e && e.parameter && e.parameter.sheetId) || DEFAULT_SHEET_ID;
+  if (!sheetId) throw new Error('Sheet ID niet geconfigureerd.');
   const spreadsheet = SpreadsheetApp.openById(sheetId);
   const sheetName = (e && e.parameter && e.parameter.sheetName) || DEFAULT_SHEET_NAME;
   if (sheetName) {
@@ -37,20 +26,20 @@ function getSheet(e) {
     if (!sheet) throw new Error('Tabblad "' + sheetName + '" niet gevonden.');
     return sheet;
   }
-  // X3: auto-detect first sheet
   return spreadsheet.getSheets()[0];
 }
 
 function doGet(e) {
   const action = (e && e.parameter && e.parameter.action) || 'getAll';
   try {
-    let result;
-    if (action === 'getAll')         result = getAllRows(e);
-    else if (action === 'setFeedback') result = setFeedback(e);
-    else if (action === 'setDay')     result = setDay(e);
-    else if (action === 'getToday')   result = getTodayRow(e);
-    else result = { status: 'error', message: 'Onbekende actie: ' + action };
-    return buildResponse(result);
+    if (action === 'getAll')      return buildResponse(getAllRows(e));
+    if (action === 'addRow')      return buildResponse(addRow(e));
+    if (action === 'updateRow')   return buildResponse(updateRow(e));
+    if (action === 'deleteRow')   return buildResponse(deleteRow(e));
+    if (action === 'setFeedback') return buildResponse(setFeedback(e));
+    if (action === 'setDay')      return buildResponse(setDayLegacy(e));
+    if (action === 'getToday')    return buildResponse(getTodayRow(e));
+    return buildResponse({ status: 'error', message: 'Onbekende actie: ' + action });
   } catch(err) {
     return buildResponse({ status: 'error', message: err.toString() });
   }
@@ -62,6 +51,18 @@ function buildResponse(data) {
     .setMimeType(ContentService.MimeType.JSON);
 }
 
+const FIELDS = ['datum', 'type', 'titel', 'detail', 'km', 'feedback', 'fase'];
+
+function getHeaders(sheet) {
+  return sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0]
+    .map(h => String(h).toLowerCase().trim());
+}
+
+function fmtDatum(val) {
+  if (val instanceof Date) return Utilities.formatDate(val, Session.getScriptTimeZone(), 'yyyy-MM-dd');
+  return String(val || '').trim();
+}
+
 function getAllRows(e) {
   const sheet = getSheet(e);
   const data = sheet.getDataRange().getValues();
@@ -69,17 +70,9 @@ function getAllRows(e) {
   const headers = data[0].map(h => String(h).toLowerCase().trim());
   const rows = [];
   for (let i = 1; i < data.length; i++) {
-    const row = {};
-    headers.forEach((h, j) => {
-      let val = data[i][j];
-      if (h === 'datum' && val instanceof Date) {
-        val = Utilities.formatDate(val, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-      } else {
-        val = (val !== null && val !== undefined) ? String(val) : '';
-      }
-      row[h] = val;
-    });
-    if (row.datum && row.datum !== '') rows.push(row);
+    const row = { rowIndex: i + 1 };
+    headers.forEach((h, j) => { row[h] = h === 'datum' ? fmtDatum(data[i][j]) : String(data[i][j] || ''); });
+    if (row.datum) rows.push(row);
   }
   return { status: 'ok', rows };
 }
@@ -90,65 +83,84 @@ function getTodayRow(e) {
   return { status: 'ok', row: all.rows.find(r => r.datum === today) || null };
 }
 
+function sortSheet(sheet) {
+  const lastRow = sheet.getLastRow();
+  const lastCol = sheet.getLastColumn();
+  if (lastRow < 3) return; // header + at least 2 data rows needed
+  sheet.getRange(2, 1, lastRow - 1, lastCol).sort({ column: 1, ascending: true });
+}
+
+function addRow(e) {
+  if (!e.parameter.datum) throw new Error('datum ontbreekt');
+  const sheet = getSheet(e);
+  const headers = getHeaders(sheet);
+  const newRow = new Array(headers.length).fill('');
+  FIELDS.forEach(f => { const c = headers.indexOf(f); if (c >= 0 && e.parameter[f] !== undefined) newRow[c] = e.parameter[f]; });
+  sheet.appendRow(newRow);
+  sortSheet(sheet);
+  // rowIndex after sort is unknown — caller should re-fetch
+  return { status: 'ok', action: 'added' };
+}
+
+function updateRow(e) {
+  const rowIndex = parseInt(e.parameter.rowIndex);
+  if (!rowIndex || rowIndex < 2) throw new Error('Geldig rowIndex vereist');
+  const sheet = getSheet(e);
+  const headers = getHeaders(sheet);
+  FIELDS.forEach(f => { const c = headers.indexOf(f); if (c >= 0 && e.parameter[f] !== undefined) sheet.getRange(rowIndex, c + 1).setValue(e.parameter[f]); });
+  sortSheet(sheet);
+  return { status: 'ok', action: 'updated' };
+}
+
+function deleteRow(e) {
+  const rowIndex = parseInt(e.parameter.rowIndex);
+  if (!rowIndex || rowIndex < 2) throw new Error('Geldig rowIndex vereist');
+  getSheet(e).deleteRow(rowIndex);
+  // No sort needed after delete
+  return { status: 'ok', action: 'deleted', rowIndex };
+}
+
 function setFeedback(e) {
-  const datum  = e.parameter.datum;
-  const rating = e.parameter.rating;
-  const tekst  = e.parameter.tekst || '';
-  if (!datum) throw new Error('Datum ontbreekt');
+  const datum = e.parameter.datum;
+  const rowIndexHint = parseInt(e.parameter.rowIndex) || 0;
+  if (!datum) throw new Error('datum ontbreekt');
   const sheet = getSheet(e);
   const data = sheet.getDataRange().getValues();
   const headers = data[0].map(h => String(h).toLowerCase().trim());
   const datumCol = headers.indexOf('datum');
   const feedbackCol = headers.indexOf('feedback');
-  if (datumCol === -1) throw new Error('Kolom "datum" niet gevonden');
-  if (feedbackCol === -1) throw new Error('Kolom "feedback" niet gevonden');
-  for (let i = 1; i < data.length; i++) {
-    let rowDatum = data[i][datumCol];
-    if (rowDatum instanceof Date) rowDatum = Utilities.formatDate(rowDatum, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-    else rowDatum = String(rowDatum).trim();
-    if (rowDatum === datum) {
-      const emojis = ['😵','😓','😐','💪','🔥'];
-      const ratingNum = parseInt(rating) || 0;
-      const feedbackStr = ratingNum + '/5 ' + (emojis[ratingNum-1]||'') + (tekst ? ' – ' + tekst : '');
-      sheet.getRange(i + 1, feedbackCol + 1).setValue(feedbackStr);
-      return { status: 'ok', datum, feedback: feedbackStr };
-    }
+  if (datumCol === -1 || feedbackCol === -1) throw new Error('Kolom datum/feedback niet gevonden');
+  const emojis = ['😵','😓','😐','💪','🔥'];
+  const ratingNum = parseInt(e.parameter.rating) || 0;
+  const feedbackStr = ratingNum + '/5 ' + (emojis[ratingNum-1]||'') + (e.parameter.tekst ? ' – ' + e.parameter.tekst : '');
+  // Use rowIndex hint if provided, else find first match
+  if (rowIndexHint >= 2) {
+    sheet.getRange(rowIndexHint, feedbackCol + 1).setValue(feedbackStr);
+    return { status: 'ok', datum, feedback: feedbackStr, rowIndex: rowIndexHint };
   }
-  throw new Error('Datum niet gevonden: ' + datum);
+  for (let i = 1; i < data.length; i++) {
+    if (fmtDatum(data[i][datumCol]) !== datum) continue;
+    const t = String(data[i][headers.indexOf('type')] || '').toLowerCase();
+    if (t === 'werk' || t === 'rust') continue;
+    sheet.getRange(i + 1, feedbackCol + 1).setValue(feedbackStr);
+    return { status: 'ok', datum, feedback: feedbackStr, rowIndex: i + 1 };
+  }
+  throw new Error('Rij niet gevonden: ' + datum);
 }
 
-function setDay(e) {
+function setDayLegacy(e) {
   const datum = e.parameter.datum;
-  if (!datum) throw new Error('Datum ontbreekt');
-  const forceAdd = e.parameter.addRow === 'true'; // C44: always add new row
+  if (!datum) throw new Error('datum ontbreekt');
+  if (e.parameter.addRow === 'true') return addRow(e);
   const sheet = getSheet(e);
   const data = sheet.getDataRange().getValues();
   const headers = data[0].map(h => String(h).toLowerCase().trim());
   const datumCol = headers.indexOf('datum');
-  if (datumCol === -1) throw new Error('Kolom "datum" niet gevonden');
-
-  const fields = ['titel','type','km','detail','fase'];
-
-  if (!forceAdd) {
-    // Find existing row with same datum — update it
-    for (let i = 1; i < data.length; i++) {
-      let rowDatum = data[i][datumCol];
-      if (rowDatum instanceof Date) rowDatum = Utilities.formatDate(rowDatum, Session.getScriptTimeZone(), 'yyyy-MM-dd');
-      else rowDatum = String(rowDatum).trim();
-      if (rowDatum === datum) {
-        fields.forEach(f => {
-          const c = headers.indexOf(f);
-          if (c >= 0 && e.parameter[f] !== undefined) sheet.getRange(i + 1, c + 1).setValue(e.parameter[f]);
-        });
-        return { status: 'ok', datum, action: 'updated' };
-      }
+  for (let i = 1; i < data.length; i++) {
+    if (fmtDatum(data[i][datumCol]) === datum) {
+      const fakeE = { parameter: Object.assign({}, e.parameter, { rowIndex: String(i + 1) }) };
+      return updateRow(fakeE);
     }
   }
-
-  // Append new row (C44: addRow=true, or no existing row found)
-  const newRow = new Array(headers.length).fill('');
-  newRow[datumCol] = datum;
-  fields.forEach(f => { const c = headers.indexOf(f); if (c >= 0 && e.parameter[f] !== undefined) newRow[c] = e.parameter[f]; });
-  sheet.appendRow(newRow);
-  return { status: 'ok', datum, action: 'added' };
+  return addRow(e);
 }
