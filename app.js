@@ -131,6 +131,7 @@ const state={
   calSelectedDate:null,
   editingRaceId:null,
   weekOffset:0,
+  editingRowIndex:null,
   _prs:null,_races:null,
   swReg:null,
   pendingSW:null,
@@ -245,36 +246,65 @@ function applyUpdate(){
   }
 }
 
-// ── DATA ─────────────────────────────────────────────────────────────────────
-function buildApiUrl(action){
-  const base=state.scriptUrl+'?action='+action;
-  return state.sheetName?base+'&sheetName='+encodeURIComponent(state.sheetName):base;
+// ── DATA LAYER ────────────────────────────────────────────────────────────────
+// All sheet writes use rowIndex as the stable identifier.
+// state.data rows include rowIndex from the API.
+
+function apiParams(extra={}){
+  const p=new URLSearchParams({...extra});
+  if(state.sheetName)p.set('sheetName',state.sheetName);
+  return p;
+}
+
+async function apiCall(params){
+  if(!state.scriptUrl)throw new Error('Geen schema gekoppeld');
+  const res=await fetch(state.scriptUrl+'?'+params);
+  if(!res.ok)throw new Error('HTTP '+res.status);
+  const json=await res.json();
+  if(json.status!=='ok')throw new Error(json.message||'Onbekende fout');
+  return json;
 }
 
 async function fetchData(){
   if(!state.scriptUrl){hideLoading();renderActiveView();renderHeader();return;}
   try{
-    const res=await fetch(buildApiUrl('getAll'));
-    if(!res.ok)throw new Error('HTTP '+res.status);
-    const json=await res.json();
-    if(json.status!=='ok')throw new Error(json.message||'Error');
-    state.data=json.rows;
+    const json=await apiCall(apiParams({action:'getAll'}));
+    state.data=json.rows; // each row has rowIndex
     updateConnectionStatus(true);
   }catch(e){updateConnectionStatus(false,e.message);}
   hideLoading();renderActiveView();renderHeader();
 }
 
+// Add a new row — always appends, sheet sorts by date server-side
+async function sheetAddRow(fields){
+  await apiCall(apiParams({action:'addRow',...fields}));
+  // Re-fetch to get correct rowIndexes after server-side sort
+  await fetchData();
+}
+
+// Update existing row by rowIndex
+async function sheetUpdateRow(rowIndex,fields){
+  await apiCall(apiParams({action:'updateRow',rowIndex:String(rowIndex),...fields}));
+  // Re-fetch after sort (date edit could change order)
+  await fetchData();
+}
+
+// Delete row by rowIndex
+async function sheetDeleteRow(rowIndex){
+  await apiCall(apiParams({action:'deleteRow',rowIndex:String(rowIndex)}));
+  if(state.data)state.data=state.data.filter(r=>r.rowIndex!==rowIndex);
+  // Re-index: rows below the deleted one shift up
+  if(state.data)state.data.forEach(r=>{if(r.rowIndex>rowIndex)r.rowIndex--;});
+}
+
 async function submitFeedback(datum,rating,tekst){
   if(!state.scriptUrl){showToast('❌ '+T('enter_url'));return false;}
   try{
-    const params=new URLSearchParams({action:'setFeedback',datum,rating,tekst:tekst||''});
-    if(state.sheetName)params.set('sheetName',state.sheetName);
-    const json=await(await fetch(state.scriptUrl+'?'+params)).json();
-    if(json.status!=='ok')throw new Error(json.message);
-    if(state.data){
-      const row=state.data.find(r=>r.datum===datum);
-      if(row){const e=['😵','😓','😐','💪','🔥'];row.feedback=`${rating}/5 ${e[rating-1]}${tekst?' – '+tekst:''}`;}
-    }
+    // Find the rowIndex of the first trainable row for this datum
+    const row=state.data?.find(r=>r.datum===datum&&r.type!=='werk'&&r.type!=='rust');
+    const extra=row?.rowIndex?{rowIndex:String(row.rowIndex)}:{};
+    const json=await apiCall(apiParams({action:'setFeedback',datum,rating,tekst:tekst||'',...extra}));
+    if(row){const e=['😵','😓','😐','💪','🔥'];row.feedback=`${rating}/5 ${e[rating-1]}${tekst?' – '+tekst:''}`;}
     showToast('✓ '+T('feedback_logged'));return true;
   }catch(e){showToast('❌ '+e.message);return false;}
 }
@@ -938,11 +968,14 @@ function openDayModal(dateStr){
         <textarea class="plan-edit-field" id="edit-detail" style="height:56px;resize:none">${esc(row?.detail||'')}</textarea>
       </div>
       <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
+      ${row?.rowIndex?`<button class="btn-secondary" style="margin-top:6px;color:var(--race-text);border-color:rgba(244,67,54,0.4)" onclick="deleteActivity(${row.rowIndex})">Verwijderen</button>`:''}
     </div>`;
   }
 
   content.innerHTML=h;
   attachStarListeners('dayModalContent');
+  // Store rowIndex for saveDayEdit to use
+  state.editingRowIndex=row?.rowIndex||null;
   document.getElementById('dayModal').classList.add('open');
 }
 
@@ -997,27 +1030,58 @@ async function saveDayEdit(datum){
   const titel=document.getElementById('edit-titel')?.value.trim()||'';
   const type=document.getElementById('edit-type')?.value.trim()||'';
   const km=document.getElementById('edit-km')?.value.trim()||'';
-  const emoji='';
   const detail=document.getElementById('edit-detail')?.value.trim()||'';
+  const fields={datum,titel,type,km,detail};
 
-  // Update local cache immediately
-  if(state.data){
-    let row=state.data.find(r=>r.datum===datum);
-    if(row){Object.assign(row,{titel,type,km,emoji,detail});}
-    else{state.data.push({datum,titel,type,km,emoji,detail,feedback:''});}
-  }
+  // Find existing row being edited (from modal context — stored in state)
+  const editingRowIndex=state.editingRowIndex||null;
 
-  // If connected, try to persist via API
   if(state.scriptUrl){
     try{
-      const params=new URLSearchParams({action:'setDay',datum,titel,type,km,emoji,detail,addRow:'true'});
-      if(state.sheetName)params.set('sheetName',state.sheetName);
-      await fetch(state.scriptUrl+'?'+params);
-    }catch(e){/* silent — local cache updated */}
+      if(editingRowIndex){
+        await sheetUpdateRow(editingRowIndex,fields);
+      }else{
+        await sheetAddRow(fields);
+      }
+    }catch(e){
+      // Fallback: update local cache only
+      if(state.data){
+        let row=state.data.find(r=>r.rowIndex===editingRowIndex||r.datum===datum);
+        if(row)Object.assign(row,fields);
+        else state.data.push({...fields,feedback:'',rowIndex:null});
+      }
+      showToast('⚠ Lokaal opgeslagen: '+e.message);
+      closeDayModal();renderActiveView();return;
+    }
+  }else{
+    // No sheet — local only
+    if(state.data){
+      let row=state.data.find(r=>r.rowIndex===editingRowIndex||r.datum===datum);
+      if(row)Object.assign(row,fields);
+      else state.data.push({...fields,feedback:'',rowIndex:null});
+    }
   }
+
+  state.editingRowIndex=null;
   showToast(T('saved'));
   closeDayModal();
   renderActiveView();
+}
+
+async function deleteActivity(rowIndex){
+  if(!rowIndex)return;
+  if(!confirm('Activiteit verwijderen?'))return;
+  closeDayModal();
+  try{
+    if(state.scriptUrl)await sheetDeleteRow(rowIndex);
+    else if(state.data)state.data=state.data.filter(r=>r.rowIndex!==rowIndex);
+    showToast('Verwijderd');
+  }catch(e){
+    if(state.data)state.data=state.data.filter(r=>r.rowIndex!==rowIndex);
+    showToast('Lokaal verwijderd: '+e.message);
+  }
+  state.editingRowIndex=null;
+  renderActiveView();renderHeader();
 }
 
 // C44: open ADD mode (new activity), independent of existing row
@@ -1056,6 +1120,7 @@ function openAddActivity(dateStr){
     </div>
     <button class="btn-primary" onclick="saveDayEdit('${dateStr}')">${T('save_changes')}</button>
   </div>`;
+  state.editingRowIndex=null;
   document.getElementById('dayModal').classList.add('open');
 }
 
@@ -1395,22 +1460,30 @@ async function saveRace(){
   closeRaceModal();renderHeader();
   if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
 
-  // C38: write to sheet if connected
+  // C38: write to sheet
+  const raceDetail=[dist,raceType,goal?`Doel: ${goal}`:''].filter(Boolean).join(' · ');
+  const raceFields={datum:date,titel:name,type:'race',detail:raceDetail,km:dist||''};
   if(state.scriptUrl){
-    const parts=[dist,raceType,goal?`Doel: ${goal}`:''].filter(Boolean);
-    const detail=parts.join(' · ');
-    const params=new URLSearchParams({action:'setDay',datum:date,titel:name,type:'race',emoji:'',detail,km:dist||''});
-    if(state.sheetName)params.set('sheetName',state.sheetName);
     try{
-      const res=await fetch(state.scriptUrl+'?'+params);
-      const json=await res.json();
-      if(json.status!=='ok')throw new Error(json.message||'Sheet error');
+      // Check if editing existing sheet row
+      const existingRow=state.data?.find(r=>r.datum===date&&isRace(r.type));
+      if(state.editingRaceId&&existingRow?.rowIndex){
+        await sheetUpdateRow(existingRow.rowIndex,raceFields);
+      }else{
+        await sheetAddRow(raceFields);
+      }
       showToast(T('race_to_sheet'));
       await fetchData();
     }catch(e){
       showToast('❌ '+e.message);
     }
   }else{
+    // Local only
+    if(state.data){
+      const ex=state.data.find(r=>r.datum===date&&isRace(r.type));
+      if(ex)Object.assign(ex,raceFields);
+      else state.data.push({...raceFields,feedback:'',rowIndex:null});
+    }
     showToast(T('race_saved'));
   }
 }
