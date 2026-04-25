@@ -204,6 +204,15 @@ function raceEmoji(race){
   return'🏁';
 }
 
+// Map raceType string → RXIcon type key
+function raceTypeIconKey(raceType, dist){
+  const tp=(raceType||'').toLowerCase(), d=(dist||'').toLowerCase();
+  if(tp.includes('trail')||tp.includes('ultra'))return'trail';
+  if(tp.includes('baan')||tp.includes('track'))return'target';
+  if(d.includes('marathon')&&!d.includes('half')&&!d.includes('halve'))return'run';
+  return'race';
+}
+
 // ── LOCALSTORAGE ─────────────────────────────────────────────────────────────
 function loadPRs(){if(!state._prs){try{state._prs=JSON.parse(localStorage.getItem('prs')||'{}')}catch{state._prs={}}}return state._prs;}
 function loadRaces(){if(!state._races){try{state._races=JSON.parse(localStorage.getItem('userRaces')||'[]')}catch{state._races=[]}}return state._races;}
@@ -377,7 +386,7 @@ function renderRacesBar(){
     h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer;min-width:64px">
       <div class="rb-name" style="font-size:9px;white-space:normal;line-height:1.2;max-width:80px;margin-bottom:2px">${esc(r.titel||r.datum)}</div>
       ${dist?`<div style="font-family:var(--font-m);font-size:8px;color:var(--muted);margin-bottom:2px">${esc(dist)} km</div>`:''}
-      <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">${RXIcon('race',12,'var(--race-text)','var(--race-text)')}</div>
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">${RXIcon(raceTypeIconKey((r.detail||'').match(/^([^·]+)/)?.[1]?.trim()||'',r.km),12,'var(--race-text)','var(--race-text)')}</div>
       ${goalStr?`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted);margin-bottom:2px">🎯 ${esc(goalStr)}</div>`:''}
       <div class="rb-value hi" style="font-size:15px;margin-top:2px">${cd.val} <span style="font-family:var(--font-m);font-size:8px;color:var(--accent);font-weight:400">${cd.unit}</span></div>
     </div>`;
@@ -920,16 +929,22 @@ function openDayModal(dateStr,targetRowIndex){
     rows.forEach((r,idx)=>{
       const rti=typeOf(r.type);
       const rb=isWork(r.type)?'work-border':isRace(r.type)?'race-border':'';
-      h+=`<div class="card ${rb}" onclick="openDayModal(this.dataset.date)" data-date="${dateStr}" style="padding:14px 16px;margin-bottom:${idx<rows.length-1?'8':'10'}px;cursor:pointer;-webkit-tap-highlight-color:transparent">
+      const isRaceRow=isRace(r.type);
+      // Parse raceType from detail (format: "dist · raceType · Doel: xx")
+      const detailParts=(r.detail||'').split('·').map(s=>s.trim()).filter(Boolean);
+      const parsedRaceType=isRaceRow&&detailParts.length>1?detailParts[1].replace(/Doel:.*/,'').trim():'';
+      const iconKey=isRaceRow?raceTypeIconKey(parsedRaceType,r.km):(r.type?.split(',')[0].trim()||'run');
+      const clickHandler=isRaceRow?`openRaceModalFromSheet(${r.rowIndex})`:`openDayModal(this.dataset.date)`;
+      h+=`<div class="card ${rb}" onclick="${clickHandler}" data-date="${dateStr}" style="padding:14px 16px;margin-bottom:${idx<rows.length-1?'8':'10'}px;cursor:pointer;-webkit-tap-highlight-color:transparent">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:${r.detail?'10':'0'}px">
           <div style="width:32px;height:32px;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0">
-            ${RXIcon(r.type?.split(',')[0].trim()||'run',18,'var(--text)','var(--accent)')}
+            ${RXIcon(iconKey,18,isRaceRow?'var(--race-text)':'var(--text)',isRaceRow?'var(--race-text)':'var(--accent)')}
           </div>
           <div style="flex:1;min-width:0">
-            <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:${rti.text};margin-bottom:2px">${T(rti.i18n)}</div>
+            <div style="font-family:var(--font-m);font-size:9px;letter-spacing:1.5px;text-transform:uppercase;font-weight:600;color:${rti.text};margin-bottom:2px">${T(rti.i18n)}${parsedRaceType?' · '+esc(parsedRaceType):''}</div>
             <div style="font-family:var(--font-d);font-weight:800;font-size:20px;line-height:1">${esc(r.titel||'Training')}</div>
           </div>
-          ${r.km?`<div style="font-family:var(--font-d);font-weight:800;font-size:22px;color:var(--accent);flex-shrink:0">${esc(r.km)}<span style="font-size:12px;color:var(--muted)">km</span></div>`:''}
+          ${r.km?`<div style="font-family:var(--font-d);font-weight:800;font-size:22px;color:${isRaceRow?'var(--race-text)':'var(--accent)'};flex-shrink:0">${esc(r.km)}<span style="font-size:12px;color:var(--muted)">km</span></div>`:''}
         </div>
         ${r.detail?`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);line-height:1.6;padding-top:10px;border-top:1px solid var(--border)">${esc(r.detail)}</div>`:''}
       </div>`;
@@ -1432,9 +1447,28 @@ function calPrev(){state.calMonth--;if(state.calMonth<0){state.calMonth=11;state
 function calNext(){state.calMonth++;if(state.calMonth>11){state.calMonth=0;state.calYear++;}state.calSelectedDate=null;renderCalendar();}
 
 // ── RACE MODAL ────────────────────────────────────────────────────────────────
+// Open race edit modal from a sheet row (C34: sheet is source of truth)
+function openRaceModalFromSheet(rowIndex){
+  const r=state.data?.find(r=>r.rowIndex===rowIndex);
+  if(!r)return;
+  // Parse detail: "dist · raceType · Doel: xx"
+  const parts=(r.detail||'').split('·').map(s=>s.trim());
+  const raceType=parts.length>1?parts[1].replace(/Doel:.*/,'').trim():'';
+  const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
+  const goal=goalMatch?goalMatch[1]:'';
+  // Build synthetic race object for openRaceModal
+  const syntheticRace={id:'sheet_'+rowIndex,name:r.titel||'',date:r.datum,dist:r.km||'',raceType,mainGoal:false,goal,_rowIndex:rowIndex};
+  state._raceFromSheet=syntheticRace;
+  closeDayModal();
+  openRaceModal('sheet_'+rowIndex);
+}
+
 function openRaceModal(raceId,prefillDate){
   // BUG1 fix: set editingRaceId before calling closeRaceModal
-  const races=loadRaces(),race=raceId?races.find(r=>r.id===raceId):null;
+  const races=loadRaces();
+  let race=raceId?races.find(r=>r.id===raceId):null;
+  // C34: also look in sheet-derived synthetic race
+  if(!race&&raceId&&raceId.startsWith('sheet_'))race=state._raceFromSheet||null;
   state.editingRaceId=race?.id||null;
   document.getElementById('raceModal').classList.remove('open');
   const content=document.getElementById('raceModalContent');
