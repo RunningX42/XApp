@@ -373,10 +373,13 @@ function renderRacesBar(){
     // C39: smaller chips, click opens day in training tab
     const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
     const goalStr=goalMatch?goalMatch[1]:'';
-    h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer;min-width:60px">
-      <div class="rb-name" style="font-size:9px;white-space:normal;line-height:1.2;max-width:70px">${esc(r.titel||r.datum)}</div>
-      <div class="rb-value${cd.val<=7?' hi':''}" style="font-size:16px">${cd.val}</div>
-      <div class="rb-unit">${goalStr||cd.unit}</div>
+    const dist=(r.km||'').trim();
+    h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer;min-width:64px">
+      <div class="rb-name" style="font-size:9px;white-space:normal;line-height:1.2;max-width:80px;margin-bottom:2px">${esc(r.titel||r.datum)}</div>
+      ${dist?`<div style="font-family:var(--font-m);font-size:8px;color:var(--muted);margin-bottom:2px">${esc(dist)} km</div>`:''}
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">${RXIcon('race',12,'var(--race-text)','var(--race-text)')}</div>
+      ${goalStr?`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted);margin-bottom:2px">🎯 ${esc(goalStr)}</div>`:''}
+      <div class="rb-value hi" style="font-size:15px;margin-top:2px">${cd.val} <span style="font-family:var(--font-m);font-size:8px;color:var(--accent);font-weight:400">${cd.unit}</span></div>
     </div>`;
   });
   // C50: always show + to add race
@@ -448,8 +451,10 @@ function renderToday(){
       if(detail){h+=`<div style="font-family:var(--font-m);font-size:11px;color:var(--muted);margin-top:12px;line-height:1.5;padding-top:12px;border-top:1px solid var(--border)">${esc(detail)}</div>`;}
       if(!row.feedback&&isRun){h+=`<button class="btn-cta">Start run →</button>`;}
       h+=`</div>`;
-      if(!isWork(row.type))h+=feedbackHtml(row.datum,row.feedback);
     });
+    // Feedback is per-day — show once, after all activity cards
+    const fbRow=activeRows.find(r=>!isWork(r.type));
+    if(fbRow)h+=feedbackHtml(fbRow.datum,fbRow.feedback);
   }
 
   // Tomorrow — compact
@@ -960,7 +965,7 @@ function openDayModal(dateStr,targetRowIndex){
       `<option value="${k}"${row.type===k?' selected':''}>${T(v.i18n)}</option>`
     ).join('');
     h+=`<div style="border-top:1px solid var(--border);margin-top:4px;padding-top:10px">
-      <button onclick="document.getElementById('editFields').style.display=document.getElementById('editFields').style.display==='none'?'block':'none'" style="background:none;border:none;color:var(--muted);font-family:var(--font-m);font-size:10px;letter-spacing:1px;cursor:pointer;padding:0;text-transform:uppercase;width:100%;text-align:left;margin-bottom:6px">› ${T('edit_day')}</button>
+      <button onclick="document.getElementById('editFields').style.display=document.getElementById('editFields').style.display==='none'?'block':'none'" style="background:none;border:none;color:var(--muted);font-family:var(--font-m);font-size:10px;letter-spacing:1px;cursor:pointer;padding:0;text-transform:uppercase;width:100%;text-align:left;margin-bottom:6px">› Activiteit bewerken</button>
       <div id="editFields" style="display:none">
         <div style="margin-bottom:8px">
           <label class="settings-label">${T('field_titel')}</label>
@@ -1650,13 +1655,7 @@ function renderConnectSection(){
     </div>
     <button class="disconnect-btn" style="margin-bottom:12px" onclick="disconnectSheet()">${T('connect_disconnect')}</button>`:'';
   el.innerHTML=connectedBadge+`
-    <div class="settings-title">${T('schema_title')}</div>
-    <div class="settings-field">
-      <label class="settings-label">Apps Script URL</label>
-      <div class="settings-hint" style="margin-bottom:6px">${T('connect_hint')}</div>
-      <input type="url" class="settings-input" id="scriptUrl" placeholder="${T('connect_url_placeholder')}"
-        value="${esc(state.scriptUrl)}">
-    </div>
+    <div class="settings-title">Hardloopschema koppelen</div>
     <div class="settings-field">
       <label class="settings-label">Google Sheet URL</label>
       <div class="settings-hint" style="margin-bottom:6px">Plak de volledige URL van je Google Sheet.</div>
@@ -1673,7 +1672,17 @@ function renderConnectSection(){
     <div class="connection-status" style="margin-top:10px">
       <div class="status-dot${connected?' ok':''}" id="statusDot"></div>
       <span id="statusText">${connected?T('connected'):T('not_connected')}</span>
-    </div>`;
+    </div>
+    <!-- DEV: Apps Script URL — verberg door deze sectie te commentariëren -->
+    <details style="margin-top:14px;border-top:1px solid var(--border);padding-top:10px">
+      <summary style="font-family:var(--font-m);font-size:9px;color:var(--faint);letter-spacing:1px;text-transform:uppercase;cursor:pointer">Dev</summary>
+      <div class="settings-field" style="margin-top:8px">
+        <label class="settings-label">Apps Script URL</label>
+        <div class="settings-hint" style="margin-bottom:6px">${T('connect_hint')}</div>
+        <input type="url" class="settings-input" id="scriptUrl" placeholder="${T('connect_url_placeholder')}"
+          value="${esc(state.scriptUrl)}">
+      </div>
+    </details>`;
 }
 
 function disconnectSheet(){
@@ -1737,9 +1746,9 @@ function saveSettingsName(){
 }
 
 function saveSettings(){
-  const url=document.getElementById('scriptUrl')?.value.trim();
-  if(!url){showToast(T('enter_url'));return;}
-  state.scriptUrl=url;localStorage.setItem('scriptUrl',url);
+  // Apps Script URL from dev section (optional)
+  const url=document.getElementById('scriptUrl')?.value.trim()||state.scriptUrl||'';
+  state.scriptUrl=url;if(url)localStorage.setItem('scriptUrl',url);
   const sheetRaw=document.getElementById('sheetIdInput')?.value.trim()||'';
   const sheetIdMatch=sheetRaw.match(/\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/);
   const sid=sheetIdMatch?sheetIdMatch[1]:sheetRaw; // fallback: treat as raw ID
