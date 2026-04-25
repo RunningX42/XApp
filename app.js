@@ -1035,12 +1035,8 @@ async function saveDayEdit(datum){
   const detail=document.getElementById('edit-detail')?.value.trim()||'';
   const fields={datum,titel,type,km,detail};
 
-  // Resolve rowIndex: from state, or find in data by datum
-  let editingRowIndex=state.editingRowIndex||null;
-  if(!editingRowIndex&&state.data){
-    const existing=state.data.find(r=>r.datum===datum&&r.rowIndex);
-    if(existing)editingRowIndex=existing.rowIndex;
-  }
+  // Use only the explicitly set editingRowIndex — never infer from datum
+  const editingRowIndex=state.editingRowIndex||null;
 
   if(state.scriptUrl){
     try{
