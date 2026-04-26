@@ -383,12 +383,16 @@ function renderRacesBar(){
     const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
     const goalStr=goalMatch?goalMatch[1]:'';
     const dist=(r.km||'').trim();
-    h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer;min-width:64px">
-      <div class="rb-name" style="font-size:9px;white-space:normal;line-height:1.2;max-width:80px;margin-bottom:2px">${esc(r.titel||r.datum)}</div>
-      ${dist?`<div style="font-family:var(--font-m);font-size:8px;color:var(--muted);margin-bottom:2px">${esc(dist)} km</div>`:''}
-      <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">${RXIcon(raceTypeIconKey((r.detail||'').match(/^([^·]+)/)?.[1]?.trim()||'',r.km),12,'var(--race-text)','var(--race-text)')}</div>
-      ${goalStr?`<div style="font-family:var(--font-m);font-size:9px;color:var(--muted);margin-bottom:2px">🎯 ${esc(goalStr)}</div>`:''}
-      <div class="rb-value hi" style="font-size:15px;margin-top:2px">${cd.val} <span style="font-family:var(--font-m);font-size:8px;color:var(--accent);font-weight:400">${cd.unit}</span></div>
+    // Parse raceType from detail: "dist · raceType · Doel: xx"
+    const detailParts=(r.detail||'').split('·').map(s=>s.trim()).filter(s=>!s.startsWith('Doel:'));
+    const chipRaceType=detailParts.length>1?detailParts[1]:'';
+    const iconKey=raceTypeIconKey(chipRaceType,dist);
+    h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer">
+      <div class="rb-title">${esc(r.titel||r.datum)}</div>
+      ${dist?`<div class="rb-meta">${esc(dist)} km</div>`:''}
+      <div style="margin:2px 0">${RXIcon(iconKey,14,'var(--race-text)','var(--race-text)')}</div>
+      ${goalStr?`<div class="rb-goal">🎯 ${esc(goalStr)}</div>`:''}
+      <div class="rb-countdown">${cd.val}<span>${cd.unit}</span></div>
     </div>`;
   });
   // C50: always show + to add race
@@ -1451,12 +1455,15 @@ function calNext(){state.calMonth++;if(state.calMonth>11){state.calMonth=0;state
 function openRaceModalFromSheet(rowIndex){
   const r=state.data?.find(r=>r.rowIndex===rowIndex);
   if(!r)return;
-  // Parse detail: "dist · raceType · Doel: xx"
-  const parts=(r.detail||'').split('·').map(s=>s.trim());
-  const raceType=parts.length>1?parts[1].replace(/Doel:.*/,'').trim():'';
+  // detail format: "dist · raceType · Doel: xx" (some parts may be missing)
+  const detailParts=(r.detail||'').split('·').map(s=>s.trim());
+  // First part could be dist (if it matches km), second is raceType
+  let raceType='';
+  for(const p of detailParts){
+    if(!p.match(/^\d/)&&!p.startsWith('Doel:')){raceType=p;break;}
+  }
   const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
   const goal=goalMatch?goalMatch[1]:'';
-  // Build synthetic race object for openRaceModal
   const syntheticRace={id:'sheet_'+rowIndex,name:r.titel||'',date:r.datum,dist:r.km||'',raceType,mainGoal:false,goal,_rowIndex:rowIndex};
   state._raceFromSheet=syntheticRace;
   closeDayModal();
