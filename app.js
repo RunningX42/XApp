@@ -389,21 +389,26 @@ function renderRacesBar(){
   }
 
   let h='';
+  // raceType lives in localStorage per race
+  const localRaces=loadRaces();
   sheetRaces.forEach(r=>{
     const cd=countdownDisplay(daysUntil(r.datum));
-    // C39: smaller chips, click opens day in training tab
-    const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
+    // Doeltijd: (Doel: 37:00) in detail
+    const goalMatch=(r.detail||'').match(/\(Doel:\s*(\d+:\d{2}(?::\d{2})?)\)/);
     const goalStr=goalMatch?goalMatch[1]:'';
-    const dist=(r.km||'').trim();
-    // Parse raceType from detail: "dist · raceType · Doel: xx"
-    const detailParts=(r.detail||'').split('·').map(s=>s.trim()).filter(s=>!s.startsWith('Doel:'));
-    const chipRaceType=detailParts.length>1?detailParts[1]:'';
-    const iconKey=raceTypeIconKey(chipRaceType,dist);
+    // Afstand: smart unit
+    const kmVal=parseFloat(r.km||0);
+    const distStr=kmVal>0?(kmVal<10?`${r.km} m`:`${r.km} km`):'';
+    // Icon: raceType from localStorage
+    const localRace=localRaces.find(lr=>lr.date===r.datum);
+    const iconKey=raceTypeIconKey(localRace?.raceType||'',r.km);
     h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer">
-      <div class="rb-title">${esc(r.titel||r.datum)}</div>
-      ${dist?`<div class="rb-meta">${esc(dist)} km</div>`:''}
-      <div style="margin:2px 0">${RXIcon(iconKey,14,'var(--race-text)','var(--race-text)')}</div>
-      ${goalStr?`<div class="rb-goal">🎯 ${esc(goalStr)}</div>`:''}
+      <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+        ${RXIcon(iconKey,13,'var(--race-text)','var(--race-text)')}
+        <div class="rb-title">${esc(r.titel||r.datum)}</div>
+      </div>
+      ${distStr?`<div class="rb-meta">${esc(distStr)}</div>`:''}
+      ${goalStr?`<div class="rb-goal">${esc(goalStr)}</div>`:''}
       <div class="rb-countdown">${cd.val}<span>${cd.unit}</span></div>
     </div>`;
   });
@@ -1474,9 +1479,11 @@ function openRaceModalFromSheet(rowIndex){
   for(const p of detailParts){
     if(!p.match(/^\d/)&&!p.startsWith('Doel:')){raceType=p;break;}
   }
-  const goalMatch=(r.detail||'').match(/Doel:\s*([0-9:]+)/);
+  const goalMatch=(r.detail||'').match(/\(Doel:\s*(\d+:\d{2}(?::\d{2})?)\)/);
   const goal=goalMatch?goalMatch[1]:'';
-  const syntheticRace={id:'sheet_'+rowIndex,name:r.titel||'',date:r.datum,dist:r.km||'',raceType,mainGoal:false,goal,_rowIndex:rowIndex};
+  const emojiRx=/^[\u{1F000}-\u{1FFFF}\u{2600}-\u{2BFF}\s]+/u;
+  const cleanTitle=(r.titel||'').replace(emojiRx,'').trim();
+  const syntheticRace={id:'sheet_'+rowIndex,name:cleanTitle||r.titel||'',date:r.datum,dist:r.km||'',raceType,mainGoal:false,goal,_rowIndex:rowIndex};
   state._raceFromSheet=syntheticRace;
   closeDayModal();
   openRaceModal('sheet_'+rowIndex);
@@ -1491,9 +1498,10 @@ function openRaceModal(raceId,prefillDate){
   state.editingRaceId=race?.id||null;
   document.getElementById('raceModal').classList.remove('open');
   const content=document.getElementById('raceModalContent');
-  const distOpts=['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'].map(d=>
-    `<option value="${d}"${race?.dist===d?'selected':''}>${d}</option>`
-  ).join('');
+  const distList=['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'];
+  const normDist=d=>{if(!d)return'';const n=d.toString().trim().replace(/\s/,'');return distList.find(o=>o.startsWith(n+'k')||o===n)||n;};
+  const raceDist=normDist(race?.dist||'');
+  const distOpts=distList.map(d=>`<option value="${d}"${raceDist===d?'selected':''}>${d}</option>`).join('');
   const typeOpts=['Weg','Baan','Trail','Ultra','Virtueel'].map(tp=>
     `<option value="${tp}"${race?.raceType===tp?'selected':''}>${tp}</option>`
   ).join('');
@@ -1511,7 +1519,7 @@ function openRaceModal(raceId,prefillDate){
       <select class="settings-input" id="raceDistSelect">
         <option value="">—</option>${distOpts}<option value="__custom">Vrije tekst…</option>
       </select>
-      <input type="text" class="settings-input" id="raceDistCustom" placeholder="Vrije tekst" style="margin-top:6px;display:none" value="${esc(['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'].includes(race?.dist||'')?'':race?.dist||'')}">
+      <input type="text" class="settings-input" id="raceDistCustom" placeholder="Vrije tekst" style="margin-top:6px;display:none" value="${esc(distList.includes(raceDist)?'':(race?.dist||''))}">
     </div>
     <div class="settings-field">
       <label class="settings-label">${T('race_type')}</label>
@@ -1535,7 +1543,18 @@ function openRaceModal(raceId,prefillDate){
   document.getElementById('raceDistSelect')?.addEventListener('change',e=>{document.getElementById('raceDistCustom').style.display=e.target.value==='__custom'?'block':'none';});
   document.getElementById('raceTypeSelect')?.addEventListener('change',e=>{document.getElementById('raceTypeCustom').style.display=e.target.value==='__custom'?'block':'none';});
   if(race?.dist){const s=document.getElementById('raceDistSelect');if([...s.options].some(o=>o.value===race.dist))s.value=race.dist;else{s.value='__custom';document.getElementById('raceDistCustom').style.display='block';}}
-  if(race?.raceType){const s=document.getElementById('raceTypeSelect');if([...s.options].some(o=>o.value===race.raceType))s.value=race.raceType;else{s.value='__custom';document.getElementById('raceTypeCustom').style.display='block';}}
+  if(race?.raceType){
+    const s=document.getElementById('raceTypeSelect');
+    const typeList=['Weg','Baan','Trail','Ultra','Virtueel'];
+    if(typeList.includes(race.raceType)){
+      s.value=race.raceType;
+    }else if(race.raceType&&race.raceType.length<30){
+      // Only use as custom if short (not a detail string)
+      s.value='__custom';document.getElementById('raceTypeCustom').style.display='block';
+      document.getElementById('raceTypeCustom').value=race.raceType;
+    }
+    // else: leave as "—" (empty/unknown)
+  }
 }
 
 async function saveRace(){
@@ -1562,7 +1581,10 @@ async function saveRace(){
   if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
 
   // C38: write to sheet
-  const raceDetail=[raceType,goal?`Doel: ${goal}`:''].filter(Boolean).join(' · ');
+  // Doeltijd written to detail as (Doel: xx:xx) — raceType stays local only
+  const existingDetail=(state.data?.find(r=>r.datum===date&&isRace(r.type))?.detail||'')
+    .replace(/\s*\(Doel:[^)]*\)/,'').trim(); // strip old Doel
+  const raceDetail=goal?`${existingDetail}(Doel: ${goal})`.trim():existingDetail;
   const raceFields={datum:date,titel:name,type:'race',detail:raceDetail,km:dist||''};
   if(state.scriptUrl){
     try{
