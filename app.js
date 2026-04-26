@@ -355,9 +355,10 @@ function setTheme(t){
 
 // ── HEADER ────────────────────────────────────────────────────────────────────
 function openDayFromRacesBar(datum){
-  // C39: navigate to Training tab and open day detail
-  switchTab('plan');
-  setTimeout(()=>openDayModal(datum),150);
+  // Open race edit modal directly
+  const r=state.data?.find(row=>row.datum===datum&&isRace(row.type));
+  if(r?.rowIndex)openRaceModalFromSheet(r.rowIndex);
+  else openDayModal(datum);
 }
 
 function renderHeader(){
