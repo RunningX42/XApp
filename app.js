@@ -12,7 +12,7 @@ const TYPES={
 const TYPE_FALLBACK=TYPES.rust;
 
 const PR_ORDER=['800m','1500m','1mile','5km','10km','10mile','HM','M'];
-const DAYS_NL=['Ma','Di','Wo','Do','Vr','Za','Zo'];
+const DAYS_NL=['Ma','Di','Wo','Do','Vr','Za','Zo']; 
 const DAYS_EN=['Mo','Tu','We','Th','Fr','Sa','Su'];
 const MONTHS_FULL_NL=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 const MONTHS_FULL_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
