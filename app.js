@@ -12,7 +12,7 @@ const TYPES={
 const TYPE_FALLBACK=TYPES.rust;
 
 const PR_ORDER=['800m','1500m','1mile','5km','10km','10mile','HM','M'];
-const DAYS_NL=['Ma','Di','Wo','Do','Vr','Za','Zo']; 
+const DAYS_NL=['Ma','Di','Wo','Do','Vr','Za','Zo'];
 const DAYS_EN=['Mo','Tu','We','Th','Fr','Sa','Su'];
 const MONTHS_FULL_NL=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 const MONTHS_FULL_EN=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1550,17 +1550,20 @@ async function saveRace(){
   if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
 
   // C38: write to sheet
-  const raceDetail=[dist,raceType,goal?`Doel: ${goal}`:''].filter(Boolean).join(' · ');
+  const raceDetail=[raceType,goal?`Doel: ${goal}`:''].filter(Boolean).join(' · ');
   const raceFields={datum:date,titel:name,type:'race',detail:raceDetail,km:dist||''};
   if(state.scriptUrl){
     try{
-      // Check if editing existing sheet row
-      const existingRow=state.data?.find(r=>r.datum===date&&isRace(r.type));
-      if(state.editingRaceId&&existingRow?.rowIndex){
-        await sheetUpdateRow(existingRow.rowIndex,raceFields);
+      // Sheet-race: update by rowIndex; new race: addRow
+      const sheetRowIndex=state._raceFromSheet?._rowIndex||null;
+      const existingRow=state.data?.find(r=>r.datum===date&&isRace(r.type)&&r.rowIndex);
+      const targetRowIndex=sheetRowIndex||(state.editingRaceId?existingRow?.rowIndex:null);
+      if(targetRowIndex){
+        await sheetUpdateRow(targetRowIndex,raceFields);
       }else{
         await sheetAddRow(raceFields);
       }
+      state._raceFromSheet=null;
       showToast(T('race_to_sheet'));
       await fetchData();
     }catch(e){
