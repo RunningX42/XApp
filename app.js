@@ -331,7 +331,18 @@ function renderActiveView(){
   }
 }
 
-// ── THEME ─────────────────────────────────────────────────────────────────────
+// DEV: force clear cache and reload
+async function devForceRefresh(){
+  if('serviceWorker' in navigator){
+    const regs=await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r=>r.unregister()));
+  }
+  const keys=await caches.keys();
+  await Promise.all(keys.map(k=>caches.delete(k)));
+  location.reload(true);
+}
+
+
 function applyTheme(){
   document.documentElement.dataset.theme=state.theme;
   document.querySelector('#themeBtnDark')?.classList.toggle('active',state.theme==='dark');
