@@ -1,15 +1,114 @@
-// ── CONSTANTS ───────────────────────────────────────────────────────────────
-// C24: standardised type keywords
-const TYPES={
-  run:    {bg:'var(--run-bg)',    text:'var(--run-text)',    i18n:'type_run'},
-  werk:   {bg:'var(--work-bg)',   text:'var(--work-text)',   i18n:'type_werk'},
-  kracht: {bg:'var(--str-bg)',    text:'var(--str-text)',    i18n:'type_kracht'},
-  mobiliteit:{bg:'var(--mob-bg)',text:'var(--mob-text)',    i18n:'type_mob'},
-  rust:   {bg:'var(--rest-bg)',   text:'var(--rest-text)',   i18n:'type_rust'},
-  race:   {bg:'var(--race-bg)',   text:'var(--race-text)',   i18n:'type_race'},
-  herstel:{bg:'var(--herstel-bg)',text:'var(--herstel-text)',i18n:'type_herstel'},
+// ── ACTIVITY DATA MODEL ───────────────────────────────────────────────────────
+// Canonical activity enum (English)
+const ACTIVITY_ENUM=['run','work','strength','mobility','rest','race','recovery'];
+
+// Dutch → English normalization map (backward compat with sheet values)
+const TYPE_NL_MAP={
+  werk:'work', rust:'rest', kracht:'strength',
+  mobiliteit:'mobility', herstel:'recovery',
 };
-const TYPE_FALLBACK=TYPES.rust;
+
+// Normalize a raw type string from the sheet to canonical enum value
+function normalizeType(raw){
+  if(!raw)return'rest';
+  const t=raw.toLowerCase().trim().split(',')[0].trim();
+  return TYPE_NL_MAP[t]||t; // map Dutch, pass through English
+}
+
+// Map canonical enum → TYPES display config (English keys added)
+const TYPE_DISPLAY={
+  run:     {bg:'var(--run-bg)',    text:'var(--run-text)',    i18n:'type_run'},
+  work:    {bg:'var(--work-bg)',   text:'var(--work-text)',   i18n:'type_werk'},
+  strength:{bg:'var(--str-bg)',    text:'var(--str-text)',    i18n:'type_kracht'},
+  mobility:{bg:'var(--mob-bg)',    text:'var(--mob-text)',    i18n:'type_mob'},
+  rest:    {bg:'var(--rest-bg)',   text:'var(--rest-text)',   i18n:'type_rust'},
+  race:    {bg:'var(--race-bg)',   text:'var(--race-text)',   i18n:'type_race'},
+  recovery:{bg:'var(--herstel-bg)',text:'var(--herstel-text)',i18n:'type_herstel'},
+  // Dutch aliases for backward compat
+  werk:    {bg:'var(--work-bg)',   text:'var(--work-text)',   i18n:'type_werk'},
+  kracht:  {bg:'var(--str-bg)',    text:'var(--str-text)',    i18n:'type_kracht'},
+  mobiliteit:{bg:'var(--mob-bg)', text:'var(--mob-text)',    i18n:'type_mob'},
+  rust:    {bg:'var(--rest-bg)',   text:'var(--rest-text)',   i18n:'type_rust'},
+  herstel: {bg:'var(--herstel-bg)',text:'var(--herstel-text)',i18n:'type_herstel'},
+};
+
+// Normalize distance: "10km" → 10, "800 m" → 0.8, "10" → 10
+function normalizeDistance(raw){
+  if(!raw&&raw!==0)return null;
+  const s=raw.toString().trim().toLowerCase();
+  const mMatch=s.match(/^([\d.]+)\s*m$/);
+  if(mMatch)return parseFloat(mMatch[1])/1000; // meters to km
+  return parseFloat(s)||null;
+}
+
+// Format distance for display: <0.1 → meters, else km
+function formatDistance(km){
+  if(km===null||km===undefined)return'';
+  if(km<0.1)return`${Math.round(km*1000)} m`;
+  return`${km} km`;
+}
+
+// Normalize empty/null values
+function normalizeEmptyValues(obj){
+  const out={};
+  for(const k in obj)out[k]=obj[k]??'';
+  return out;
+}
+
+// ── DATA SERVICE LAYER ────────────────────────────────────────────────────────
+// Thin wrappers — UI always goes through these, never calls sheet directly.
+
+function getActivities(filters={}){
+  let rows=state.data||[];
+  if(filters.date)rows=rows.filter(r=>r.datum===filters.date);
+  if(filters.fase)rows=rows.filter(r=>r.fase===filters.fase);
+  if(filters.type)rows=rows.filter(r=>normalizeType(r.type)===filters.type);
+  if(filters.excludeTypes)rows=rows.filter(r=>!filters.excludeTypes.includes(normalizeType(r.type)));
+  return rows;
+}
+
+async function createActivity(fields){
+  // fields: {datum, type, titel, detail, km, fase}
+  const normalized={...fields, type: fields.type||'rest'};
+  if(state.scriptUrl){
+    await sheetAddRow(normalized);
+  }else{
+    if(!state.data)state.data=[];
+    state.data.push({...normalized,feedback:'',rowIndex:null});
+    renderActiveView();
+  }
+}
+
+async function updateActivity(rowIndex,fields){
+  if(state.scriptUrl){
+    await sheetUpdateRow(rowIndex,fields);
+  }else{
+    const row=state.data?.find(r=>r.rowIndex===rowIndex);
+    if(row)Object.assign(row,fields);
+    renderActiveView();
+  }
+}
+
+async function deleteActivityById(rowIndex){
+  // Undo buffer — keep for 10 seconds
+  const row=state.data?.find(r=>r.rowIndex===rowIndex);
+  if(row){
+    state._undoBuffer={row,timeout:setTimeout(()=>{state._undoBuffer=null;},10000)};
+  }
+  if(state.scriptUrl){
+    await sheetDeleteRow(rowIndex);
+  }else{
+    if(state.data)state.data=state.data.filter(r=>r.rowIndex!==rowIndex);
+    renderActiveView();
+  }
+}
+
+// ── CONSTANTS (keep for backward compat) ─────────────────────────────────────
+// TYPES is now an alias for TYPE_DISPLAY for backward compat
+const TYPES=TYPE_DISPLAY;
+const TYPE_FALLBACK=TYPES.rest;
+
+
 
 const PR_ORDER=['800m','1500m','1mile','5km','10km','10mile','HM','M'];
 const DAYS_NL=['Ma','Di','Wo','Do','Vr','Za','Zo'];
@@ -171,18 +270,20 @@ function getWeekDates(){
 // C24: type resolution — comma-separated, first valid type wins for colour
 function typeOf(typeStr){
   if(!typeStr)return TYPE_FALLBACK;
-  const parts=typeStr.toLowerCase().split(',').map(s=>s.trim());
-  for(const p of parts){
-    if(TYPES[p])return TYPES[p];
-  }
-  return TYPE_FALLBACK;
+  const norm=normalizeType(typeStr);
+  return TYPE_DISPLAY[norm]||TYPE_DISPLAY[typeStr.toLowerCase().trim()]||TYPE_FALLBACK;
 }
-// C24: check for specific type in comma-separated string
-const hasType=(typeStr,key)=>typeStr?.toLowerCase().split(',').map(s=>s.trim()).includes(key)??false;
-const isWork=t=>hasType(t,'werk');
+// Type checks — work with both Dutch and English values
+const hasType=(typeStr,key)=>{
+  if(!typeStr)return false;
+  const norm=normalizeType(typeStr);
+  const dutch=Object.entries(TYPE_NL_MAP).find(([,v])=>v===key)?.[0];
+  return norm===key||typeStr.toLowerCase().trim()===key||(dutch&&typeStr.toLowerCase().trim()===dutch);
+};
+const isWork=t=>hasType(t,'work');
 const isRace=t=>hasType(t,'race');
-const isRust=t=>hasType(t,'rust');
-const isMob=t=>hasType(t,'mobiliteit');
+const isRust=t=>hasType(t,'rest');
+const isMob=t=>hasType(t,'mobility');
 
 function countdownDisplay(days){
   if(days<0)return{val:'✓',unit:T('days_ago')};
@@ -389,26 +490,33 @@ function renderRacesBar(){
   }
 
   let h='';
-  // raceType lives in localStorage per race
   const localRaces=loadRaces();
+  if(!sheetRaces.length){
+    // No races yet — show + only
+    h=`<div class="rb-add" onclick="openRaceModal()" style="border-left:none;padding-left:0">+</div>`;
+    bar.innerHTML=h;return;
+  }
   sheetRaces.forEach(r=>{
     const cd=countdownDisplay(daysUntil(r.datum));
-    // Doeltijd: (Doel: 37:00) in detail
     const goalMatch=(r.detail||'').match(/\(Doel:\s*(\d+:\d{2}(?::\d{2})?)\)/);
     const goalStr=goalMatch?goalMatch[1]:'';
-    // Afstand: smart unit
-    const kmVal=parseFloat(r.km||0);
-    const distStr=kmVal>0?(kmVal<10?`${r.km} m`:`${r.km} km`):'';
-    // Icon: raceType from localStorage
-    const localRace=localRaces.find(lr=>lr.date===r.datum);
-    const iconKey=raceTypeIconKey(localRace?.raceType||'',r.km);
-    h+=`<div class="rb-item" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer">
-      <div style="display:flex;align-items:center;gap:5px;margin-bottom:2px">
+    // Smart unit: >100 = km, <=100 = meters (no one runs 5 km as "5")
+    // Actually: if raw value looks like meters (>=100 or has 'm'), use m
+    const kmRaw=(r.km||'').toString().trim();
+    const kmVal=parseFloat(kmRaw);
+    const distStr=kmRaw?(kmVal>100?`${kmRaw} m`:`${kmRaw} km`):'';
+    // raceType + mainGoal from localStorage (keyed by date)
+    const lr=localRaces.find(l=>l.date===r.datum)||localRaces.find(l=>l.name===r.titel);
+    const iconKey=raceTypeIconKey(lr?.raceType||'',r.km);
+    const isMain=!!lr?.mainGoal;
+    h+=`<div class="rb-item${isMain?' rb-item-main':''}" onclick="openDayFromRacesBar('${r.datum}')" style="cursor:pointer${isMain?';border-bottom:2px solid var(--accent)':''}">
+      <div style="display:flex;align-items:center;gap:4px;margin-bottom:2px">
         ${RXIcon(iconKey,13,'var(--race-text)','var(--race-text)')}
         <div class="rb-title">${esc(r.titel||r.datum)}</div>
       </div>
       ${distStr?`<div class="rb-meta">${esc(distStr)}</div>`:''}
-      ${goalStr?`<div class="rb-goal">${esc(goalStr)}</div>`:''}
+      ${goalStr?`<div class="rb-goal" style="color:var(--accent);font-size:9px;font-family:var(--font-m)">${esc(goalStr)}</div>`:''}
+      ${isMain?`<div style="font-family:var(--font-m);font-size:8px;letter-spacing:1px;color:var(--accent);text-transform:uppercase">★ Doel</div>`:''}
       <div class="rb-countdown">${cd.val}<span>${cd.unit}</span></div>
     </div>`;
   });
@@ -651,7 +759,7 @@ function renderWeek(){
             </div>
             <div style="flex:1;min-width:0">
               ${activeRows.map((row,i)=>{const ti=typeOf(row.type);return`<div onclick="openDayModalRow(${row.rowIndex},'${date}')" style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:${i>0?'8px 0 0':0};${i>0?'border-top:1px solid var(--border);margin-top:8px':''}">
-                <div style="width:18px;height:18px;flex-shrink:0">${RXIcon(row.type?.split(',')[0].trim()||'rust',16,'var(--muted)','var(--accent)')}</div>
+                <div style="width:18px;height:18px;flex-shrink:0">${RXIcon(normalizeType(row.type||'rest'),16,'var(--muted)','var(--accent)')}</div>
                 <div style="flex:1;min-width:0">
                   <div style="font-family:var(--font-m);font-size:9px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:${ti.text}">${T(ti.i18n)}</div>
                   <div style="font-family:var(--font-d);font-weight:700;font-size:14px">${esc(row.titel||'')}</div>
@@ -802,7 +910,7 @@ function renderPlanRows(rows,t,faseBadge=''){
     h+=`<div>
       <div class="plan-row${isPast?' is-past':''}${isTdy?' is-today':''}${work?' is-work':''}" onclick="togglePlanRow('${rowId}','${row.datum}')" style="padding:12px 12px">
         <div class="plan-row-date"><strong>${parts[0]} ${parts[1]}</strong>${parts[2]}</div>
-        <div class="plan-row-emoji">${RXIcon(row.type?.split(',')[0].trim()||'rust',16,'var(--muted)','var(--accent)')}</div>
+        <div class="plan-row-emoji">${RXIcon(normalizeType(row.type||'rest'),16,'var(--muted)','var(--accent)')}</div>
         <div class="plan-row-body"><div class="plan-row-title" style="font-size:16px;font-weight:700">${esc(row.titel||'—')}</div></div>
         ${row.km?`<div class="plan-row-km">${esc(row.km)}km</div>`:'<div class="plan-row-km"></div>'}
         ${row.feedback?'<div class="plan-row-feedback"></div>':''}
@@ -1112,9 +1220,9 @@ async function saveDayEdit(datum){
   if(state.scriptUrl){
     try{
       if(editingRowIndex){
-        await sheetUpdateRow(editingRowIndex,fields);
+        await updateActivity(editingRowIndex,fields);
       }else{
-        await sheetAddRow(fields);
+        await createActivity(fields);
       }
     }catch(e){
       // Fallback: update local cache only
@@ -1146,12 +1254,10 @@ async function deleteActivity(rowIndex){
   if(!confirm('Activiteit verwijderen?'))return;
   closeDayModal();
   try{
-    if(state.scriptUrl)await sheetDeleteRow(rowIndex);
-    else if(state.data)state.data=state.data.filter(r=>r.rowIndex!==rowIndex);
+    await deleteActivityById(rowIndex);
     showToast('Verwijderd');
   }catch(e){
-    if(state.data)state.data=state.data.filter(r=>r.rowIndex!==rowIndex);
-    showToast('Lokaal verwijderd: '+e.message);
+    showToast('Fout: '+e.message);
   }
   state.editingRowIndex=null;
   renderActiveView();renderHeader();
@@ -1490,43 +1596,51 @@ function openRaceModalFromSheet(rowIndex){
 }
 
 function openRaceModal(raceId,prefillDate){
-  // BUG1 fix: set editingRaceId before calling closeRaceModal
   const races=loadRaces();
-  let race=raceId?races.find(r=>r.id===raceId):null;
-  // C34: also look in sheet-derived synthetic race
-  if(!race&&raceId&&raceId.startsWith('sheet_'))race=state._raceFromSheet||null;
+  let race=raceId?races.find(r=>r.id===raceId)||races.find(r=>r.date===raceId):null;
+  if(!race&&raceId?.startsWith('sheet_'))race=state._raceFromSheet||null;
   state.editingRaceId=race?.id||null;
   document.getElementById('raceModal').classList.remove('open');
   const content=document.getElementById('raceModalContent');
-  const distList=['5km','10km','10mile','Halve marathon','Marathon','Trailrun','Ultra'];
-  const normDist=d=>{if(!d)return'';const n=d.toString().trim().replace(/\s/,'');return distList.find(o=>o.startsWith(n+'k')||o===n)||n;};
-  const raceDist=normDist(race?.dist||'');
-  const distOpts=distList.map(d=>`<option value="${d}"${raceDist===d?'selected':''}>${d}</option>`).join('');
-  const typeOpts=['Weg','Baan','Trail','Ultra','Virtueel'].map(tp=>
-    `<option value="${tp}"${race?.raceType===tp?'selected':''}>${tp}</option>`
-  ).join('');
-  content.innerHTML=`<div class="modal-title">${T(raceId?'race_edit':'race_add')}</div>
+
+  const DIST=['5 km','10 km','10 mile','Halve marathon','Marathon'];
+  const TYPE=['Weg','Baan','Trail','Ultra','Virtueel'];
+
+  const rawDist=(race?.dist||'').toString().trim();
+  const normDist=rawDist.replace(/^(\d+)\s*km?$/i,'$1 km');
+  const matchedDist=DIST.find(o=>o===normDist||o===rawDist)||'';
+  const customDist=matchedDist?'':rawDist;
+
+  const matchedType=TYPE.find(o=>o===(race?.raceType||''))||'';
+  const customType=matchedType?'':(race?.raceType||'');
+
+  content.innerHTML=`
+    <div class="modal-title">${raceId?'Race bewerken':'Race toevoegen'}</div>
     <div class="settings-field">
-      <label class="settings-label">${T('race_name')}</label>
+      <label class="settings-label">Race naam</label>
       <input type="text" class="settings-input" id="raceNameInput" value="${esc(race?.name||'')}" placeholder="Big10 Rotterdam">
     </div>
     <div class="settings-field">
-      <label class="settings-label">${T('race_date')}</label>
-      <input type="date" class="settings-input" id="raceDateInput" value="${esc(race?.date||prefillDate||'')}">
+      <label class="settings-label">Datum</label>
+      <input type="date" class="settings-input" id="raceDateInput" value="${esc(race?.date||prefillDate||'')}" style="width:100%">
     </div>
     <div class="settings-field">
-      <label class="settings-label">${T('race_dist')}</label>
-      <select class="settings-input" id="raceDistSelect">
-        <option value="">—</option>${distOpts}<option value="__custom">Vrije tekst…</option>
+      <label class="settings-label">Afstand</label>
+      <select class="settings-input" id="raceDistSelect" onchange="document.getElementById('raceDistCustom').style.display=this.value==='__custom'?'block':'none'">
+        <option value="">—</option>
+        ${DIST.map(d=>`<option value="${d}"${matchedDist===d?' selected':''}>${d}</option>`).join('')}
+        <option value="__custom"${customDist?' selected':''}>Anders…</option>
       </select>
-      <input type="text" class="settings-input" id="raceDistCustom" placeholder="Vrije tekst" style="margin-top:6px;display:none" value="${esc(distList.includes(raceDist)?'':(race?.dist||''))}">
+      <input type="text" class="settings-input" id="raceDistCustom" placeholder="bijv. 800 m" style="margin-top:6px;display:${customDist?'block':'none'}" value="${esc(customDist)}">
     </div>
     <div class="settings-field">
-      <label class="settings-label">${T('race_type')}</label>
-      <select class="settings-input" id="raceTypeSelect">
-        <option value="">—</option>${typeOpts}<option value="__custom">Vrije tekst…</option>
+      <label class="settings-label">Type race</label>
+      <select class="settings-input" id="raceTypeSelect" onchange="document.getElementById('raceTypeCustom').style.display=this.value==='__custom'?'block':'none'">
+        <option value="">—</option>
+        ${TYPE.map(t=>`<option value="${t}"${matchedType===t?' selected':''}>${t}</option>`).join('')}
+        <option value="__custom"${customType?' selected':''}>Anders…</option>
       </select>
-      <input type="text" class="settings-input" id="raceTypeCustom" placeholder="Vrije tekst" style="margin-top:6px;display:none" value="${esc(['Weg','Baan','Trail','Ultra','Virtueel'].includes(race?.raceType||'')?'':race?.raceType||'')}">
+      <input type="text" class="settings-input" id="raceTypeCustom" placeholder="bijv. Veldloop" style="margin-top:6px;display:${customType?'block':'none'}" value="${esc(customType)}">
     </div>
     <div class="settings-field">
       <label class="settings-label">Doeltijd (optioneel)</label>
@@ -1534,83 +1648,69 @@ function openRaceModal(raceId,prefillDate){
     </div>
     <div class="settings-field" style="display:flex;align-items:center;gap:10px">
       <input type="checkbox" id="raceMainInput" ${race?.mainGoal?'checked':''} style="width:18px;height:18px;accent-color:var(--accent)">
-      <label for="raceMainInput" class="settings-label" style="margin:0">${T('race_main')}</label>
+      <label for="raceMainInput" class="settings-label" style="margin:0">Hoofddoel</label>
     </div>
-    <button class="btn-primary" style="margin-top:8px" onclick="saveRace()">${T('race_save')}</button>
-    ${race?`<button class="btn-secondary" onclick="deleteRace('${race.id}')">🗑 ${T('race_delete')}</button>`:''}`;
+    <button class="btn-primary" style="margin-top:8px" onclick="saveRace()">Race opslaan</button>
+    ${race?`<button class="btn-secondary" onclick="deleteRace('${race.id}')">🗑 Verwijderen</button>`:''}`;
 
   document.getElementById('raceModal').classList.add('open');
-  document.getElementById('raceDistSelect')?.addEventListener('change',e=>{document.getElementById('raceDistCustom').style.display=e.target.value==='__custom'?'block':'none';});
-  document.getElementById('raceTypeSelect')?.addEventListener('change',e=>{document.getElementById('raceTypeCustom').style.display=e.target.value==='__custom'?'block':'none';});
-  if(race?.dist){const s=document.getElementById('raceDistSelect');if([...s.options].some(o=>o.value===race.dist))s.value=race.dist;else{s.value='__custom';document.getElementById('raceDistCustom').style.display='block';}}
-  if(race?.raceType){
-    const s=document.getElementById('raceTypeSelect');
-    const typeList=['Weg','Baan','Trail','Ultra','Virtueel'];
-    if(typeList.includes(race.raceType)){
-      s.value=race.raceType;
-    }else if(race.raceType&&race.raceType.length<30){
-      // Only use as custom if short (not a detail string)
-      s.value='__custom';document.getElementById('raceTypeCustom').style.display='block';
-      document.getElementById('raceTypeCustom').value=race.raceType;
-    }
-    // else: leave as "—" (empty/unknown)
-  }
 }
 
 async function saveRace(){
   const name=document.getElementById('raceNameInput')?.value.trim();
   const date=document.getElementById('raceDateInput')?.value;
-  if(!name||!date){showToast(T('race_required'));return;}
+  if(!name||!date){showToast('Race naam en datum zijn verplicht');return;}
   const distSel=document.getElementById('raceDistSelect')?.value;
-  const dist=distSel==='__custom'?document.getElementById('raceDistCustom')?.value.trim():distSel;
+  const dist=distSel==='__custom'?document.getElementById('raceDistCustom')?.value.trim():(distSel||'');
   const typeSel=document.getElementById('raceTypeSelect')?.value;
-  const raceType=typeSel==='__custom'?document.getElementById('raceTypeCustom')?.value.trim():typeSel;
-  const mainGoal=document.getElementById('raceMainInput')?.checked;
+  const raceType=typeSel==='__custom'?document.getElementById('raceTypeCustom')?.value.trim():(typeSel||'');
+  const mainGoal=!!document.getElementById('raceMainInput')?.checked;
   const goal=document.getElementById('raceGoalInput')?.value.trim()||'';
+
+  // Persist raceType + mainGoal + goal in localStorage (keyed by date for sheet races)
   const races=loadRaces();
-  if(state.editingRaceId){
+  const isSheetRace=!state.editingRaceId||state.editingRaceId.startsWith('sheet_');
+  if(isSheetRace){
+    const idx=races.findIndex(r=>r.date===date);
+    const entry={id:date,name,date,dist,raceType,mainGoal,goal};
+    if(idx>=0)races[idx]=entry;else races.push(entry);
+    state.editingRaceId=date;
+  }else{
     const idx=races.findIndex(r=>r.id===state.editingRaceId);
     if(idx>=0)races[idx]={...races[idx],name,date,dist,raceType,mainGoal,goal};
-  }else{
-    races.push({id:Date.now().toString(),name,date,dist,raceType,mainGoal,goal});
+    else races.push({id:Date.now().toString(),name,date,dist,raceType,mainGoal,goal});
   }
   persistRaces(races);
-  const [sy,sm,sd]=date.split('-').map(Number);
+
+  const [sy,sm]=date.split('-').map(Number);
   state.calYear=sy;state.calMonth=sm-1;state.calSelectedDate=date;
   closeRaceModal();renderHeader();
   if(state.currentTab==='calendar')renderCalendar();else switchTab('calendar');
 
-  // C38: write to sheet
-  // Doeltijd written to detail as (Doel: xx:xx) — raceType stays local only
+  // Sheet: write titel + km + (Doel: xx:xx) appended to detail
   const existingDetail=(state.data?.find(r=>r.datum===date&&isRace(r.type))?.detail||'')
-    .replace(/\s*\(Doel:[^)]*\)/,'').trim(); // strip old Doel
-  const raceDetail=goal?`${existingDetail}(Doel: ${goal})`.trim():existingDetail;
+    .replace(/\s*\(Doel:[^)]*\)/,'').trim();
+  const raceDetail=goal?`${existingDetail?existingDetail+' ':''}(Doel: ${goal})`:existingDetail;
   const raceFields={datum:date,titel:name,type:'race',detail:raceDetail,km:dist||''};
+
   if(state.scriptUrl){
     try{
-      // Sheet-race: update by rowIndex; new race: addRow
       const sheetRowIndex=state._raceFromSheet?._rowIndex||null;
-      const existingRow=state.data?.find(r=>r.datum===date&&isRace(r.type)&&r.rowIndex);
-      const targetRowIndex=sheetRowIndex||(state.editingRaceId?existingRow?.rowIndex:null);
-      if(targetRowIndex){
-        await sheetUpdateRow(targetRowIndex,raceFields);
-      }else{
-        await sheetAddRow(raceFields);
-      }
+      const existingRow=state.data?.find(r=>r.datum===date&&isRace(r.type));
+      const targetRowIndex=sheetRowIndex||existingRow?.rowIndex||null;
+      if(targetRowIndex)await sheetUpdateRow(targetRowIndex,raceFields);
+      else await sheetAddRow(raceFields);
       state._raceFromSheet=null;
-      showToast(T('race_to_sheet'));
+      showToast('Race opgeslagen in schema');
       await fetchData();
-    }catch(e){
-      showToast('❌ '+e.message);
-    }
+    }catch(e){showToast('❌ '+e.message);}
   }else{
-    // Local only
     if(state.data){
       const ex=state.data.find(r=>r.datum===date&&isRace(r.type));
       if(ex)Object.assign(ex,raceFields);
       else state.data.push({...raceFields,feedback:'',rowIndex:null});
     }
-    showToast(T('race_saved'));
+    showToast('Race opgeslagen');
   }
 }
 
